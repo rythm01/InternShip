@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "name": "Alex Smith",
+        "relation": "Cousin",
+        "phone": "+1234567890",
+        "email": "alexsmith@gmail.com",
+        "type": "General Member"
+    },
+    {
+        "id": 2,
+        "name": "Alex Smith",
+        "relation": "Cousin",
+        "phone": "+1234567890",
+        "email": "alexsmith@gmail.com",
+        "type": "General Member"
+    },
+    {
+        "id": 3,
+        "name": "Alex Smith",
+        "relation": "Cousin",
+        "phone": "+1234567890",
+        "email": "alexsmith@gmail.com",
+        "type": "General Member"
+    },
+    {
+        "id": 4,
+        "name": "Alex Smith",
+        "relation": "Cousin",
+        "phone": "+1234567890",
+        "email": "alexsmith@gmail.com",
+        "type": "General Member"
+    }
+]

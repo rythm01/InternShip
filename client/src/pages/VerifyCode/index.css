@@ -1,0 +1,48 @@
+
+.number_input input{
+  width: 76.83px ;
+  height: 77px ;
+  margin: 24px ;
+  border-radius: 10px ;
+  font-size: 32px ;
+}
+
+@media (max-width:1200px){
+  .number_input input{
+    width: 56.83px ;
+    height: 57px ;
+    margin: 13px ;
+    border-radius: 10px ;
+    font-size: 25px ;
+  }
+}
+
+@media (max-width:900px){
+  .number_input input{
+    width: 46.83px ;
+    height: 47px ;
+    margin: 10px ;
+    border-radius: 8px ;
+    font-size: 20px ;
+  }
+}
+
+@media (max-width:600px){
+  .number_input input{
+    width: 30px ;
+    height: 30px ;
+    margin: 6px ;
+    border-radius: 6px ;
+    font-size: 15px ;
+  }
+}
+
+@media (max-width:400px){
+  .number_input input{
+    width: 25px ;
+    height: 25px ;
+    margin: 8px 4px;
+    border-radius: 6px ;
+    font-size: 13px ;
+  }
+}

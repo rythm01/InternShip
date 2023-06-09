@@ -1,0 +1,164 @@
+.selected-flag {
+  border: none !important;
+  outline: none !important;
+  margin-top: -15px !important;
+}
+
+@media (max-width: 1200px) {
+  .selected-flag {
+    margin-top: -10px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .selected-flag {
+    margin-top: 0 !important;
+  }
+}
+
+.flag-dropdown {
+  border: none !important;
+  background-color: transparent !important;
+}
+.country-list {
+  /* width: 100% !important; */
+  /* left: -463px !important; */
+  /* margin-top: 17px !important; */
+  font-family: TT Commons !important;
+  border-radius: 10px !important;
+  border: 1px solid #292d3233;
+  box-shadow: none !important;
+  border-top: none !important;
+  line-height: "26px" !important;
+  width: 1025% !important;
+  margin-left: -915% !important;
+}
+
+@media (max-width: 1200px) {
+  .country-list {
+    width: 1050% !important;
+    margin-left: -950% !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .country-list {
+    width: 850% !important;
+    margin-left: -755% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .country-list {
+    width: 650% !important;
+    margin-left: -565% !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .country-list {
+    width: 600% !important;
+    margin-left: -520% !important;
+  }
+}
+
+.react-tel-input .country-list .country .dial-code {
+  color: inherit !important;
+}
+
+.country.highlight {
+  background-color: #00a652 !important;
+  color: white !important;
+}
+.search {
+  display: none !important;
+}
+.country-list li {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-family: TT Commons !important;
+  height: 60px;
+}
+.country-list li span:hover {
+  color: white !important;
+}
+.country-list li:hover {
+  background-color: #00a652 !important;
+  color: white !important;
+}
+.country-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.country-list {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.button {
+  height: 40px;
+  width: 50px;
+  margin: 20px;
+  right: 0px;
+}
+.input {
+  width: 100% !important;
+  height: 77px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  transition: 0.25s;
+}
+
+@media (max-width: 1200px) {
+  .input {
+    width: 525px !important;
+    height: 70px !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+  }
+  .button {
+    margin: 15px;
+  }
+}
+@media (max-width: 900px) {
+  .input {
+    width: 425px !important;
+    height: 65px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+  }
+  .button {
+    margin: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .input {
+    width: 325px !important;
+    height: 55px !important;
+    font-size: 12px !important;
+  }
+  .button {
+    margin: 8px;
+  }
+}
+@media (max-width: 400px) {
+  .input {
+    width: 100% !important;
+    height: 45px !important;
+    padding-left: 20px !important;
+  }
+  .react-tel-input {
+    width: 100% !important;
+  }
+  .button {
+    margin: 2px;
+  }
+  .m-2 {
+    margin: 2px 0 !important;
+  }
+  .w-200 {
+    width: 100% !important;
+  }
+}

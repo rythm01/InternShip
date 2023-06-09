@@ -1,0 +1,1 @@
+export const BASE_URL = "https://p-and-s-services-33412-staging.botics.co/";

@@ -1,0 +1,317 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+@font-face {
+  font-family: "TT Commons";
+  src: local("TT Commons"),
+    url(./assets/fonts/TT\ Commons/TT\ Commons\ Regular.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "TT Commons";
+  font-weight: 500;
+  src: local("TT Commons"),
+    url(./assets/fonts/TT\ Commons/TT\ Commons\ Medium.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "TT Commons";
+  font-weight: 600;
+  src: local("TT Commons"),
+    url(./assets/fonts/TT\ Commons/TT\ Commons\ DemiBold.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "TT Commons";
+  font-weight: 700;
+  src: local("TT Commons"),
+    url(./assets/fonts/TT\ Commons/TT\ Commons\ Bold.otf) format("opentype");
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.modal-addOn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.modal__close {
+  display: block;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal__inner {
+  position: relative;
+  max-width: 100%;
+  padding: 16px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 20px 32px -8px;
+  margin: auto;
+}
+
+.MuiGrid-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal__close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.modal__close-btn svg {
+  width: 58px;
+  height: 58px;
+}
+
+@media (max-width: 600px) {
+  .modal__close-btn svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.modal__close-btn:hover svg {
+  opacity: 1;
+}
+
+p {
+  font-size: 16px;
+}
+
+.main_div {
+  padding: 80px;
+}
+
+@media (max-width: 1200px) {
+  .main_div {
+    padding: 40px 0;
+  }
+}
+@media (max-width: 800px) {
+  .main_div {
+    padding: 40px 0;
+  }
+  p {
+    font-size: 14px;
+  }
+  .bold_p {
+    font-size: 16px !important;
+  }
+  .flex_column {
+    flex-direction: column !important;
+    /* height: 100% !important; */
+  }
+}
+@media (max-width: 600px) {
+  .main_div {
+    padding: 30px;
+  }
+}
+@media (max-width: 400px) {
+  .main_div {
+    padding: 0px;
+  }
+  p {
+    font-size: 12px;
+  }
+  .bold_p {
+    font-size: 14px !important;
+  }
+  ol {
+    padding: 0 0 0 20px !important;
+  }
+}
+
+.home_ul_li {
+  display: flex;
+  gap: 50px;
+}
+.home_ul_li ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.home_ul_li ul li {
+  font-size: 14px;
+  font-weight: 600;
+}
+@media (max-width: 800px) {
+  .home_ul_li {
+    gap: 0px;
+    flex-wrap: wrap;
+  }
+  .home_ul_li ul li {
+    font-size: 12px;
+  }
+}
+
+.flex_wrap {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+  .mt-5 {
+    margin-top: 2rem !important;
+  }
+  .mb-5 {
+    margin-bottom: 2rem !important;
+  }
+}
+@media (max-width: 600px) {
+  .pb-0 {
+    padding-bottom: 0 !important;
+  }
+  .mt-0 {
+    margin-top: 0 !important;
+  }
+  .p-0 {
+    padding: 0 !important;
+  }
+}
+.table_responsive {
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 20px;
+}
+thead tr th,
+tbody tr td {
+  white-space: nowrap;
+}
+.w-100 {
+  width: 100% !important;
+}
+
+@media (max-width: 1000px) {
+  .column_1 {
+    flex-direction: column !important;
+  }
+  .width-100 {
+    width: 100% !important;
+  }
+  .h-unset {
+    height: unset !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .grid_file {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 800px) {
+  .column_2 {
+    flex-direction: column !important;
+  }
+  .width-100-2 {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 375px) {
+  svg.logo_width {
+    width: 44px;
+  }
+}
+
+@media (max-width: 650px) {
+  .modal {
+    width: 90% !important;
+    height: 320px !important;
+  }
+  .MuiBox-root.css-kmq0in {
+    width: -webkit-fill-available !important ;
+  }
+}
+.block {
+  display: none !important;
+}
+.width-0 {
+  width: unset !important;
+}
+@media (max-width: 991px) {
+  .none {
+    display: none !important;
+  }
+  .block {
+    display: block !important;
+  }
+  .marginx-20 {
+    margin: 0px !important;
+  }
+}
+.offcanvas.offcanvas-start.show {
+  width: 300px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .welcome_flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  .welcome_flex .title {
+    margin-bottom: 0 !important;
+  }
+}
