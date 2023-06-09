@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const permissions_1 = require("../../../controllers/apis/v1/permissions");
+const router = (0, express_1.Router)();
+router.use(verifyUsers_1.authenticateUser);
+router.get('/:id', permissions_1.permissionsController.getPermissions);
+router.route('/').post(permissions_1.permissionsController.createPermission);
+// router.get('/user', authController.getUser);
+exports.default = router;

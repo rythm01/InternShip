@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const notification_1 = require("../../../controllers/apis/v1/notification");
+const router = (0, express_1.Router)();
+router.use(verifyUsers_1.authenticateUser);
+router.route('/').get(notification_1.notificationController.getNotifications);
+// router.get('/user', authController.getUser);
+exports.default = router;
