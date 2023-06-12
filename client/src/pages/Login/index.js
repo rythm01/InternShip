@@ -107,7 +107,6 @@ export default function Login() {
     const res = await login({ email, password });
     if (!res.data.success) {
       setLoading(false)
-
       return setError(res.data.message)
     }
     if (res.data.success && res.data.is2fa) {
@@ -119,7 +118,7 @@ export default function Login() {
         }
       })
     }
-
+    console.log(res.data.token);
     setToken(res.data.token)
 
     const response = await getProfile(res.data.token)
@@ -201,13 +200,16 @@ export default function Login() {
           />
 
           {error && (
-            <Paragraph color="#FF5F5F">{error}</Paragraph>
+            <div color="#FF5F5F">
+              {error}
+            </div>
           )}
           {validateEmail && (
-            <Paragraph color="#FF5F5F">Please Enter a valid Email</Paragraph>
+            <div color="#FF5F5F">
+              Please Enter a valid Email
+            </div>
           )}
-
-
+          
           <ButtonBar>
             <Button color="#00A652" type="submit" onSubmit={onSubmit}>
               Log in
@@ -215,7 +217,8 @@ export default function Login() {
           </ButtonBar>
         </form>
 
-        {/* <Divider>Or log in with</Divider>
+
+        <Divider>Or log in with</Divider>
         <ButtonBar>
           <Button
             // onClick={() => loginWithGoogle()}
@@ -279,14 +282,14 @@ export default function Login() {
               </Button>
             )}
           />
-        </ButtonBar> */}
+        </ButtonBar>
 
-        <Paragraph>
+        <div>
           Don't have an account?{" "}
           <CustomLink to="/signup">
             <Paragraph bold>Sign Up</Paragraph>
           </CustomLink>
-        </Paragraph>
+        </div>
         <LogoContainer>
           <Logo />
         </LogoContainer>

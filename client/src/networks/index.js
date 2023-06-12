@@ -4,7 +4,7 @@ const base_url = process.env.REACT_APP_PROD ? "https://ssvault.adtruz.com/api/v1
 
 
 export default axios.create({
-    baseURL: "https://sandsvault.io/api/v1",
+    baseURL: "http://localhost:8000/api/v1",
     headers: {
         "access-control-allow-origin": "*",
     },
