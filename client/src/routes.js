@@ -164,7 +164,9 @@ const routes = [
       },
       {
         path: "payment",
-        element: <Elements stripe={stripePromise}><Payment /></Elements>
+        element: (
+          <Elements stripe={stripePromise}><Payment /></Elements>
+        )
       }
     ]
   },
