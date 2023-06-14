@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { Fragment, useContext, useEffect } from "react";
 import styled from "styled-components";
 import { ReactComponent as Logo } from "../../assets/images/Logo.svg";
 import {
@@ -32,7 +32,15 @@ import { useGoogleLogin } from "@react-oauth/google";
 import useWindowSize from "./../../utils/hook/useWindowSize";
 import { AuthContext } from "../../context/AuthContext";
 import { getProfile } from "../../networks/profile";
-
+import BankForm from "../../components/common/Forms/BankForm";
+import CreditcardForm from "../../components/common/Forms/CreditcardForm";
+import Recipe from "../../components/common/Forms/Recipe";
+import LoanAccountForm from "../../components/common/Forms/LoanAccountForm";
+import MerchantAccountForm from "../../components/common/Forms/MerchantAccountForm";
+import MiscForm from "../../components/common/Forms/MiscForm";
+import { Password } from "@mui/icons-material";
+import PasswordStotageForm from "../../components/common/Forms/PasswordStotageForm";
+import SignUp from "../../components/common/Forms/SignUp";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 
@@ -157,143 +165,146 @@ export default function Login() {
 
 
   return (
-    <Page justifyContent="flex-start">
-      <Container margin="100px auto" padding="70px" borderRadius="20px">
-        <Title
-          margin={width < 600 ? "100px 30px 30px 30px" : "30px 30px 0 30px"}
-        >
-          Log In
-        </Title>
-        <form
-          onSubmit={onSubmit}
-          style={{
-            width: width < 600 && "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InputGroup
-            label="Email"
-            placeholder="Enter your email here"
-            imageSrc={emailImg}
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          <InputGroup
-            label="Password"
-            placeholder="Enter your password here"
-            hintText="Forgot Password?"
-            onHintClick={handleForgotPassword}
-            imageSrc={passwordImg}
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-
-          <CheckBox
-            text="Remember me"
-            checked={remember}
-            onChange={() => setRemember((v) => !v)}
-          />
-
-          {error && (
-            <div color="#FF5F5F">
-              {error}
-            </div>
-          )}
-          {validateEmail && (
-            <div color="#FF5F5F">
-              Please Enter a valid Email
-            </div>
-          )}
-          
-          <ButtonBar>
-            <Button color="#00A652" type="submit" onSubmit={onSubmit}>
-              Log in
-            </Button>
-          </ButtonBar>
-        </form>
-
-
-        <Divider>Or log in with</Divider>
-        <ButtonBar>
-          <Button
-            // onClick={() => loginWithGoogle()}
+    <>
+      
+      <Page justifyContent="flex-start">
+        <Container margin="100px auto" padding="70px" borderRadius="20px">
+          <Title
+            margin={width < 600 ? "100px 30px 30px 30px" : "30px 30px 0 30px"}
+          >
+            Log In
+          </Title>
+          <form
+            onSubmit={onSubmit}
             style={{
-              backgroundColor: "white",
-              color: "black",
-              textColor: "#000",
+              width: width < 600 && "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <Image
-              margin="8px -14px 0 -15px"
-              width="80px"
-              src={googleImg}
-              alt="Google logo"
+            <InputGroup
+              label="Email"
+              placeholder="Enter your email here"
+              imageSrc={emailImg}
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
-            Google
-          </Button>
+            <InputGroup
+              label="Password"
+              placeholder="Enter your password here"
+              hintText="Forgot Password?"
+              onHintClick={handleForgotPassword}
+              imageSrc={passwordImg}
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
 
-          <FacebookLogin
-            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-            callback={HandleFacebookLogin}
-            render={(renderProps) => (
-              <Button
-                onClick={renderProps.onClick}
-                style={{
-                  backgroundColor: "white",
-                  color: "black",
-                  textColor: "#000",
-                }}
-              >
-                <Image width="26px" src={facebookImg} alt="Facebook logo" />{" "}
-                Facebook
-              </Button>
-            )}
-          />
-          <AppleSignin
-            authOptions={{
-              clientId: "com.crowdbotics.storeandsharevault.service",
-              scope: "email name",
-              redirectURI: `${window.location.origin}/login`,
-              state: "state",
-              nonce: "nonce",
-              usePopup: true,
-            }} // REQUIRED
-            noDefaultStyle={false}
-            onSuccess={HandleAppleLogin}
-            onError={({ error }) =>
-              error !== "popup_closed_by_user" &&
-              alert(`Apple SignIn Error: \n ${error}`)
-            }
-            skipScript={false}
-            render={(props) => (
-              <Button {...props} color="#fff" width="154px" textColor="#000">
-                <Image
-                  margin="4px -10px 0 -15px"
-                  width="70px"
-                  src={appleImg}
-                  alt="Apple logo"
-                />{" "}
-                Apple
-              </Button>
-            )}
-          />
-        </ButtonBar>
+            <CheckBox
+              text="Remember me"
+              checked={remember}
+              onChange={() => setRemember((v) => !v)}
+            />
 
-        <div>
-          Don't have an account?{" "}
-          <CustomLink to="/signup">
-            <Paragraph bold>Sign Up</Paragraph>
-          </CustomLink>
-        </div>
-        <LogoContainer>
-          <Logo />
-        </LogoContainer>
-      </Container>
-    </Page>
+            {error && (
+              <div color="#FF5F5F">
+                {error}
+              </div>
+            )}
+            {validateEmail && (
+              <div color="#FF5F5F">
+                Please Enter a valid Email
+              </div>
+            )}
+
+            <ButtonBar>
+              <Button color="#00A652" type="submit" onSubmit={onSubmit}>
+                Log in
+              </Button>
+            </ButtonBar>
+          </form>
+
+
+          <Divider>Or log in with</Divider>
+          <ButtonBar>
+            <Button
+              // onClick={() => loginWithGoogle()}
+              style={{
+                backgroundColor: "white",
+                color: "black",
+                textColor: "#000",
+              }}
+            >
+              <Image
+                margin="8px -14px 0 -15px"
+                width="80px"
+                src={googleImg}
+                alt="Google logo"
+              />
+              Google
+            </Button>
+
+            <FacebookLogin
+              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+              callback={HandleFacebookLogin}
+              render={(renderProps) => (
+                <Button
+                  onClick={renderProps.onClick}
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+                    textColor: "#000",
+                  }}
+                >
+                  <Image width="26px" src={facebookImg} alt="Facebook logo" />{" "}
+                  Facebook
+                </Button>
+              )}
+            />
+            <AppleSignin
+              authOptions={{
+                clientId: "com.crowdbotics.storeandsharevault.service",
+                scope: "email name",
+                redirectURI: `${window.location.origin}/login`,
+                state: "state",
+                nonce: "nonce",
+                usePopup: true,
+              }} // REQUIRED
+              noDefaultStyle={false}
+              onSuccess={HandleAppleLogin}
+              onError={({ error }) =>
+                error !== "popup_closed_by_user" &&
+                alert(`Apple SignIn Error: \n ${error}`)
+              }
+              skipScript={false}
+              render={(props) => (
+                <Button {...props} color="#fff" width="154px" textColor="#000">
+                  <Image
+                    margin="4px -10px 0 -15px"
+                    width="70px"
+                    src={appleImg}
+                    alt="Apple logo"
+                  />{" "}
+                  Apple
+                </Button>
+              )}
+            />
+          </ButtonBar>
+
+          <div>
+            Don't have an account?{" "}
+            <CustomLink to="/signup">
+              <Paragraph bold>Sign Up</Paragraph>
+            </CustomLink>
+          </div>
+          <LogoContainer>
+            <Logo />
+          </LogoContainer>
+        </Container>
+      </Page>
+    </>
   );
 }
