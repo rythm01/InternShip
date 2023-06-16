@@ -3,6 +3,7 @@ import {
   IoHomeOutline,
   IoInformationCircleOutline
 } from "react-icons/io5"
+import { RiLockPasswordLine } from 'react-icons/ri';
 import { ReactComponent as PeopleIcon } from "../../../assets/images/people.svg"
 
 const routes = [
@@ -16,6 +17,12 @@ const routes = [
     to: "my-buddies",
     pathname: "/my-buddies",
     Icon: PeopleIcon
+  },
+  {
+    name:"Passwords",
+    to:"passwords",
+    pathname:"/home/passwords",
+    Icon: RiLockPasswordLine
   },
   {
     name: "Documents",

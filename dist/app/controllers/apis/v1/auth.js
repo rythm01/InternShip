@@ -27,7 +27,6 @@ exports.authController = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { email, password } = req.body;
-            console.log(email);
             const user = yield UserRepo.findOne({ where: { email } });
             if (!user) {
                 return res.status(200).json({ message: 'User not found', success: false });

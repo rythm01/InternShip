@@ -102,8 +102,8 @@ export const profileController = {
             };
 
             //upload file to aws s3
-            const data = await s3.upload(params).promise()
-            if (!data) return res.status(200).json({ success: false, message: "something went wrong!" })
+            // const data = await s3.upload(params).promise()
+            // if (!data) return res.status(200).json({ success: false, message: "something went wrong!" })
 
 
             const profile = new UserProfile();
@@ -113,8 +113,8 @@ export const profileController = {
             profile.plan = plan!;
             profile.location = location;
             profile.verficationPeriod = verificationPeriod;
-            profile.profilePicture = data.Location;
-            profile.profilePictureKey = data.Key;
+            // profile.profilePicture = data.Location;
+            // profile.profilePictureKey = data.Key;
             profile.storage = plan?.storage.toString() || (1024 * 1024).toString();
             profile.storageLeft = plan?.storage.toString() || (1024 * 1024).toString();
 

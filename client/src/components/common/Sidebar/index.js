@@ -21,7 +21,7 @@ export default function Sidebar() {
   const handleLogout = () => {
     //add logout function
     logout();
-    window.location.href = "https://sandsvault.io"
+    window.location.href = "http://localhost:3000/login"
   };
 
   const { width } = useWindowSize();

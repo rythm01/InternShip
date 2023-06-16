@@ -19,11 +19,10 @@ const port = process.env.PORT || 5000
 //creating http server using http module
 try {
     AppDataSource.initialize().then(() => {
-
         http.createServer({}, app).listen(port, () => {
             console.log("Server is listening on PORT " + port)
         })
-    }).catch(err => {
+    }).catch((err:any) => {
         console.log(err)
     })
 
