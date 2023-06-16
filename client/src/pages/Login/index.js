@@ -115,6 +115,7 @@ export default function Login() {
     const res = await login({ email, password });
     if (!res.data.success) {
       setLoading(false)
+
       return setError(res.data.message)
     }
     if (res.data.success && res.data.is2fa) {
@@ -126,7 +127,7 @@ export default function Login() {
         }
       })
     }
-    console.log(res.data.token);
+
     setToken(res.data.token)
 
     const response = await getProfile(res.data.token)

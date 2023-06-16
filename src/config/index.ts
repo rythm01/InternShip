@@ -12,12 +12,13 @@ const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE_NAME,
     port: 5432,
-    entities: ["dist/app/models/*{.ts,.js}"],
+    entities: ["src/app/models/*{.ts,.js}"],
     synchronize: true,
-    logging: true
+    logging: true,
+    ssl: false, // Disable SSL
 })
 
-const twilio = client(process.env.TWILIO_SID, process.env.TWILIO_TOKEN)
+const twilio = client(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_TOKEN)
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

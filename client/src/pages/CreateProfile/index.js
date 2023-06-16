@@ -128,7 +128,7 @@ export default function CreateProfile() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = "/";
+    window.location.href = "https://sandsvault.io";
   };
 
   const onSubmit = async (e) => {

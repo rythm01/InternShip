@@ -6,7 +6,6 @@ import { Admin } from '../../../models/admin';
 import bcrypt from 'bcrypt';
 import generateOTP from "../../../../utils/generateOtp"
 import { transporter } from '../../../../config';
-
 import { OAuth2Client } from 'google-auth-library';
 
 const UserRepo = AppDataSource.getRepository(UserAuth);
@@ -50,7 +49,6 @@ export const authController = {
                 console.error(error);
                 return res.json({ success: false, message: 'Something went wrong!' });
             });
-
         }
         catch (error) {
             console.log(error);
@@ -131,31 +129,33 @@ export const authController = {
 
             await UserRepo.save(newUser);
 
-            const mailOptions = {
-                from: 'Store And Share Vault',
-                to: email,
-                subject: 'Welcome Email',
-                html: `<p>${name}</p>
+            // const mailOptions = {
+            //     from: 'Store And Share Vault',
+            //     to: email,
+            //     subject: 'Welcome Email',
+            //     html: `<p>${name}</p>
 
-                <p>Welcome to Store &amp; Share Vault, your central location for managing and sharing important files, documents and photos with loved ones. Let others know you care about them by adding them as a Buddy and sharing this information with them in a closed network. Find comfort in the fact that you and your loved ones will never have to frantically search for important information ever again!</p>
+            //     <p>Welcome to Store &amp; Share Vault, your central location for managing and sharing important files, documents and photos with loved ones. Let others know you care about them by adding them as a Buddy and sharing this information with them in a closed network. Find comfort in the fact that you and your loved ones will never have to frantically search for important information ever again!</p>
                 
-                <p>Feel free to reach out to our Customer Support Team at anytime with questions, comments or concerns. Info@StoreAndShareVault.io</p>`,
-            };
+            //     <p>Feel free to reach out to our Customer Support Team at anytime with questions, comments or concerns. Info@StoreAndShareVault.io</p>`,
+            // };
 
-            transporter.sendMail(mailOptions, async function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
+            // transporter.sendMail(mailOptions, async function (error, info) {
+            //     if (error) {
+            //         console.log(error);
+            //     } else {
 
 
 
-                }
-            });
+            //     }
+            // });
 
 
 
             const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || "hcjhad7842687ahdcb");
             res.json({ token, success: true });
+            // console.log(name + email + password + phoneNumber);
+            
         } catch (error) {
             console.log(error);
             res.status(200).json({ success: false, message: 'Something went wrong' });
