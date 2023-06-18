@@ -45,7 +45,7 @@ import { getFile, getfiles } from "../../../../networks/files";
 import { createFolder, deleteFolderApi, getFolders } from "../../../../networks/folders";
 import { getBuddiesApi } from "../../../../networks/buddies";
 import Files from "./FilesStaticData";
-import fileimage from "../../../../assets/images/file1.png"
+import fileimage from "../../../../assets/images/files.png"
 
 
 
