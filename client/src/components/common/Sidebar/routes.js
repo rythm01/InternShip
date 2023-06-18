@@ -21,7 +21,7 @@ const routes = [
   {
     name:"Passwords",
     to:"passwords",
-    pathname:"/home/passwords",
+    pathname:"/passwords",
     Icon: RiLockPasswordLine
   },
   {

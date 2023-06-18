@@ -62,7 +62,7 @@ const Row = styled.div`
   ${(props) => props.link && "cursor:pointer;"}
 `;
 
-const LoanAccountPassword = () => {
+const NonBankerPassword = () => {
 
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -379,4 +379,4 @@ const LoanAccountPassword = () => {
     )
 }
 
-export default LoanAccountPassword
+export default NonBankerPassword;
