@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
-const Container = styled.form `
- form{
+const Container = styled.form`
   max-width: 500px;
   margin: 10px auto;
   padding: 10px 20px;
@@ -24,7 +23,10 @@ const Container = styled.form `
       margin-bottom: 8px;
     }
 
-    input {
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -42,9 +44,7 @@ const Container = styled.form `
     }
 
     p {
-      margin: 0;
-      margin-top: 10px;
-      font-size: 14px;
+      font-weight: 300;
     }
   }
 
@@ -58,20 +58,31 @@ const Container = styled.form `
       color: #fff;
       background-color: #00a652;
       font-size: 18px;
-      font-weight: 600;
+      font-style: normal;
       text-align: center;
       border-radius: 5px;
       width: 50%;
       border: 1px solid #00a652;
       border-width: 1px 1px 3px;
+      border-radius: 10px;
       box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
       margin-bottom: 10px;
+      font-weight: 600;
       cursor: pointer;
     }
   }
-}
-`
+`;
 const CreditcardForm = () => {
+  const formRef = useRef(null);
+
+
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    formRef.current.reset(); // Clear all input fields
+    console.log('Form submitted...!');
+
+  };
 
     const handleKeyPress = (event) => {
         console.log("Handle KEy Press..")
@@ -85,8 +96,8 @@ const CreditcardForm = () => {
         }
     };
     return (
-        <Container>
-            <form action="" method="post">
+        <Container ref={formRef} onSubmit={handleFormSubmit}>
+           
 
 
                 <h1>Credit Card Account Password Storage Form</h1>
@@ -121,7 +132,7 @@ const CreditcardForm = () => {
                     <button type="submit">Sign up</button>
                 </div>
 
-            </form>
+           
         </Container>
     )
 }

@@ -1,5 +1,3 @@
-
-
 const Passwords = [
     {
         id: "1",
