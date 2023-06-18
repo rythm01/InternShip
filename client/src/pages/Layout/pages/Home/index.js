@@ -99,6 +99,7 @@ const Cont = styled.div`
     justify-content: center;
     font-family: "TT Commons", sans-serif;
     font-size: 20px;
+    font-weight: 500;
     line-height: 26px;
     padding: 0px 6px;
     color: black;
@@ -202,6 +203,7 @@ const Image = styled.img`
 const Row = styled.div`
   display: flex;
   flex-direction: row;
+  border-raduis: ${(props) => props.borderRaduis};
   justify-content: ${(props) => props.justifyContent};
   align-items: ${(props) => props.alignItems};
   height: ${(props) => props.height};
@@ -326,8 +328,6 @@ export default function Home() {
     setLoading(false);
     return setNotifications(res.data.data);
   };
-
-  useEffect(() => {}, []);
   const style = {
     position: "absolute",
     transform: "translate(-50%, -50%)",
@@ -743,20 +743,22 @@ export default function Home() {
                     />
                     <Box
                       sx={{
-                        width: "85%",
+                        width: "92%",
                         p: 3,
                         m: 3,
                         borderRadius: "20px",
                       }}
                     >
-                      <Row alignItems="center">
+                      <Row
+                        alignItems="center"
+                        border="1px solid black"
+                        borderRadius="10px"
+                      >
                         <Button
                           width="100%"
                           height="60px"
-                          borderRadius="10px"
                           color="white"
                           textColor="black"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
                         >
                           <label
                             style={{
@@ -766,6 +768,8 @@ export default function Home() {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
+                              border: "1px solid rgba(0,0,0,0.5)",
+                              borderRadius: "10px",
                             }}
                           >
                             <input
@@ -800,6 +804,8 @@ export default function Home() {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
+                              border: "1px solid rgba(0,0,0,0.5)",
+                              borderRadius: "10px",
                             }}
                           >
                             <input
@@ -828,7 +834,7 @@ export default function Home() {
                                 ? selectedOption.name
                                 : "Select Password Type"}
                               {/* <FontAwesomeIcon
-                                // icon={faChevronDown}
+                                icon={faChevronDown}
                                 className="dropdown-icon"
                               /> */}
                             </div>
@@ -840,7 +846,6 @@ export default function Home() {
                                     className="dropdown-option"
                                     onClick={() => handleOptionSelect(option)}
                                     onChange={(e) => {
-                                      // setIsForm({ isVisible: true, form: e.name });
                                       navigate(
                                         `/password-type-form?form=${e.id}`
                                       );
@@ -871,6 +876,8 @@ export default function Home() {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
+                              border: "1px solid rgba(0,0,0,0.5)",
+                              borderRadius: "10px",
                             }}
                           >
                             <input
@@ -905,6 +912,8 @@ export default function Home() {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
+                              border: "1px solid rgba(0,0,0,0.5)",
+                              borderRadius: "10px",
                             }}
                           >
                             <input
