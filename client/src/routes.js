@@ -20,6 +20,15 @@ const Signup = React.lazy(() => import("./pages/Signup"));
 const VerifyCode = React.lazy(() => import("./pages/VerifyCode"));
 const Layout = React.lazy(() => import("./pages/Layout"));
 const MyBuddies = React.lazy(() => import("./pages/Layout/pages/MyBuddies"));
+const Passwords = React.lazy(() => import("./pages/Layout/pages/Passwords"));
+const LoanAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/LoanAccountPassword"));
+const NonBankerPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/NonBankerPassword"));
+const CreditCardPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/CreditCardPassword"));
+const MiscPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/MiscPassword"));
+const BankAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/BankAccountPassword"));
+const CryptoPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/CryptoPassword"));
+const MerchantAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/MerchantAccountPassword"));
+const Recipes = React.lazy(() => import("./pages/Layout/pages/Passwords/Recipes"));
 const Documents = React.lazy(() => import("./pages/Layout/pages/Documents"));
 const About = React.lazy(() => import("./pages/Layout/pages/About"));
 const Subscriptions = React.lazy(() => import("./pages/Subscriptions"));
@@ -59,6 +68,51 @@ const routes = [
       {
         path: "my-buddies",
         element: <MyBuddies />,
+        isProtected: true,
+      },
+      {
+        path: "passwords",
+        element: <Passwords />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/loanaccountpassword",
+        element: <LoanAccountPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/nonbankerpassword",
+        element: <NonBankerPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/creditcardpassword",
+        element: <CreditCardPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/miscpassword",
+        element: <MiscPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/bankaccountpassword",
+        element: <BankAccountPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/cryptopassword",
+        element: <CryptoPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/merchantaccount",
+        element: <MerchantAccountPassword />,
+        isProtected: true,
+      },
+      {
+        path: "passwords/recipes",
+        element: <Recipes />,
         isProtected: true,
       },
       {

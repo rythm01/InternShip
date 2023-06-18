@@ -45,7 +45,7 @@ import { getFile, getfiles } from "../../../../networks/files";
 import { createFolder, deleteFolderApi, getFolders } from "../../../../networks/folders";
 import { getBuddiesApi } from "../../../../networks/buddies";
 import Files from "./FilesStaticData";
-import fileimage from "../../../../assets/images/file1.png"
+import fileimage from "../../../../assets/images/files.png"
 
 
 
@@ -62,7 +62,7 @@ const Row = styled.div`
   ${(props) => props.link && "cursor:pointer;"}
 `;
 
-const LoanAccountPassword = () => {
+const MerchantAccountPassword = () => {
 
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -379,4 +379,4 @@ const LoanAccountPassword = () => {
     )
 }
 
-export default LoanAccountPassword
+export default MerchantAccountPassword;
