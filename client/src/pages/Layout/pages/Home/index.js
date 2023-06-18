@@ -44,10 +44,132 @@ import FolderRenameModal from "../../../../components/FolderRenameModal";
 import styled from "styled-components";
 import useWindowSize from "../../../../utils/hook/useWindowSize";
 import { AuthContext } from "../../../../context/AuthContext";
-import { getFolders, createFolder, deleteFolderApi } from "../../../../networks/folders";
+import {
+  getFolders,
+  createFolder,
+  deleteFolderApi,
+} from "../../../../networks/folders";
 import AlertModal from "../../../../components/common/AlertModal";
-import { getfiles, createFile, deleteFileData } from "../../../../networks/files";
-import { getNotificationApi } from "../../../../networks/notifications"
+import {
+  getfiles,
+  createFile,
+  deleteFileData,
+} from "../../../../networks/files";
+import { getNotificationApi } from "../../../../networks/notifications";
+
+const style2 = {
+  position: "absolute",
+  transform: "translate(-50%, -50%)",
+  height: "550px",
+  width: "669px",
+  left: "50%",
+  top: "50%",
+  borderRadius: "20px",
+  backgroundColor: "white",
+  outline: "none",
+  boxShadow: 30,
+  // p: "45px 15px 45px 15px",
+};
+
+const PasswordSelectNames = [
+  { id: 1, name: "Loan Account Passwords" },
+  { id: 2, name: "Passwords (Non Bank Accounts)" },
+  { id: 3, name: "Credit Card Account Passwords" },
+  { id: 4, name: "Misc Accounts Passwords" },
+  { id: 5, name: "Misc Forms" },
+  { id: 6, name: "Bank Account Passwords" },
+  { id: 7, name: "Merchant Account Passwords" },
+];
+
+const Cont = styled.div`
+  .dropdown-container {
+    position: relative;
+    margin: 8px;
+    width: 550px;
+  }
+
+  .dropdown-header {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    cursor: pointer;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "TT Commons", sans-serif;
+    font-size: 20px;
+    line-height: 26px;
+    padding: 0px 6px;
+    color: black;
+    transition: border-color 0.3s ease;
+    position: relative;
+  }
+
+  .dropdown-header:hover {
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 6px;
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 999;
+  }
+
+  .dropdown-option {
+    cursor: pointer;
+    text-align: center;
+    padding: 6px;
+    color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #000000;
+  }
+
+  .dropdown-option:hover {
+    background-color: #00a652;
+  }
+
+  .dropdown-option:last-child {
+    margin-bottom: 0;
+  }
+
+  .dropdown-option:active {
+    background-color: #00a652;
+  }
+
+  .dropdown-option:focus {
+    outline: none;
+  }
+
+  .dropdown-option[selected="true"] {
+    background-color: #00a652;
+    color: #fff;
+  }
+
+  .dropdown-option[selected="true"]:hover {
+    background-color: #00a652;
+  }
+
+  .dropdown-option[selected="true"]:active {
+    background-color: #00a652;
+  }
+`;
 
 const Column = styled.div`
   display: flex;
@@ -96,7 +218,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [open, setopen] = useState(false);
   const { setModal } = useModal();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [field, setfield] = useState("");
   const [isRenameModalOpen, toggleRenameModal] = useState(false);
   const [folderToRename, setFolderToRename] = useState({});
@@ -105,82 +227,107 @@ export default function Home() {
   const [jpegCount, setJpegCount] = useState(0);
   const [otherFilesCount, setOtherFilesCount] = useState(0);
   const [filesData, setFilesData] = useState([]);
-  const [notification, setNotifications] = useState([])
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notification, setNotifications] = useState([]);
+  const [isUplaod, setIsUpload] = useState(false);
 
-  const [folders, setFolders] = useState([])
+  const [folders, setFolders] = useState([]);
 
-  const { profile, t, setRefresh, refresh } = useContext(AuthContext)
+  const { profile, t, setRefresh, refresh } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!JSON.parse(localStorage.getItem('profile'))?.verficationPeriod) return navigate("/create-profile")
+    if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
+      return navigate("/create-profile");
     getFolderData();
     getfileData();
-    getNotification()
+    getNotification();
   }, [profile]);
 
   const HandleCreateFolder = async () => {
     // console.log(field)
-    if (!field) return alert("Please enter folder name")
+    if (!field) return alert("Please enter folder name");
     const data = {
       name: field,
     };
-    setLoading(true)
+    setLoading(true);
     const res = await createFolder(t, data);
-    setLoading(false)
-    if (!res.data.success) return alert(res.data.message)
+    setLoading(false);
+    if (!res.data.success) return alert(res.data.message);
     setfield("");
     setopen(false);
     getFolderData();
   };
 
-
-  const getFolderData = async () => {
-    setLoading(true)
-    const res = await getFolders(t)
-    if (!res.data.success) return alert(res.data.message)
-
-    const allFoldersWithoutRoot = res.data.data.filter((folder) => folder.name !== "root")
-
-    setFolders(allFoldersWithoutRoot)
-    setLoading(false)
-
+  const handleOptionSelect = (option) => {
+    // setSelectedOption(option);
+    navigate(`/password-type-form?form=${option.id}`);
+    setDropdownOpen(false);
   };
 
+  const getFolderData = async () => {
+    setLoading(true);
+    const res = await getFolders(t);
+    if (!res.data.success) return alert(res.data.message);
+
+    const allFoldersWithoutRoot = res.data.data.filter(
+      (folder) => folder.name !== "root"
+    );
+
+    setFolders(allFoldersWithoutRoot);
+    setLoading(false);
+  };
 
   const getfileData = async () => {
-    setLoading(true)
+    setLoading(true);
     const res = await getfiles(t);
-    setLoading(false)
-    if (!res.data.success) return alert(res.data.message)
+    setLoading(false);
+    if (!res.data.success) return alert(res.data.message);
     const filesData = res.data.data;
     setFilesData(filesData);
-    const pdf = filesData?.filter((file) => file.ext === "pdf" || file.ext === "PDF");
-    const png = filesData?.filter((file) => file.ext === "png" || file.ext === "PNG");
-    const jpeg = filesData?.filter((file) => file.ext === "jpeg" || file.ext === "jpg" || file.ext === "JPEG" || file.ext === "JPG");
-    const otherFiles = filesData?.filter((file) => file.ext !== "pdf" && file.ext !== "png" && file.ext !== "jpeg" && file.ext !== "jpg" && file.ext !== "PDF" && file.ext !== "PNG" && file.ext !== "JPEG" && file.ext !== "JPG");
+    const pdf = filesData?.filter(
+      (file) => file.ext === "pdf" || file.ext === "PDF"
+    );
+    const png = filesData?.filter(
+      (file) => file.ext === "png" || file.ext === "PNG"
+    );
+    const jpeg = filesData?.filter(
+      (file) =>
+        file.ext === "jpeg" ||
+        file.ext === "jpg" ||
+        file.ext === "JPEG" ||
+        file.ext === "JPG"
+    );
+    const otherFiles = filesData?.filter(
+      (file) =>
+        file.ext !== "pdf" &&
+        file.ext !== "png" &&
+        file.ext !== "jpeg" &&
+        file.ext !== "jpg" &&
+        file.ext !== "PDF" &&
+        file.ext !== "PNG" &&
+        file.ext !== "JPEG" &&
+        file.ext !== "JPG"
+    );
     setpdfcount(pdf?.length);
     setpngcount(png?.length);
     setJpegCount(jpeg?.length);
     setOtherFilesCount(otherFiles?.length);
   };
 
-
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const getNotification = async () => {
-    setLoading(true)
+    setLoading(true);
     const res = await getNotificationApi(t);
-    if (!res.data.success) return alert(res.data.message)
-    setLoading(false)
+    if (!res.data.success) return alert(res.data.message);
+    setLoading(false);
     return setNotifications(res.data.data);
   };
 
-
-
-
-
-
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
   const style = {
     position: "absolute",
     transform: "translate(-50%, -50%)",
@@ -200,12 +347,14 @@ export default function Home() {
     { color: "#DFF9EC", count: pdfcount ? pdfcount : 0, type: "PDF Files" },
     { color: "#FDF1CD", count: pngcount ? pngcount : 0, type: "PNG Files" },
     { color: "#FEEBE1", count: jpegCount ? jpegCount : 0, type: "JPEG Files" },
-    { color: "#E3EEFF", count: otherFilesCount ? otherFilesCount : 0, type: "Other Files" },
+    {
+      color: "#E3EEFF",
+      count: otherFilesCount ? otherFilesCount : 0,
+      type: "Other Files",
+    },
   ];
   const postFile = async (fileToUpload) => {
-
-
-    if (profile.storageLeft < (fileToUpload.size / 1024)) {
+    if (profile.storageLeft < fileToUpload.size / 1024) {
       return setModal(
         <AlertModal
           message={"You have reached your storage limit."}
@@ -213,29 +362,28 @@ export default function Home() {
           onSubmit={() => {
             navigate("/");
           }}
-        />)
+        />
+      );
     }
-
 
     const formData = new FormData();
     formData.append("file", fileToUpload);
-    setLoading(true)
+    setLoading(true);
     const res = await createFile(t, formData);
-    if (!res.data.success) return alert(res.data.message)
+    if (!res.data.success) return alert(res.data.message);
     getfileData();
     getFolderData();
-    setRefresh(!refresh)
-    setLoading(false)
+    setRefresh(!refresh);
+    setLoading(false);
   };
 
-
   const deleteFolder = async (folder) => {
-    const res = await deleteFolderApi(t, folder)
+    const res = await deleteFolderApi(t, folder);
     if (!res.data.success) {
-      return alert(res.data.message)
+      return alert(res.data.message);
     }
-    getFolderData()
-  }
+    getFolderData();
+  };
 
   const renameFolder = (id) => {
     setFolderToRename(id);
@@ -244,7 +392,7 @@ export default function Home() {
 
   const { width } = useWindowSize();
 
-  const { logout } = useContext(AuthContext)
+  const { logout } = useContext(AuthContext);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -257,7 +405,7 @@ export default function Home() {
     if (!res.data.success) return alert(res.data.message);
     getfileData();
     getFolderData();
-    setRefresh(!refresh)
+    setRefresh(!refresh);
     setLoading(false);
   };
   return (
@@ -305,7 +453,7 @@ export default function Home() {
                 text: "Logout",
                 onClick: () => {
                   //logout functionality should be here
-                  logout()
+                  logout();
                   window.location.href = "https://sandsvault.io";
                 },
               },
@@ -454,7 +602,6 @@ export default function Home() {
                 })}
                 <NewFolder onChange="" setopen={setopen} />
               </Box>
-
             </HomeContainer>
 
             <HomeContainer
@@ -542,7 +689,7 @@ export default function Home() {
                                   {
                                     text: "Open",
                                     onClick: () => {
-                                      navigate('/documents/file/' + item.id)
+                                      navigate("/documents/file/" + item.id);
                                     },
                                   },
 
@@ -552,7 +699,6 @@ export default function Home() {
                                       deleteFile(item.id);
                                     },
                                   },
-
                                 ]}
                               />
                             </div>
@@ -570,6 +716,216 @@ export default function Home() {
                   );
                 })}
               </Box>
+              <div className="modal-forgot">
+                <Modal
+                  open={isUplaod}
+                  onClose={() => setIsUpload(false)}
+                  keepMounted
+                  aria-labelledby="simple-modal-title"
+                  aria-describedby="simple-modal-description"
+                >
+                  <Box style={style2}>
+                    <Title
+                      fontSize="1.7rem"
+                      fontWeight="700"
+                      margin="20px auto 0 25px"
+                    >
+                      Select Information Type
+                    </Title>
+                    <CrossOutline
+                      style={{
+                        position: "absolute",
+                        right: 20,
+                        top: 10,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setIsUpload(false)}
+                    />
+                    <Box
+                      sx={{
+                        width: "85%",
+                        p: 3,
+                        m: 3,
+                        borderRadius: "20px",
+                      }}
+                    >
+                      <Row alignItems="center">
+                        <Button
+                          width="100%"
+                          height="60px"
+                          borderRadius="10px"
+                          color="white"
+                          textColor="black"
+                          border="1px solid rgba(0, 0, 0, 0.5);"
+                        >
+                          <label
+                            style={{
+                              cursor: "pointer",
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <input
+                              accept=".pdf,.doc,.docx,.xls,.xlsx"
+                              type="file"
+                              onClick={(e) => {
+                                e.target.value = null;
+                              }}
+                              onChange={(e) => {
+                                setIsUpload(false);
+                                postFile(e.target.files[0]);
+                              }}
+                            />
+                            Document
+                          </label>
+                        </Button>
+                      </Row>
+                      <Row alignItems="center">
+                        <Button
+                          width="100%"
+                          height="60px"
+                          color="white"
+                          borderRadius="10px"
+                          textColor="black"
+                          border="1px solid rgba(0, 0, 0, 0.5);"
+                        >
+                          <label
+                            style={{
+                              cursor: "pointer",
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onClick={(e) => {
+                                e.target.value = null;
+                              }}
+                              onChange={(e) => {
+                                setIsUpload(false);
+                                postFile(e.target.files[0]);
+                              }}
+                            />
+                            Photo
+                          </label>
+                        </Button>
+                      </Row>
+                      <Row alignItems="center">
+                        <Cont>
+                          <div className="dropdown-container">
+                            <div
+                              className="dropdown-header"
+                              onClick={toggleDropdown}
+                            >
+                              {selectedOption
+                                ? selectedOption.name
+                                : "Select Password Type"}
+                              {/* <FontAwesomeIcon
+                                // icon={faChevronDown}
+                                className="dropdown-icon"
+                              /> */}
+                            </div>
+                            {dropdownOpen && (
+                              <ul className="dropdown-options">
+                                {PasswordSelectNames.map((option) => (
+                                  <li
+                                    key={option.id}
+                                    className="dropdown-option"
+                                    onClick={() => handleOptionSelect(option)}
+                                    onChange={(e) => {
+                                      // setIsForm({ isVisible: true, form: e.name });
+                                      navigate(
+                                        `/password-type-form?form=${e.id}`
+                                      );
+                                    }}
+                                  >
+                                    {option.name}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </Cont>
+                      </Row>
+                      <Row alignItems="center">
+                        <Button
+                          width="100%"
+                          height="60px"
+                          color="white"
+                          borderRadius="10px"
+                          textColor="black"
+                          border="1px solid rgba(0, 0, 0, 0.5);"
+                        >
+                          <label
+                            style={{
+                              cursor: "pointer",
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <input
+                              type="file"
+                              accept="video/*"
+                              onClick={(e) => {
+                                e.target.value = null;
+                              }}
+                              onChange={(e) => {
+                                setIsUpload(false);
+                                postFile(e.target.files[0]);
+                              }}
+                            />
+                            Video
+                          </label>
+                        </Button>
+                      </Row>
+                      <Row alignItems="center">
+                        <Button
+                          width="100%"
+                          height="60px"
+                          color="white"
+                          textColor="black"
+                          borderRadius="10px"
+                          border="1px solid rgba(0, 0, 0, 0.5);"
+                        >
+                          <label
+                            style={{
+                              cursor: "pointer",
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <input
+                              type="file"
+                              onClick={(e) => {
+                                e.target.value = null;
+                              }}
+                              onChange={(e) => {
+                                setIsUpload(false);
+                                postFile(e.target.files[0]);
+                              }}
+                            />
+                            Upload From device
+                          </label>
+                        </Button>
+                      </Row>
+                    </Box>
+                  </Box>
+                </Modal>
+              </div>
+
               <NewFile>
                 <label
                   style={{
@@ -580,23 +936,16 @@ export default function Home() {
                     alignItems: "center",
                     cursor: "pointer",
                   }}
+                  onClick={(e) => {
+                    e.target.value = null;
+                    setIsUpload(!isUplaod);
+                  }}
                 >
                   + Upload new File
-                  <input
-                    type="file"
-                    onClick={(e) => {
-                      e.target.value = null;
-                    }}
-                    onChange={(e) => {
-                      postFile(e.target.files[0]);
-                    }}
-                  />
                 </label>
               </NewFile>
             </HomeContainer>
           </Row>
-
-
         </Column>
 
         <Column width="30%" className="width-100 h-unset">
@@ -612,16 +961,28 @@ export default function Home() {
               viewBoxSize={[154, 154]}
               center={[77, 77]}
               totalValue={100}
-
               data={[
                 {
                   title: "Used",
-                  value: `${profile ? ((parseFloat(profile.storage) - parseFloat(profile.storageLeft)) / parseFloat(profile.storage)) * 100 : 70}`,
+                  value: `${
+                    profile
+                      ? ((parseFloat(profile.storage) -
+                          parseFloat(profile.storageLeft)) /
+                          parseFloat(profile.storage)) *
+                        100
+                      : 70
+                  }`,
                   color: "#FBBC05",
                 },
                 {
                   title: "Free Space",
-                  value: `${profile ? (parseFloat(profile.storageLeft) / parseFloat(profile.storage)) * 100 : 30}`,
+                  value: `${
+                    profile
+                      ? (parseFloat(profile.storageLeft) /
+                          parseFloat(profile.storage)) *
+                        100
+                      : 30
+                  }`,
                   color: "#1877f2",
                 },
               ]}
@@ -697,10 +1058,7 @@ export default function Home() {
             width="93%"
             height="546px"
             title="Recent Activity"
-          >
-
-
-          </HomeContainer>
+          ></HomeContainer>
         </Column>
       </Row>
       <Modal
