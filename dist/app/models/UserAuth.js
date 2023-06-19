@@ -15,8 +15,8 @@ const UserProfile_1 = require("./UserProfile");
 let UserAuth = class UserAuth {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", Number)
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    __metadata("design:type", String)
 ], UserAuth.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),

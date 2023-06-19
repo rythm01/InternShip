@@ -20,7 +20,7 @@ try {
         http_1.default.createServer({}, app_1.default).listen(port, () => {
             console.log("Server is listening on PORT " + port);
         });
-    }).catch(err => {
+    }).catch((err) => {
         console.log(err);
     });
 }

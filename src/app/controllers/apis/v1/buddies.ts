@@ -1,12 +1,11 @@
-import { AppDataSource } from '../../../../config';
-import { Response } from 'express';
-import { Request } from '../../../../utils/@types'
-import Buddy from '../../../models/Buddies';
-import { UserAuth } from '../../../models/UserAuth';
-import { Notification } from '../../../models/notification';
-import { transporter } from '../../../../config';
-import BuddyInvitation from '../../../models/invitation';
-
+import { AppDataSource } from "../../../../config";
+import { Response } from "express";
+import { Request } from "../../../../utils/@types";
+import Buddy from "../../../models/Buddies";
+import { UserAuth } from "../../../models/UserAuth";
+import { Notification } from "../../../models/notification";
+import { transporter } from "../../../../config";
+import BuddyInvitation from "../../../models/invitation";
 
 const buddyRepo = AppDataSource.getRepository(Buddy);
 const authRepo = AppDataSource.getRepository(UserAuth);
@@ -14,181 +13,203 @@ const invitationRepo = AppDataSource.getRepository(BuddyInvitation);
 const notificationRepo = AppDataSource.getRepository(Notification);
 
 export const buddyController = {
-    getBuddies: async (req: Request, res: Response) => {
-        const user = await authRepo.findOne({ where: { id: req.user } });
-        const buddies = await buddyRepo.find({
-            where: { user: { id: user?.id } }, select: {
-                id: true,
-                relationshipStatus: true,
-                buddyType: true,
-                buddyStatus: true,
-                buddy: {
-                    id: true,
-                    email: true,
-                },
-                user: {
-                    id: true,
-                    email: true,
-                },
-                createdAt: true,
-                updatedAt: true,
-            }, relations: ['user', 'buddy']
-        });
-        const invitations = await invitationRepo.find({ where: { user: { id: user?.id } }, relations: ['user'] });
-        return res.status(200).json({ success: true, message: "Buddies fetched", buddies, invitations });
-    },
+  getBuddies: async (req: Request, res: Response) => {
+    const user = await authRepo.findOne({ where: { id: req.user as any } });
+    const buddies = await buddyRepo.find({
+      where: { user: { id: user?.id } },
+      select: {
+        id: true,
+        relationshipStatus: true,
+        buddyType: true,
+        buddyStatus: true,
+        buddy: {
+          id: true,
+          email: true,
+        },
+        user: {
+          id: true,
+          email: true,
+        },
+        createdAt: true,
+        updatedAt: true,
+      },
+      relations: ["user", "buddy"],
+    });
+    const invitations = await invitationRepo.find({
+      where: { user: { id: user?.id } },
+      relations: ["user"],
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Buddies fetched",
+      buddies,
+      invitations,
+    });
+  },
 
-    addBuddy: async (req: Request, res: Response) => {
+  addBuddy: async (req: Request, res: Response) => {
+    const { email, relation, type } = req.body;
 
-        const { email, relation, type } = req.body;
+    const buddy = await authRepo.findOne({ where: { email: email } });
+    const user = await authRepo.findOne({ where: { id: req.user as any } });
 
-        const buddy = await authRepo.findOne({ where: { email: email } });
-        const user = await authRepo.findOne({ where: { id: req.user } });
+    var primeBuddyExists = await buddyRepo.find({
+      where: { user: { id: user?.id }, buddyType: "subprime" },
+    });
+    console.log(primeBuddyExists);
 
+    var extBuddies = await buddyRepo.find({
+      where: { user: { id: user?.id }, buddy: { id: buddy?.id } },
+    });
+    var extInvitations = await invitationRepo.find({
+      where: { user: { id: user?.id }, buddy: email },
+    });
+    var extNotifications = await notificationRepo.find({
+      where: { email: email, type: "buddy" },
+    });
 
-        var primeBuddyExists = await buddyRepo.find({ where: { user: { id: user?.id }, buddyType: "subprime" } });
-        console.log(primeBuddyExists);
+    if (extBuddies.length > 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Buddy already exists" });
+    }
 
-        var extBuddies = await buddyRepo.find({ where: { user: { id: user?.id }, buddy: { id: buddy?.id } } });
-        var extInvitations = await invitationRepo.find({ where: { user: { id: user?.id }, buddy: email } });
-        var extNotifications = await notificationRepo.find({ where: { email: email, type: "buddy" } });
+    if (extInvitations.length > 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Buddy invitation already sent" });
+    }
 
-        if (extBuddies.length > 0) {
-            return res.status(200).json({ success: false, message: "Buddy already exists" });
+    // if (extNotifications.length > 0) {
+    //     return res.status(200).json({ success: false, message: "Buddy invitation already sent" });
+    // }
+    var notification = new Notification();
+    notification.email = email;
+    notification.message = "You have a new buddy request";
+    notification.type = "buddy";
+    notification.status = "unread";
+    notification.data = JSON.stringify({
+      email: email,
+      relation: relation,
+      type: "buddy",
+      inviterId: req.user,
+      inviterEmail: user?.email,
+    });
+    await notificationRepo.save(notification);
+    if (!buddy) {
+      var invitation = new BuddyInvitation();
+      invitation.buddy = email;
+      invitation.relationshipStatus = relation;
+      invitation.buddyType =
+        primeBuddyExists.length >= 1 ? "buddy" : "subprime";
+      invitation.buddyStatus = "Invited";
+      invitation.user = user!;
+
+      await invitationRepo.save(invitation);
+
+      const mailOptions = {
+        from: "Store And Share Vault",
+        to: email,
+        subject: "Buddy Request",
+        html: `<p>Hi ${email.split("@")[0]},</p><br/><p> ${
+          user?.email.split("@")[0]
+        } would like to add you as a Buddy on their Store and Share Vault Account! Click the link below to register:</p><br/><a href="https://app.sandsvault.io/signup">https://app.sandsvault.io/signup</a><br/><p>Once you register, you will be able to access your buddy's account and view their files.</p><br/><p>Thanks,</p><br/><p>Store and Share Vault Team</p>`,
+      };
+
+      transporter.sendMail(mailOptions, async function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
         }
+      });
 
-        if (extInvitations.length > 0) {
-            return res.status(200).json({ success: false, message: "Buddy invitation already sent" });
-        }
+      return res
+        .status(200)
+        .json({ success: true, message: "Buddy request sent" });
+    }
 
-        // if (extNotifications.length > 0) {
-        //     return res.status(200).json({ success: false, message: "Buddy invitation already sent" });
-        // }
-        var notification = new Notification();
-        notification.email = email;
-        notification.message = "You have a new buddy request";
-        notification.type = "buddy";
-        notification.status = "unread";
-        notification.data = JSON.stringify({ email: email, relation: relation, type: "buddy", inviterId: req.user, inviterEmail: user?.email });
-        await notificationRepo.save(notification);
-        if (!buddy) {
+    var newBuddy = new Buddy();
+    newBuddy.user = user!;
+    newBuddy.buddy = buddy;
+    newBuddy.relationshipStatus = relation;
+    newBuddy.buddyType = primeBuddyExists.length >= 1 ? "buddy" : "subprime";
+    newBuddy.buddyStatus = "pending";
 
+    await buddyRepo.save(newBuddy);
 
+    return res
+      .status(200)
+      .json({ success: true, message: "Buddy request sent" });
+  },
 
-            var invitation = new BuddyInvitation();
-            invitation.buddy = email;
-            invitation.relationshipStatus = relation;
-            invitation.buddyType = primeBuddyExists.length >= 1 ? "buddy" : "subprime";
-            invitation.buddyStatus = "Invited";
-            invitation.user = user!;
+  acceptBuddy: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.body;
 
-            await invitationRepo.save(invitation);
+      const user = await authRepo.findOne({ where: { id: req.user as any } });
 
-            const mailOptions = {
-                from: 'Store And Share Vault',
-                to: email,
-                subject: 'Buddy Request',
-                html: `<p>Hi ${email.split('@')[0]},</p><br/><p> ${user?.email.split('@')[0]} would like to add you as a Buddy on their Store and Share Vault Account! Click the link below to register:</p><br/><a href="https://app.sandsvault.io/signup">https://app.sandsvault.io/signup</a><br/><p>Once you register, you will be able to access your buddy's account and view their files.</p><br/><p>Thanks,</p><br/><p>Store and Share Vault Team</p>`
-            };
+      const invitation = await invitationRepo.findOne({
+        where: { user: { id: id }, buddy: user?.email },
+      });
 
-            transporter.sendMail(mailOptions, async function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-
-
-
-                }
-            });
-
-            return res.status(200).json({ success: true, message: "Buddy request sent" });
-        }
-
-
+      if (invitation) {
         var newBuddy = new Buddy();
-        newBuddy.user = user!;
-        newBuddy.buddy = buddy;
-        newBuddy.relationshipStatus = relation;
-        newBuddy.buddyType = primeBuddyExists.length >= 1 ? "buddy" : "subprime";
-        newBuddy.buddyStatus = "pending";
+        newBuddy.user = invitation.user;
+        newBuddy.buddy = user!;
+        newBuddy.relationshipStatus = invitation.relationshipStatus;
+        newBuddy.buddyType = invitation.buddyType;
+        newBuddy.buddyStatus = "accepted";
 
         await buddyRepo.save(newBuddy);
 
-        return res.status(200).json({ success: true, message: "Buddy request sent" });
-    },
+        await invitationRepo.delete(invitation.id!);
 
-    acceptBuddy: async (req: Request, res: Response) => {
-        try {
-            const { id } = req.body;
+        return res
+          .status(200)
+          .json({ success: true, message: "Buddy request accepted" });
+      }
 
-            const user = await authRepo.findOne({ where: { id: req.user } });
+      const buddy = await buddyRepo.findOne({
+        where: { user: { id: id }, buddy: { id: user?.id } },
+      });
 
-            const invitation = await invitationRepo.findOne({ where: { user: { id: id }, buddy: user?.email } });
+      if (buddy) {
+        buddy.buddyStatus = "accepted";
+        await buddyRepo.save(buddy);
 
-            if (invitation) {
-                var newBuddy = new Buddy();
-                newBuddy.user = invitation.user;
-                newBuddy.buddy = user!;
-                newBuddy.relationshipStatus = invitation.relationshipStatus;
-                newBuddy.buddyType = invitation.buddyType;
-                newBuddy.buddyStatus = "accepted";
+        return res
+          .status(200)
+          .json({ success: true, message: "Buddy request accepted" });
+      }
 
-                await buddyRepo.save(newBuddy);
+      return res
+        .status(200)
+        .json({ success: false, message: "Buddy request not found" });
+    } catch (err) {}
+  },
 
-                await invitationRepo.delete(invitation.id!);
+  getBuddy: async (req: Request, res: Response) => {},
 
-                return res.status(200).json({ success: true, message: "Buddy request accepted" });
-            }
+  updateBuddy: async (req: Request, res: Response) => {},
 
+  deleteBuddy: async (req: Request, res: Response) => {
+    try {
+      const { type, id } = req.body;
 
-            const buddy = await buddyRepo.findOne({ where: { user: { id: id }, buddy: { id: user?.id } } });
+      if (type === "BD") {
+        const buddy = await buddyRepo.findOne({ where: { id: id } });
+        await buddyRepo.delete(buddy?.id!);
+      } else {
+        const invitation = await invitationRepo.findOne({ where: { id: id } });
+        await invitationRepo.delete(invitation?.id!);
+      }
 
-            if (buddy) {
-                buddy.buddyStatus = "accepted";
-                await buddyRepo.save(buddy);
-
-                return res.status(200).json({ success: true, message: "Buddy request accepted" });
-            }
-
-            return res.status(200).json({ success: false, message: "Buddy request not found" });
-
-
-
-        } catch (err) {
-
-        }
-    },
-
-    getBuddy: async (req: Request, res: Response) => { },
-
-    updateBuddy: async (req: Request, res: Response) => { },
-
-    deleteBuddy: async (req: Request, res: Response) => {
-
-        try {
-            const { type, id } = req.body;
-
-
-
-            if (type === "BD") {
-                const buddy = await buddyRepo.findOne({ where: { id: id } });
-                await buddyRepo.delete(buddy?.id!);
-            } else {
-                const invitation = await invitationRepo.findOne({ where: { id: id } });
-                await invitationRepo.delete(invitation?.id!);
-            }
-
-            return res.status(200).json({ success: true, message: "Buddy deleted" });
-
-
-        } catch (err) {
-            console.log(err);
-            return res.status(200).json({ success: false, message: "Something went wrong" });
-        }
-
-
+      return res.status(200).json({ success: true, message: "Buddy deleted" });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(200)
+        .json({ success: false, message: "Something went wrong" });
     }
-
-
-
-}
+  },
+};
