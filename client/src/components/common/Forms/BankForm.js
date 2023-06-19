@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
+import { Formik, Form, Field } from "formik";
 
 const Container = styled.form`
   max-width: 500px;
@@ -53,7 +54,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -74,66 +75,92 @@ const Container = styled.form`
 `;
 
 const BankForm = () => {
-  const formRef = useRef(null);
-
-
-
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    formRef.current.reset(); // Clear all input fields
-    console.log('Form submitted...!');
-
-  };
-
-  const handleKeyPress = (event) => {
-    console.log("Handle KEy Press..")
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
-
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-      event.preventDefault();
-    }
+  const handleSubmit = (values, { setSubmitting }) => {
+    console.log(values);
+    setSubmitting(false);
   };
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
+    <Container>
+      <Formik
+        initialValues={{
+          bank_name: "",
+          webiste: "",
+          user_name: "",
+          password: "",
+          account_number: "",
+          routing: "",
+          account_nick_name: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form onSubmit={handleSubmit}>
+            <h1>Bank Account Password Storage Form</h1>
 
+            <fieldset>
+              <label>Bank Name:</label>
+              <Field type="text" name="bank_name" placeholder="Enter Name" />
 
-      <h1>Bank Account Password Storage Form</h1>
+              <label>Website/URL</label>
+              <Field
+                type="text"
+                name="webiste"
+                placeholder="Enter url/website"
+              />
 
-      <fieldset>
-        <label for="name">Bank Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter Name" required />
+              <label>User Name:</label>
+              <Field
+                type="text"
+                name="user_name"
+                placeholder="Enter username"
+              />
 
-        <label for="url">Website/URL</label>
-        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+              <label>Password:</label>
+              <Field
+                type="password"
+                name="password"
+                placeholder="Enter password"
+              />
 
-        <label for="username">User Name:</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required />
+              <label>Account:</label>
+              <Field
+                type="tel"
+                name="account_number"
+                placeholder="Enter Account"
+              />
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="user_password" placeholder="Enter passowrd" required />
+              <label>Routing:</label>
+              <Field type="text" name="routing" placeholder="Enter Routing" />
 
-        <label for="account">Account:</label>
-        <input type="tel" id="account" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress} required />
+              <label>Account Nick Name:</label>
+              <Field
+                type="text"
+                name="account_nick_name"
+                placeholder="Enter account nickname"
+              />
 
-        <label for="routing">Routing:</label>
-        <input type="text" id="routing" name="routing" placeholder="Enter routing" required />
-
-        <label for="nickname">Account Nick Name:</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
-
-        <label for="password">Password Recovery:</label>
-        <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
-
-      </fieldset>
-      <div class="subbutton">
-        <button type="submit">Sign up</button>
-      </div>
-
-
+              <label>Password Recovery:</label>
+              <p>
+                we do not recommend storing questions and answer to recover your
+                password. Please reset your password instead for added security.
+              </p>
+            </fieldset>
+            <div class="subbutton">
+              <span onClick={handleSubmit}>Submit</span>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </Container>
-  )
-}
+  );
+};
 
-export default BankForm
+export default BankForm;
