@@ -21,6 +21,7 @@ import TextArea from "../../components/common/TextArea";
 import useWindowSize from "../../utils/hook/useWindowSize";
 import { Box } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Index = () => {
   const [title, setTitle] = useState("");
@@ -30,7 +31,7 @@ const Index = () => {
   const { profile, logout, authData } = useContext(AuthContext)
 
   const handleSubmit = () => {
-    if (!title || !message) return alert("please enter title and message");
+    if (!title || !message) return toast("please enter title and message");
     else {
 
     }
@@ -40,6 +41,7 @@ const Index = () => {
 
   return (
     <>
+     <Toaster />
       <Box
         display="flex"
         height="73px"

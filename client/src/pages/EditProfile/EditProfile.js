@@ -31,6 +31,7 @@ import { Modal, Stack } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import countries from "../../countires";
 import { getProfile, updateProfile } from "../../networks/profile";
+import { Toaster, toast } from "react-hot-toast";
 
 
 const Row = styled.div`
@@ -135,7 +136,7 @@ export default function EditProfile() {
     const file = e.target.files[0];
     // console.log('file...', file)
     if (file.type.split("/")[0] !== "image")
-      return alert("This file type is not supported");
+      return toast("This file type is not supported");
 
     //set profile pic to server
     setProfilePic(file);
@@ -160,10 +161,10 @@ export default function EditProfile() {
     const res = await updateProfile(t, formData);
 
     setLoading(false);
-    if (!res.data.success) return alert(res.data.message)
+    if (!res.data.success) return toast(res.data.message)
     const update = await getProfile(t);
     setLoading(false);
-    if (!update.data.success) return alert(update.data.message)
+    if (!update.data.success) return toast(update.data.message)
 
     setProfile(update.data.data)
 
@@ -178,6 +179,7 @@ export default function EditProfile() {
 
   return (
     <>
+    <Toaster />
       <div
         style={{
           display: "flex",

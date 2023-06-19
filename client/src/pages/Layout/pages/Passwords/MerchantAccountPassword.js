@@ -46,6 +46,7 @@ import { createFolder, deleteFolderApi, getFolders } from "../../../../networks/
 import { getBuddiesApi } from "../../../../networks/buddies";
 import Files from "./FilesStaticData";
 import fileimage from "../../../../assets/images/files.png"
+import toast, { Toaster } from 'react-hot-toast';
 
 
 
@@ -122,7 +123,7 @@ const MerchantAccountPassword = () => {
 
         const res = await createFolder(t, { name: field });
         if (!res.data.success) {
-            return alert(res.data.message);
+            return toast(res.data.message);
         }
         setField("");
         setOpen(false);
@@ -132,7 +133,7 @@ const MerchantAccountPassword = () => {
     const deleteFolder = async (id) => {
         const res = await deleteFolderApi(t, id)
         if (!res.data.success) {
-            return alert(res.data.message)
+            return toast(res.data.message)
         }
         getAllFolders()
     }
@@ -157,6 +158,7 @@ const MerchantAccountPassword = () => {
                 alignItems="center"
                 justifyContent="space-between"
             >
+            <Toaster />
                 <BackTransactions />
                 <Title margin={width > 600 ? "8px 0px 0px 80px" : "8px 0px 0px 60px"}>
 

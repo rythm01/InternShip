@@ -5,6 +5,7 @@ import { ReactComponent as CrossOutline } from "../assets/images/CrossOutline.sv
 import useWindowSize from "../utils/hook/useWindowSize";
 import { updateFolder } from "../networks/folders";
 import { AuthContext } from "../context/AuthContext";
+import { Toaster, toast } from "react-hot-toast";
 
 const FolderRenameModal = ({ open, close, folder }) => {
   const [folderName, setFolderName] = useState("");
@@ -20,7 +21,7 @@ const FolderRenameModal = ({ open, close, folder }) => {
   const RenameFolder = async () => {
 
     const res = await updateFolder(t, folder.id, { name: folderName })
-    if (!res.data.success) return alert(res.data.message)
+    if (!res.data.success) return toast(res.data.message)
     close()
   };
 
@@ -50,6 +51,7 @@ const FolderRenameModal = ({ open, close, folder }) => {
           p: "45px 15px 25px 15px",
         }}
       >
+      <Toaster />
         <Title fontWeight="700" margin="16px 0">
           Rename Folder
         </Title>

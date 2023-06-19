@@ -44,6 +44,7 @@ import { AuthContext } from "../../../../context/AuthContext";
 import { getFile, getfiles } from "../../../../networks/files";
 import { createFolder, deleteFolderApi, getFolders } from "../../../../networks/folders";
 import { getBuddiesApi } from "../../../../networks/buddies";
+import { Toaster, toast } from "react-hot-toast";
 
 const Row = styled.div`
   display: flex;
@@ -116,7 +117,7 @@ export default function Documents() {
 
     const res = await createFolder(t, { name: field })
     if (!res.data.success) {
-      return alert(res.data.message)
+      return toast(res.data.message)
     }
     setField("")
     setOpen(false)
@@ -127,7 +128,7 @@ export default function Documents() {
   const deleteFolder = async (id) => {
     const res = await deleteFolderApi(t, id)
     if (!res.data.success) {
-      return alert(res.data.message)
+      return toast(res.data.message)
     }
     getAllFolders()
   }
@@ -146,6 +147,7 @@ export default function Documents() {
 
   return (
     <>
+     <Toaster />
       <Row
         width="100%"
         height="73px"

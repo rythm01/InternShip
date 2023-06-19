@@ -22,6 +22,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 import countries from "../../countires";
 import { createProfile, getProfile } from "../../networks/profile";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Option = (props) => {
   return (
@@ -112,7 +113,7 @@ export default function CreateProfile() {
     const file = e.target.files[0];
     // console.log('file...', file)
     if (file.type.split("/")[0] !== "image")
-      return alert("This file type is not supported");
+      return toast("This file type is not supported");
     setImagePreview(URL.createObjectURL(file));
     setImageFile(file);
     //uploadImage(file);
@@ -135,11 +136,11 @@ export default function CreateProfile() {
     e.preventDefault();
 
 
-    if (!firstName) return alert("Please enter your first name")
-    if (!lastName) return alert("Please enter your last name")
-    if (!country) return alert("Please select your country")
-    if (!verificationPeriod) return alert("Please select verification period")
-    if (!imageFile) return alert("Please select your profile image")
+    if (!firstName) return toast("Please enter your first name")
+    if (!lastName) return toast("Please enter your last name")
+    if (!country) return toast("Please select your country")
+    if (!verificationPeriod) return toast("Please select verification period")
+    if (!imageFile) return toast("Please select your profile image")
     setLoading(true);
 
 
@@ -156,14 +157,14 @@ export default function CreateProfile() {
     const res = await createProfile(t, data);
     if (!res.data.success) {
       setLoading(false);
-      return alert(res.data.message)
+      return toast(res.data.message)
     }
 
 
     const response = await getProfile(t)
     if (!response.data.success) {
       setLoading(false);
-      return alert(response.data.message)
+      return toast(response.data.message)
     }
 
     if (response.data.data) {
@@ -184,6 +185,7 @@ export default function CreateProfile() {
 
   return (
     <Page>
+     <Toaster />
       <Container
         width="727px"
         margin="100px"

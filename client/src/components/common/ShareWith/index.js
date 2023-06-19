@@ -9,6 +9,7 @@ import { getBuddiesApi } from '../../../networks/buddies';
 import { AuthContext } from '../../../context/AuthContext';
 
 import { addBuddiesToFilePermissionApi } from '../../../networks/filePermission';
+import { Toaster, toast } from 'react-hot-toast';
 
 
 const Text = styled.span`
@@ -160,16 +161,17 @@ const ShareWith = ({ details }) => {
 
     const res = await addBuddiesToFilePermissionApi(t, { file: details.id, user: selectedBuddies[0].buddy, type: "time" })
     if (!res.data.success) {
-      return alert(res.data.message)
+      return toast(res.data.message)
     }
-    alert(res.data.message)
+    toast(res.data.message)
     setIsAddButtonShown(false)
   }
 
 
   return (
     <Box width='100%' height='70vh' sx={{ boxShadow: '0.5px 0.5px 0.5px #f5f5f5', borderRadius: '15px', paddingX: '20px', paddingY: '10px', border: '1px solid #f5f5f5', backgroundColor: 'white', marginTop: '10px', overflowY: 'auto' }}>
-      <Heading>Details</Heading>
+    <Toaster />  
+    <Heading>Details</Heading>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(0, 0, 0, 0.05)' }} />
       <Text fontWeight='600'>Uploaded on: {details?.createdAt.split("T")[0]}</Text>
       <Box sx={{ marginTop: '10px' }}>

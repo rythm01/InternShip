@@ -6,6 +6,7 @@ import { CustomErrorComponent } from 'custom-error';
 import { useParams } from 'react-router-dom';
 import { getFile } from '../networks/files';
 import { AuthContext } from '../context/AuthContext';
+import { Toaster, toast } from 'react-hot-toast';
 
 const PdfViewer = () => {
     const [url, setUrl] = useState('');
@@ -24,7 +25,7 @@ const PdfViewer = () => {
         try {
             const res = await getFile(t, id)
 
-            if (!res.data.success) alert(res.data.message)
+            if (!res.data.success) toast(res.data.message)
 
             const { url, ext } = res.data.data
             setUrl(url)
@@ -40,6 +41,7 @@ const PdfViewer = () => {
 
     return (
         <div>
+        <Toaster />
             <FileViewer
                 fileType={ext.toLowerCase()}
                 filePath={url}
