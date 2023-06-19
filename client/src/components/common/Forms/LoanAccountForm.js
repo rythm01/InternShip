@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.form`
@@ -25,6 +25,7 @@ const Container = styled.form`
 
     input[type="text"],
     input[type="password"],
+    input[type="tel"],
     input[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
@@ -73,8 +74,19 @@ const Container = styled.form`
 `;
 
 const LoanAccountForm = () => {
+
+  const formRef = useRef(null);
+
+
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    formRef.current.reset(); // Clear all input fields
+    console.log('Form submitted...!');
+
+  };
   return (
-    <Container action="" method="post">
+    <Container ref={formRef} onSubmit={handleFormSubmit}>
       <h1>Loan Account Password Storage Form</h1>
 
       <fieldset>

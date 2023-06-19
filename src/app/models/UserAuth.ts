@@ -1,49 +1,56 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
 
-import { UserProfile } from './UserProfile';
+import { UserProfile } from "./UserProfile";
 
 @Entity()
 export class UserAuth {
-    @PrimaryGeneratedColumn('uuid')
-    id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    phoneNumber: string;
+  @Column()
+  phoneNumber: string;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column({ default: true })
-    is2fa: boolean;
+  @Column({ default: true })
+  is2fa: boolean;
 
-    @Column({ default: true })
-    isActive: boolean;
+  @Column({ default: true })
+  isActive: boolean;
 
-    @Column({ default: false })
-    isStaff: boolean;
+  @Column({ default: false })
+  isStaff: boolean;
 
-    @CreateDateColumn()
-    dateJoined: Date;
+  @CreateDateColumn()
+  dateJoined: Date;
 
-    @Column({ nullable: true })
-    lastLogin: Date;
+  @Column({ nullable: true })
+  lastLogin: Date;
 
-    @Column({ nullable: true, default: false })
-    isSuperUser: boolean;
+  @Column({ nullable: true, default: false })
+  isSuperUser: boolean;
 
-    @OneToOne(() => UserProfile, (userProfile) => userProfile.userAuth)
-    userProfile: UserProfile;
+  @OneToOne(() => UserProfile, (userProfile) => userProfile.userAuth)
+  userProfile: UserProfile;
 
-    @Column({ nullable: true })
-    generatedOTP: string;
+  @Column({ nullable: true })
+  generatedOTP: string;
 
-    @Column({ nullable: true })
-    otpExpiresIn: Date;
-
+  @Column({ nullable: true })
+  otpExpiresIn: Date;
 }

@@ -10,7 +10,7 @@
     "dev": "nodemon ./dist/index.js",
     "build": "tsc -p .",
     "start": "nodemon ./src/index.ts"
-  },  
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -45,6 +45,7 @@
     "nodemailer": "^6.9.1",
     "nodemailer-smtp-transport": "^2.7.4",
     "pg": "^8.10.0",
+    "react": "^18.2.0",
     "reflect-metadata": "^0.1.13",
     "stripe": "^11.14.0",
     "twilio": "^4.8.0",
