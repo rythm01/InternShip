@@ -136,7 +136,7 @@ export const authController = {
             //     html: `<p>${name}</p>
 
             //     <p>Welcome to Store &amp; Share Vault, your central location for managing and sharing important files, documents and photos with loved ones. Let others know you care about them by adding them as a Buddy and sharing this information with them in a closed network. Find comfort in the fact that you and your loved ones will never have to frantically search for important information ever again!</p>
-                
+
             //     <p>Feel free to reach out to our Customer Support Team at anytime with questions, comments or concerns. Info@StoreAndShareVault.io</p>`,
             // };
 
@@ -151,11 +151,41 @@ export const authController = {
             // });
 
 
-
-            const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || "hcjhad7842687ahdcb");
-            res.json({ token, success: true });
+            //Sending registraion success message
+            if (!newUser.is2fa) {
+                const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || "hcjhad7842687ahdcb");
+                return res.json({ token, newUser, success: true, is2fa: false });
+            }
             // console.log(name + email + password + phoneNumber);
-            
+
+            // Generate OTP
+            const OTP = generateOTP();
+
+            // Send OTP to the user's phone number
+            twilio.messages.create({
+                body: `Hi! ${newUser.name}, your Store And Share Vault verification OTP is ${OTP}..`,
+                to: newUser.phoneNumber,
+                from: process.env.TWILIO_PHONE
+            }).then(async (message) => {
+                if (!message.sid) {
+                    // Handle error when OTP sending fails
+                    console.error('Failed to send OTP');
+                } else {
+                    // Save the generated OTP and its expiration time
+                    const date = new Date();
+                    newUser.generatedOTP = OTP;
+                    newUser.otpExpiresIn = new Date(date.getTime() + 300000);
+                    await UserRepo.save(newUser);
+                     
+                    // Handle successful OTP sending
+                    return res.json({ id: newUser.id, success: true, message: 'OTP sent successfully', is2fa: true })
+                }
+            }).catch((error) => {
+                // Handle error when OTP sending fails
+                console.error(error);
+                return res.json({ success: false, message: 'Something went wrong!' });
+            });
+
         } catch (error) {
             console.log(error);
             res.status(200).json({ success: false, message: 'Something went wrong' });

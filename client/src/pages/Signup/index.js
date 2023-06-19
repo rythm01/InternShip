@@ -4,6 +4,7 @@ import { ReactComponent as Logo } from "../../assets/images/Logo.svg";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
+import { getProfile } from "../../networks/profile";
 
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 
@@ -113,8 +114,11 @@ export default function Signup() {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [isTermAndCondition, setIsTermAndCondition] = useState(false);
   const [isPrivacyPolicy, setIsPrivacyPolicy] = useState(false);
-
-  const { setToken, t } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  
+  const { setToken, t, setProfile } = useContext(AuthContext)
+  
+  const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -135,21 +139,36 @@ export default function Signup() {
       phoneNumber: phone,
     };
     const res = await register(data);
-
+    console.log(res);
     if (!res.data.success) return setError(res.data.message);
+    
+    if (res.data.success && res.data.is2fa) {
+      setLoading(false)
 
+      return navigate("/2fa", {
+        state: {
+          data: res.data
+        }
+      })
+    }
     console.log(res.data);
 
     setToken(res.data.token);
+    const response = await getProfile(res.data.token)
+    if (!response.data.success) return navigate('/create-profile')
+    if (response.data.success) {
+      setProfile(response.data.data)
+      setLoading(false)
+      return navigate("/")
+    }
   };
-  const navigate = useNavigate();
 
-  const HandleSuccess = () => {};
-  const HandleFailure = () => {};
+  const HandleSuccess = () => { };
+  const HandleFailure = () => { };
 
-  const HandleFacebookLogin = () => {};
+  const HandleFacebookLogin = () => { };
 
-  const HandleAppleLogin = ({ authorization: { code, id_token } }) => {};
+  const HandleAppleLogin = ({ authorization: { code, id_token } }) => { };
 
   useEffect(() => {
     if (t) {
