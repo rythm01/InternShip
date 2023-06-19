@@ -17,7 +17,7 @@ import {
 } from "../../components/common";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import files from "../../assets/images/files.png";
-import BackTransactions from "../TransactionsPaymentHistory/BackTransactions";
+import BackTransactions from "../TransactionsPaymentHistory/BackTransactions/DocumentBack";
 import { Box, Stack } from "@mui/material";
 import FolderContainer from "../Layout/pages/Home/FolderContainer";
 import { NewFile } from "../../components/Home";

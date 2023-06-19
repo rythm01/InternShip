@@ -23,7 +23,7 @@ import SignOut from "../../../../assets/images/SignOut.png";
 import Group86 from "../../../../assets/images/Group 86.png";
 import NotePencil from "../../../../assets/images/NotePencil.png";
 import OptionMenuSettings from "../../../../components/common/OptionMenuSettings";
-import BackTransactions from "../../../TransactionsPaymentHistory/BackTransactions";
+import BackTransactions from "../../../TransactionsPaymentHistory/BackTransactions/PasswordBack";
 import folder from "../../../../assets/images/folder.png";
 import File from "../../../../assets/images/file.svg";
 import { Box } from "@mui/material";

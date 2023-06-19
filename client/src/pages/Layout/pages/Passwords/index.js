@@ -136,9 +136,6 @@ export default function Passwords() {
         getAllFolders()
     }
 
-
-
-
     const { width } = useWindowSize();
 
 
@@ -152,7 +149,7 @@ export default function Passwords() {
         <>
             <Row
                 width="100%"
-                height="73px"
+                height="73px"r
                 padding="24px 0"
                 alignItems="center"
                 justifyContent="space-between"

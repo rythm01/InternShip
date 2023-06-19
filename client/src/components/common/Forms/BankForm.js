@@ -1,6 +1,8 @@
+
 import React from "react";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
+
 
 const Container = styled.form`
   max-width: 500px;
@@ -75,9 +77,11 @@ const Container = styled.form`
 `;
 
 const BankForm = () => {
+
   const handleSubmit = (values, { setSubmitting }) => {
     console.log(values);
     setSubmitting(false);
+
   };
   return (
     <Container>

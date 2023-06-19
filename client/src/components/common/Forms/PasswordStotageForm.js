@@ -73,46 +73,48 @@ const Container = styled.form`
   }
 `;
 const PasswordStotageForm = () => {
-    const formRef = useRef(null);
+  const formRef = useRef(null);
 
 
 
-    const handleFormSubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        formRef.current.reset(); // Clear all input fields
-        console.log('Form submitted...!');
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    const formData = new FormData(formRef.current);
+    console.log('Form submitted...!', formData);
+    //first display all form data & then
+    formRef.current.reset(); // Clear all input fields
 
-    };
-    return (
-        <Container ref={formRef} onSubmit={handleFormSubmit}>
+  };
+  return (
+    <Container ref={formRef} onSubmit={handleFormSubmit}>
 
-                <h1>Password Storage Form</h1>
+      <h1>Password Storage Form</h1>
 
-                <fieldset>
-                    <label for="url">Website/URL</label>
-                    <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+      <fieldset>
+        <label for="url">Website/URL</label>
+        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
 
-                    <label for="username">User Name:</label>
-                    <input type="text" id="username" name="username" placeholder="Enter username" required />
+        <label for="username">User Name:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" required />
 
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="user_password" placeholder="Name" required />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="user_password" placeholder="Name" required />
 
-                    <label for="nickname">Account Nick Name:</label>
-                    <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
+        <label for="nickname">Account Nick Name:</label>
+        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
 
-                    <label for="password">Password Recovery:</label>
-                    <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
+        <label for="password">Password Recovery:</label>
+        <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
 
-                </fieldset>
-                <div class="subbutton">
-                    <button type="submit">Sign up</button>
-                </div>
-          
+      </fieldset>
+      <div class="subbutton">
+        <button type="submit">Sign up</button>
+      </div>
 
 
-        </Container>
-    )
+
+    </Container>
+  )
 }
 
 export default PasswordStotageForm
