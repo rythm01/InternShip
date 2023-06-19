@@ -78,8 +78,10 @@ const MerchantAccountForm = () => {
 
   const handleFormSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
+    const formData = new FormData(formRef.current);
+    console.log('Form submitted...!', formData);
+    //first display all form data & then
     formRef.current.reset(); // Clear all input fields
-    console.log('Form submitted...!');
 
   };
   const handleKeyPress = (event) => {

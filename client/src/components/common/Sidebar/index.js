@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from "../../../assets/images/Logo.svg";
-
 import Brand from "../Brand";
 import SidebarItem from "./SidebarItem";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -10,6 +9,7 @@ import SidebarContainer from "./SidebarContainer";
 import useDevice from "../../../utils/hook/mediaQuery";
 import useWindowSize from "../../../utils/hook/useWindowSize";
 import { AuthContext } from "../../../context/AuthContext";
+
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -55,13 +55,27 @@ export default function Sidebar() {
           overflow: "hidden",
         }}
       >
-        {routes.map((route, index) => (
-          <SidebarItem
-            key={index}
-            active={location.pathname === route.pathname}
-            {...route}
-          />
-        ))}
+        {routes.map((route, index) => {
+          if (route.name === "Documents" || route.name === "Passwords") {
+            const isActive = route.pathname.some(path => location.pathname.includes(path));
+            return (
+              <SidebarItem
+                key={index}
+                active={isActive}
+                {...route}
+              />
+            );
+          } else {
+            const isActive = route.pathname.includes(location.pathname);
+            return (
+              <SidebarItem
+                key={index}
+                active={isActive}
+                {...route}
+              />
+            );
+          }
+        })}
         {width <= 600 && (
           <SidebarItem
             name="Logout"

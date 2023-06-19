@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
-
 const Container = styled.form`
   max-width: 500px;
   margin: 10px auto;
@@ -76,13 +75,12 @@ const Container = styled.form`
 const BankForm = () => {
   const formRef = useRef(null);
 
-
-
   const handleFormSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
+    const formData = new FormData(formRef.current);
+    console.log('Form submitted...!', formData);
+    //first display all form data & then
     formRef.current.reset(); // Clear all input fields
-    console.log('Form submitted...!');
-
   };
 
   const handleKeyPress = (event) => {
