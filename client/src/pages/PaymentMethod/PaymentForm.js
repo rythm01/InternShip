@@ -25,6 +25,7 @@ import NotePencil from "../../assets/images/NotePencil.png";
 import { MdKeyboardBackspace } from "react-icons/md";
 import styled from "styled-components";
 import { AuthContext } from "../../context/AuthContext";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Row = styled.div`
   display: flex;
@@ -74,7 +75,7 @@ export const PaymentForm = () => {
     });
     if (error) {
       console.log("[error]", error);
-      alert(error.message);
+      toast.error(error.message);
     } else {
       console.log("[PaymentMethod]", paymentMethod);
 
@@ -84,6 +85,7 @@ export const PaymentForm = () => {
 
   return (
     <>
+     <Toaster />
       <Row
         height="73px"
         padding="24px"

@@ -50,8 +50,8 @@ import {
 import { getBuddiesApi } from "../../../../networks/buddies";
 import Files from "./FilesStaticData";
 import fileimage from "../../../../assets/images/file1.png";
-import { getBankAccountForm } from "../../../../networks/passwordTypeForms";
 import moment from "moment";
+import { getBankAccountForm } from "../../../../networks/passwordTypeForms";
 
 const Row = styled.div`
   display: flex;

@@ -15,6 +15,7 @@ import styled from "styled-components";
 import { AuthContext } from "../../context/AuthContext";
 import { getNotificationApi } from "../../networks/notifications";
 import { createBuddyApi } from "../../networks/buddies";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Row = styled.div`
   display: flex;
@@ -49,7 +50,7 @@ const Notifications = () => {
     try {
 
       const res = await getNotificationApi(t)
-      if (!res.data.success) return alert(res.data.message)
+      if (!res.data.success) return toast.error(res.data.message)
       setData(res.data.data)
     } catch (err) {
       console.log(err)
@@ -60,7 +61,7 @@ const Notifications = () => {
   const accept = async (data) => {
     try {
       const res = await createBuddyApi(t, data.inviterId)
-      if (!res.data.success) return alert(res.data.message)
+      if (!res.data.success) return toast.error(res.data.message)
       getNotifications()
     } catch (err) {
       console.log(err)
@@ -129,6 +130,7 @@ const Notifications = () => {
 
   return (
     <>
+     <Toaster />
       <Row
         width="100%"
         height="73px"

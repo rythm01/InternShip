@@ -13,6 +13,7 @@ import PlanHeader from "./PlanHeader";
 import PlanName from "./PlanName";
 import PlanPrice from "./PlanPrice";
 import { useSelector } from "react-redux";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Plan({
   plan: {
@@ -92,7 +93,7 @@ export default function Plan({
   };
 
   const choosePlanSubscried = () => {
-    window.alert("plan already Subscribed");
+    toast.error("plan already Subscribed");
   };
 
   const viewAddon = () => {
@@ -133,6 +134,7 @@ export default function Plan({
     <Container
       style={{ height: height ? height : "606px", width: "100%", flex: 1 }}
     >
+     <Toaster />
       <PlanHeader>
         <PlanName color={color}>{name}</PlanName>
         <PlanPrice>

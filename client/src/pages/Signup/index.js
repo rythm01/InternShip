@@ -41,6 +41,7 @@ import PrivacyPolicy from "../PrivacyPolicy";
 import useWindowSize from "./../../utils/hook/useWindowSize";
 import { Box } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
+import { Toaster , toast } from "react-hot-toast";
 
 const Text = styled.span`
   font-family: "TT Commons";
@@ -191,6 +192,7 @@ export default function Signup() {
 
   return (
     <Page justifyContent="flex-start">
+     <Toaster />
       <Container margin="100px" padding="70px" borderRadius="20px">
         <Box paddingTop={width < 600 && "50px"}>
           <Title
@@ -363,7 +365,7 @@ export default function Signup() {
             onSuccess={HandleAppleLogin}
             onError={({ error }) =>
               error !== "popup_closed_by_user" &&
-              alert(`Apple SignIn Error: \n ${error}`)
+              toast.error(`Apple SignIn Error: \n ${error}`)
             }
             skipScript={false}
             render={(props) => (

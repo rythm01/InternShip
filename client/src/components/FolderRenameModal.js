@@ -5,6 +5,7 @@ import { ReactComponent as CrossOutline } from "../assets/images/CrossOutline.sv
 import useWindowSize from "../utils/hook/useWindowSize";
 import { updateFolder } from "../networks/folders";
 import { AuthContext } from "../context/AuthContext";
+import { Toaster, toast } from "react-hot-toast";
 
 const FolderRenameModal = ({ open, close, folder }) => {
   const [folderName, setFolderName] = useState("");
@@ -20,68 +21,71 @@ const FolderRenameModal = ({ open, close, folder }) => {
   const RenameFolder = async () => {
 
     const res = await updateFolder(t, folder.id, { name: folderName })
-    if (!res.data.success) return alert(res.data.message)
+    if (!res.data.success) return toast.error(res.data.message)
     close()
   };
 
   const { width } = useWindowSize();
 
   return (
-    <Modal
-      open={open}
-      onClose={close}
-      keepMounted
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-    >
-      <Box
-        style={{
-          position: "absolute",
-          transform: "translate(-50%, -50%)",
-          height: width < 600 ? "auto" : "369px",
-          maxWidth: "669px",
-          width: "100%",
-          left: "50%",
-          top: "50%",
-          borderRadius: "20px",
-          backgroundColor: "white",
-          outline: "none",
-          boxShadow: 30,
-          p: "45px 15px 25px 15px",
-        }}
+    <>
+      <Toaster />
+      <Modal
+        open={open}
+        onClose={close}
+        keepMounted
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
       >
-        <Title fontWeight="700" margin="16px 0">
-          Rename Folder
-        </Title>
-        <CrossOutline
+        <Box
           style={{
             position: "absolute",
-            right: 20,
-            top: 10,
-            cursor: "pointer",
-            width: width < 600 && "30px",
-            height: width < 600 && "30px",
+            transform: "translate(-50%, -50%)",
+            height: width < 600 ? "auto" : "369px",
+            maxWidth: "669px",
+            width: "100%",
+            left: "50%",
+            top: "50%",
+            borderRadius: "20px",
+            backgroundColor: "white",
+            outline: "none",
+            boxShadow: 30,
+            p: "45px 15px 25px 15px",
           }}
-          onClick={close}
-        />
-        <Box
-          sx={{ backgroundColor: "#f5f5f5", p: 3, m: 3, borderRadius: "20px" }}
         >
-          <InputGroup
-            width="545px"
-            label="Title"
-            placeholder="Type here"
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
+          <Title fontWeight="700" margin="16px 0">
+            Rename Folder
+          </Title>
+          <CrossOutline
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 10,
+              cursor: "pointer",
+              width: width < 600 && "30px",
+              height: width < 600 && "30px",
+            }}
+            onClick={close}
           />
-          <Row margin="0 auto" justifyContent="center">
-            <Button color="#00A652" onClick={RenameFolder}>
-              Rename
-            </Button>
-          </Row>
+          <Box
+            sx={{ backgroundColor: "#f5f5f5", p: 3, m: 3, borderRadius: "20px" }}
+          >
+            <InputGroup
+              width="545px"
+              label="Title"
+              placeholder="Type here"
+              value={folderName}
+              onChange={(e) => setFolderName(e.target.value)}
+            />
+            <Row margin="0 auto" justifyContent="center">
+              <Button color="#00A652" onClick={RenameFolder}>
+                Rename
+              </Button>
+            </Row>
+          </Box>
         </Box>
-      </Box>
-    </Modal>
+      </Modal>
+    </>
   );
 };
 
