@@ -83,6 +83,7 @@ const BankForm = () => {
     postBankAccountForm(t, values);
     setSubmitting(false);
   };
+
   return (
     <Container>
       <Formik
@@ -106,7 +107,7 @@ const BankForm = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <Form onSubmit={handleSubmit}>
+          <Form ref={formRef}>
             <h1>Bank Account Password Storage Form</h1>
 
             <fieldset>
