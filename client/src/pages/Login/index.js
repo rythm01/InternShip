@@ -42,6 +42,7 @@ import { Password } from "@mui/icons-material";
 import PasswordStotageForm from "../../components/common/Forms/PasswordStotageForm";
 import SignUp from "../../components/common/Forms/SignUp";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { Toaster,toast } from "react-hot-toast";
 
 
 const Image = styled.img`
@@ -167,7 +168,7 @@ export default function Login() {
 
   return (
     <>
-      
+      <Toaster />
       <Page justifyContent="flex-start">
         <Container margin="100px auto" padding="70px" borderRadius="20px">
           <Title
@@ -278,7 +279,7 @@ export default function Login() {
               onSuccess={HandleAppleLogin}
               onError={({ error }) =>
                 error !== "popup_closed_by_user" &&
-                alert(`Apple SignIn Error: \n ${error}`)
+                toast(`Apple SignIn Error: \n ${error}`)
               }
               skipScript={false}
               render={(props) => (

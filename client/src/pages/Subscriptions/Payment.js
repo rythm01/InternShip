@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import toast, { Toaster } from 'react-hot-toast';
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -109,7 +110,7 @@ const Payment = () => {
     });
     if (error) {
       console.log("[error]", error);
-      alert(error.message);
+      toast.error(error.message);
     } else {
       console.log("[PaymentMethod]", paymentMethod);
       addCard(paymentMethod?.id)
@@ -159,7 +160,8 @@ const Payment = () => {
         })
         .catch((error) => {
           console.log("error", error);
-          alert(JSON.stringify(error));
+          toast.error(JSON.stringify(error));
+          // alert(JSON.stringify(error));
         });
       // ... SEND to your API server to process payment intent
     }
@@ -195,7 +197,7 @@ const Payment = () => {
               console.log(
                 "You cannot subscribe to a plan with a different billing interval"
               );
-              window.alert(
+              toast.error(
                 "You cannot subscribe to a plan with a different billing interval"
               );
             });
@@ -204,7 +206,7 @@ const Payment = () => {
           console.log(
             "You cannot subscribe to a plan with a different billing interval"
           );
-          window.alert(
+          toast.error(
             "You cannot subscribe to a plan with a different billing interval"
           );
         });
@@ -219,7 +221,7 @@ const Payment = () => {
           console.log(
             "You cannot subscribe to a plan with a different billing interval"
           );
-          window.alert(
+          toast.error(
             "You cannot subscribe to a plan with a different billing interval"
           );
         });
@@ -234,7 +236,7 @@ const Payment = () => {
           console.log(
             "You cannot subscribe to a plan with a different billing interval"
           );
-          window.alert(
+          toast.error(
             "You cannot subscribe to a plan with a different billing interval"
           );
         });
@@ -245,11 +247,11 @@ const Payment = () => {
         payment_method: card.value,
         plan_ids: [{ plan: plan.id }],
       };
-
+  
       if (storage) {
         subscriptionData.plan_ids.push({ plan: storage.id });
       }
-
+  
       if (video) {
         subscriptionData.plan_ids.push({ plan: video.id });
       }
@@ -365,6 +367,7 @@ const Payment = () => {
 
   return (
     <>
+    <Toaster />
       <Page justifyContent={width < 900 && "flex-start"}>
         <Container margin="69px auto" justifyContent="flex-start" width="80%">
           <Title

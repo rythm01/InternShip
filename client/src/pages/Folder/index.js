@@ -31,6 +31,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { createFile, deleteFileData } from "../../networks/files";
 import { getBuddiesApi } from "../../networks/buddies";
 import FileModal from "../../components/common/FileModal";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Folder() {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ export default function Folder() {
     formData.append("file", file);
     formData.append("folderId", folderId);
     const res = await createFile(t, formData);
-    if (!res.data.success) return alert(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getFolderDetails();
     setIsFileUploading(false);
   };
@@ -88,7 +89,7 @@ export default function Folder() {
     setIsLoading(true);
 
     const res = await deleteFileData(t, fileId);
-    if (!res.data.success) return alert(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getFolderDetails();
     setSelectedFileId(null)
     setIsLoading(false);
@@ -97,7 +98,7 @@ export default function Folder() {
   //get buddies function
   const getBuddiesData = async () => {
     const res = await getBuddiesApi(t);
-    if (!res.data.success) return alert(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setBuddies(res.data.data);
   };
 
@@ -105,7 +106,7 @@ export default function Folder() {
   const getFolderDetails = async () => {
     setIsLoading(true);
     const res = await getFolder(t, params.id);
-    if (!res.data.success) return alert(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setFolder(res.data.data);
     setIsLoading(false);
   }
@@ -157,6 +158,7 @@ export default function Folder() {
 
   return (
     <>
+    <Toaster />
       <Row
         width="100%"
         height="73px"

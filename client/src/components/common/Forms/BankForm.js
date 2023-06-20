@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
@@ -78,10 +78,11 @@ const Container = styled.form`
 
 const BankForm = () => {
   const { t } = useContext(AuthContext);
-
+  const formRef = useRef(null);
   const handleSubmit = (values, { setSubmitting }) => {
     postBankAccountForm(t, values);
     setSubmitting(false);
+
   };
 
   return (
