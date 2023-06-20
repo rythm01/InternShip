@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
-import postBankAccountForm from "../../../networks/passwordTypeForms";
+import { postBankAccountForm } from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -78,10 +79,16 @@ const Container = styled.form`
 
 const BankForm = () => {
   const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    postBankAccountForm(t, values);
-    setSubmitting(false);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      await postBankAccountForm(t, values);
+      navigate("/passwords/bankaccountpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -89,7 +96,7 @@ const BankForm = () => {
       <Formik
         initialValues={{
           bank_name: "",
-          webiste: "",
+          website: "",
           user_name: "",
           password: "",
           account_number: "",
@@ -107,7 +114,7 @@ const BankForm = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <Form ref={formRef}>
+          <Form>
             <h1>Bank Account Password Storage Form</h1>
 
             <fieldset>
@@ -117,7 +124,7 @@ const BankForm = () => {
               <label>Website/URL</label>
               <Field
                 type="text"
-                name="webiste"
+                name="website"
                 placeholder="Enter url/website"
               />
 

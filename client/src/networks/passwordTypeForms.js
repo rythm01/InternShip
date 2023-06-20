@@ -13,4 +13,14 @@ export const postBankAccountForm = async (t, data) => {
   }
 };
 
-export default postBankAccountForm;
+export const getBankAccountForm = async (t, data) => {
+  try {
+    return axios.get(`/password-type/bank-password/`, {
+      headers: {
+        Authorization: `Bearer ${t}`,
+      },
+    });
+  } catch (err) {
+    return err;
+  }
+};

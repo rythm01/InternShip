@@ -21,7 +21,7 @@ const plans_1 = __importDefault(require("./plans"));
 let UserProfile = class UserProfile {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", Number)
 ], UserProfile.prototype, "id", void 0);
 __decorate([
@@ -57,7 +57,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserProfile.prototype, "profilePictureKey", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => plans_1.default, plan => plan.user),
+    (0, typeorm_1.ManyToOne)(() => plans_1.default, (plan) => plan.user),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", plans_1.default)
 ], UserProfile.prototype, "plan", void 0);
@@ -66,11 +66,11 @@ __decorate([
     __metadata("design:type", Date)
 ], UserProfile.prototype, "dateJoined", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(type => File_1.default, file => file.user),
+    (0, typeorm_1.OneToMany)((type) => File_1.default, (file) => file.user),
     __metadata("design:type", Array)
 ], UserProfile.prototype, "files", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(type => Folder_1.default, folder => folder.user),
+    (0, typeorm_1.OneToMany)((type) => Folder_1.default, (folder) => folder.user),
     __metadata("design:type", Array)
 ], UserProfile.prototype, "folders", void 0);
 __decorate([

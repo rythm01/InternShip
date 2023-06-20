@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 
 import { UserProfile } from "./UserProfile";
+import BankAccountPassword from "./BankAccountPassword";
 
 @Entity()
 export class UserAuth {

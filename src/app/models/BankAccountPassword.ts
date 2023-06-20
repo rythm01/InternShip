@@ -5,16 +5,19 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from "typeorm";
 import { UserAuth } from "./UserAuth";
+import { UserProfile } from "./UserProfile";
 
 @Entity()
 class BankAccountPassword {
   @PrimaryGeneratedColumn("uuid")
   id: number;
 
-  @ManyToOne((type) => UserAuth)
-  user: UserAuth;
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
+  @JoinColumn({ name: "userProfileId" })
+  userProfile: UserProfile;
 
   @Column()
   bank_name: string;
@@ -28,8 +31,8 @@ class BankAccountPassword {
   @Column()
   password: string;
 
-  @Column()
-  account_number: number;
+  @Column({ nullable: true })
+  account_number: string;
 
   @Column()
   routing: string;
