@@ -1,10 +1,6 @@
 import { Router } from "express";
 
-
-
-
 const app = Router();
-
 
 app.use("/auth", require("./auth").default);
 app.use("/files", require("./files").default);
@@ -17,8 +13,6 @@ app.use("/notifications", require("./notification").default);
 app.use("/buddies", require("./buddies").default);
 app.use("/permissions", require("./permissions").default);
 app.use("/storage-addons", require("./storageAddon").default);
-
-
-
+app.use("/password-type/bank-password", require("./bankAccount").default);
 
 export default app;

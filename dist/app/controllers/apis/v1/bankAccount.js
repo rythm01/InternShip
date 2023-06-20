@@ -22,12 +22,11 @@ const UserRepo = config_1.AppDataSource.getRepository(UserAuth_1.UserAuth);
 exports.bankAccountController = {
     postBankAccount: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { bank_name, website, user_id, user_name, password, account_number, routing, account_nick_name, } = req.body;
+            const { bank_name, website, user_name, password, account_number, routing, account_nick_name, } = req.body;
             const requiredFields = [
                 "bank_name",
                 "website",
                 "user_name",
-                "user_id",
                 "password",
                 "account_number",
                 "routing",
@@ -43,7 +42,7 @@ exports.bankAccountController = {
             }
             const findUser = yield UserRepo.findOne({
                 where: {
-                    id: user_id,
+                    id: req.user,
                 },
             });
             const newBankAccount = new BankAccountPassword_1.default();
@@ -55,7 +54,8 @@ exports.bankAccountController = {
             newBankAccount.account_number = account_number;
             newBankAccount.routing = routing;
             newBankAccount.account_nick_name = account_nick_name;
-            yield BankAccountRepo.save(newBankAccount);
+            console.log(newBankAccount);
+            // await BankAccountRepo.save(newBankAccount);
             res.status(200).json({
                 message: "Account saved Successfully",
             });

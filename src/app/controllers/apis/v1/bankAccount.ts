@@ -14,7 +14,6 @@ export const bankAccountController = {
       const {
         bank_name,
         website,
-        user_id,
         user_name,
         password,
         account_number,
@@ -25,7 +24,6 @@ export const bankAccountController = {
         "bank_name",
         "website",
         "user_name",
-        "user_id",
         "password",
         "account_number",
         "routing",
@@ -43,7 +41,7 @@ export const bankAccountController = {
 
       const findUser = await UserRepo.findOne({
         where: {
-          id: user_id,
+          id: req.user as any,
         },
       });
 
@@ -56,8 +54,9 @@ export const bankAccountController = {
       newBankAccount.account_number = account_number;
       newBankAccount.routing = routing;
       newBankAccount.account_nick_name = account_nick_name;
+      console.log(newBankAccount);
 
-      await BankAccountRepo.save(newBankAccount);
+      // await BankAccountRepo.save(newBankAccount);
 
       res.status(200).json({
         message: "Account saved Successfully",
