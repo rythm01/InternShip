@@ -249,14 +249,14 @@ export default function Home() {
 
   const HandleCreateFolder = async () => {
     // console.log(field)
-    if (!field) return toast("Please enter folder name");
+    if (!field) return toast.error("Please enter folder name");
     const data = {
       name: field,
     };
     setLoading(true);
     const res = await createFolder(t, data);
     setLoading(false);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setfield("");
     setopen(false);
     getFolderData();
@@ -271,7 +271,7 @@ export default function Home() {
   const getFolderData = async () => {
     setLoading(true);
     const res = await getFolders(t);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
 
     const allFoldersWithoutRoot = res.data.data.filter(
       (folder) => folder.name !== "root"
@@ -285,7 +285,7 @@ export default function Home() {
     setLoading(true);
     const res = await getfiles(t);
     setLoading(false);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     const filesData = res.data.data;
     setFilesData(filesData);
     const pdf = filesData?.filter(
@@ -325,7 +325,7 @@ export default function Home() {
   const getNotification = async () => {
     setLoading(true);
     const res = await getNotificationApi(t);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setLoading(false);
     return setNotifications(res.data.data);
   };
@@ -371,7 +371,7 @@ export default function Home() {
     formData.append("file", fileToUpload);
     setLoading(true);
     const res = await createFile(t, formData);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getfileData();
     getFolderData();
     setRefresh(!refresh);
@@ -381,7 +381,7 @@ export default function Home() {
   const deleteFolder = async (folder) => {
     const res = await deleteFolderApi(t, folder);
     if (!res.data.success) {
-      return toast(res.data.message);
+      return toast.error(res.data.message);
     }
     getFolderData();
   };
@@ -403,7 +403,7 @@ export default function Home() {
     setLoading(true);
 
     const res = await deleteFileData(t, fileId);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getfileData();
     getFolderData();
     setRefresh(!refresh);

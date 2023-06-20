@@ -163,7 +163,7 @@ const ShareWith = ({ details }) => {
     if (!res.data.success) {
       return toast(res.data.message)
     }
-    toast(res.data.message)
+    toast.error(res.data.message)
     setIsAddButtonShown(false)
   }
 

@@ -113,7 +113,7 @@ export default function CreateProfile() {
     const file = e.target.files[0];
     // console.log('file...', file)
     if (file.type.split("/")[0] !== "image")
-      return toast("This file type is not supported");
+      return toast.error("This file type is not supported");
     setImagePreview(URL.createObjectURL(file));
     setImageFile(file);
     //uploadImage(file);
@@ -136,11 +136,11 @@ export default function CreateProfile() {
     e.preventDefault();
 
 
-    if (!firstName) return toast("Please enter your first name")
-    if (!lastName) return toast("Please enter your last name")
-    if (!country) return toast("Please select your country")
-    if (!verificationPeriod) return toast("Please select verification period")
-    if (!imageFile) return toast("Please select your profile image")
+    if (!firstName) return toast.error("Please enter your first name")
+    if (!lastName) return toast.error("Please enter your last name")
+    if (!country) return toast.error("Please select your country")
+    if (!verificationPeriod) return toast.error("Please select verification period")
+    if (!imageFile) return toast.error("Please select your profile image")
     setLoading(true);
 
 
@@ -157,14 +157,14 @@ export default function CreateProfile() {
     const res = await createProfile(t, data);
     if (!res.data.success) {
       setLoading(false);
-      return toast(res.data.message)
+      return toast.error(res.data.message)
     }
 
 
     const response = await getProfile(t)
     if (!response.data.success) {
       setLoading(false);
-      return toast(response.data.message)
+      return toast.error(response.data.message)
     }
 
     if (response.data.data) {
@@ -184,98 +184,100 @@ export default function CreateProfile() {
   }
 
   return (
-    <Page>
-     <Toaster />
-      <Container
-        width="727px"
-        margin="100px"
-        padding="70px"
-        borderRadius="20px"
-      >
-        <Back onClick={handleLogout} />
-        <Title>Create Profile</Title>
+    <>
+      <Toaster />
+      <Page>
+        <Container
+          width="727px"
+          margin="100px"
+          padding="70px"
+          borderRadius="20px"
+        >
+          <Back onClick={handleLogout} />
+          <Title>Create Profile</Title>
 
-        <form onSubmit={onSubmit}>
-          <ProfileImage
-            imagePreview={imagePreview ? imagePreview : imageFile}
-            handleImage={handleImage}
-          />
-          <InputGroup
-            label="First Name"
-            placeholder="Enter your first name"
-            value={profile?.name}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <InputGroup
-            label="Last Name"
-            placeholder="Enter your last name"
-            value={profile?.name}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <InputGroup
-            disabled={true}
-            label="Email"
-            placeholder="Enter your email"
-            value={email}
-          />
-          {countriesOptions && (
-            <>
+          <form onSubmit={onSubmit}>
+            <ProfileImage
+              imagePreview={imagePreview ? imagePreview : imageFile}
+              handleImage={handleImage}
+            />
+            <InputGroup
+              label="First Name"
+              placeholder="Enter your first name"
+              value={profile?.name}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <InputGroup
+              label="Last Name"
+              placeholder="Enter your last name"
+              value={profile?.name}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <InputGroup
+              disabled={true}
+              label="Email"
+              placeholder="Enter your email"
+              value={email}
+            />
+            {countriesOptions && (
+              <>
+                <Row justifyContent="space-between">
+                  <Label>Location</Label>
+                </Row>
+                <Select
+                  height="50px"
+                  menuPosition="left"
+                  placeholder="Select the location"
+                  value={countriesOptions.find(
+                    (el) => el.value === country
+                  )}
+                  styles={customStyles}
+                  onChange={(e) => {
+                    setCountry(e.value);
+                  }}
+                  options={countriesOptions}
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  components={{ Option }}
+                />
+              </>
+            )}
+
+            <div
+              style={{
+                display: "block",
+                marginTop: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
               <Row justifyContent="space-between">
-                <Label>Location</Label>
+                <Label>Verification Period</Label>
               </Row>
               <Select
                 height="50px"
-                menuPosition="left"
-                placeholder="Select the location"
-                value={countriesOptions.find(
-                  (el) => el.value === country
-                )}
+                placeholder="Select the verification period"
+                value={verificationPeriod}
                 styles={customStyles}
                 onChange={(e) => {
-                  setCountry(e.value);
+                  setVerificationPeriod(e);
                 }}
-                options={countriesOptions}
+                options={verificationperiodoptions}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                components={{ Option }}
+                components={{
+                  Option,
+                }}
               />
-            </>
-          )}
+            </div>
+            <ButtonBar>
+              <Button color="#00A652" type="submit">
+                Save
+              </Button>
+            </ButtonBar>
 
-          <div
-            style={{
-              display: "block",
-              marginTop: "1rem",
-              marginBottom: "1rem",
-            }}
-          >
-            <Row justifyContent="space-between">
-              <Label>Verification Period</Label>
-            </Row>
-            <Select
-              height="50px"
-              placeholder="Select the verification period"
-              value={verificationPeriod}
-              styles={customStyles}
-              onChange={(e) => {
-                setVerificationPeriod(e);
-              }}
-              options={verificationperiodoptions}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-          <ButtonBar>
-            <Button color="#00A652" type="submit">
-              Save
-            </Button>
-          </ButtonBar>
-
-        </form>
-      </Container>
-    </Page>
+          </form>
+        </Container>
+      </Page>
+    </>
   );
 }

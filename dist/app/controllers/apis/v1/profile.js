@@ -28,9 +28,14 @@ exports.profileController = {
         try {
             // const userProfile = await ProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.folders", "Folder").where("userProfile.userAuth = :id", { id: req.user }).getOne();
             //create query builder to find userprofile according to user id
-            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile").innerJoin("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile")
+                .innerJoin("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ message: 'Profile does not exist', success: false });
+                return res
+                    .status(200)
+                    .json({ message: "Profile does not exist", success: false });
             }
             const userProfileData = yield ProfileRepo.findOne({
                 relations: ["files", "folders", "userAuth", "plan"],
@@ -54,43 +59,61 @@ exports.profileController = {
                         buddies: true,
                         fileSizeLimit: true,
                         files: true,
-                    }
+                    },
                 },
-                where: { id: userProfile.id }
+                where: { id: userProfile.id },
             });
             if (!userProfileData) {
-                return res.status(200).json({ message: 'Profile does not exist', success: false });
+                return res
+                    .status(200)
+                    .json({ message: "Profile does not exist", success: false });
             }
-            return res.status(200).json({ message: 'Profile found successfully', success: true, data: userProfileData });
+            return res.status(200).json({
+                message: "Profile found successfully",
+                success: true,
+                data: userProfileData,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ message: 'Internal server error', success: false });
+            return res
+                .status(200)
+                .json({ message: "Internal server error", success: false });
         }
     }),
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const file = req.file;
             const { fname, lname, verificationPeriod, location } = req.body;
-            const userAuth = yield UserAuthRepo.findOne({ where: { id: req.user } });
-            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userAuth = yield UserAuthRepo.findOne({
+                where: { id: req.user },
+            });
+            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile already exists' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile already exists" });
             }
-            const plan = yield PlanRepo.findOne({ where: { title: 'Freemium' } });
+            const plan = yield PlanRepo.findOne({ where: { title: "Freemium" } });
             const key = (0, crypto_1.default)(16);
             var fileData = {
-                name: (req.body.parent_id || 0).toString() + req.user + `|` + file.originalname,
-                ext: file.originalname.split('.')[1],
+                name: (req.body.parent_id || 0).toString() +
+                    req.user +
+                    `|` +
+                    file.originalname,
+                ext: file.originalname.split(".")[1],
                 size: file.size,
                 key: key,
-                folderId: (req.body.parent_id || 0),
-                userId: req.user
+                folderId: req.body.parent_id || 0,
+                userId: req.user,
             };
             const params = {
                 Bucket: process.env.AWS_STORAGE_BUCKET_NAME || "store-and-share-vault",
                 Key: key + "." + fileData.ext,
-                ACL: 'public-read',
+                ACL: "public-read",
                 Body: file.buffer,
             };
             //upload file to aws s3
@@ -106,7 +129,8 @@ exports.profileController = {
             // profile.profilePicture = data.Location;
             // profile.profilePictureKey = data.Key;
             profile.storage = (plan === null || plan === void 0 ? void 0 : plan.storage.toString()) || (1024 * 1024).toString();
-            profile.storageLeft = (plan === null || plan === void 0 ? void 0 : plan.storage.toString()) || (1024 * 1024).toString();
+            profile.storageLeft =
+                (plan === null || plan === void 0 ? void 0 : plan.storage.toString()) || (1024 * 1024).toString();
             var response = yield ProfileRepo.save(profile);
             const folder = new Folder_1.default();
             folder.name = "root";
@@ -120,23 +144,32 @@ exports.profileController = {
             // });
             profile.stripeCustomer = "#12345";
             yield ProfileRepo.save(profile);
-            return res.status(200).json({ success: true, message: 'Profile created successfully' });
+            return res
+                .status(200)
+                .json({ success: true, message: "Profile created successfully" });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
     update: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { fullName, userName, verficationPeriod, location } = req.body;
-            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield ProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(400).json({ message: 'Profile does not exist' });
+                return res.status(400).json({ message: "Profile does not exist" });
             }
-            const userAuth = yield UserAuthRepo.findOne({ where: { id: req === null || req === void 0 ? void 0 : req.user } });
+            const userAuth = yield UserAuthRepo.findOne({
+                where: { id: req === null || req === void 0 ? void 0 : req.user },
+            });
             if (!userAuth) {
-                return res.status(400).json({ message: 'User does not exist' });
+                return res.status(400).json({ message: "User does not exist" });
             }
             if (req.file) {
                 //delete exsisting file from aws s3
@@ -144,31 +177,38 @@ exports.profileController = {
                     Bucket: process.env.AWS_STORAGE_BUCKET_NAME || "store-and-share-vault",
                     Key: userProfile.profilePictureKey,
                 };
-                const ackno = yield config_1.s3.deleteObject(deleteParams).promise();
-                if (!ackno)
-                    return res.status(200).json({ success: false, message: "something went wrong!" });
+                // const ackno = await s3.deleteObject(deleteParams).promise();
+                // if (!ackno)
+                //   return res
+                //     .status(200)
+                //     .json({ success: false, message: "something went wrong!" });
                 const file = req.file;
                 const key = (0, crypto_1.default)(16);
                 var fileData = {
-                    name: (req.body.parent_id || 0).toString() + req.user + `|` + file.originalname,
-                    ext: file.originalname.split('.')[1],
+                    name: (req.body.parent_id || 0).toString() +
+                        req.user +
+                        `|` +
+                        file.originalname,
+                    ext: file.originalname.split(".")[1],
                     size: file.size,
                     key: key,
-                    folderId: (req.body.parent_id || 0),
-                    userId: req.user
+                    folderId: req.body.parent_id || 0,
+                    userId: req.user,
                 };
                 const params = {
                     Bucket: process.env.AWS_STORAGE_BUCKET_NAME || "store-and-share-vault",
                     Key: key + "." + fileData.ext,
-                    ACL: 'public-read',
+                    ACL: "public-read",
                     Body: file.buffer,
                 };
                 //upload file to aws s3
-                const data = yield config_1.s3.upload(params).promise();
-                if (!data)
-                    return res.status(500).json({ success: false, message: "something went wrong!" });
-                userProfile.profilePicture = data.Location;
-                userProfile.profilePictureKey = data.Key;
+                // const data = await s3.upload(params).promise();
+                // if (!data)
+                //   return res
+                //     .status(500)
+                //     .json({ success: false, message: "something went wrong!" });
+                // userProfile.profilePicture = data.Location;
+                // userProfile.profilePictureKey = data.Key;
             }
             userProfile.firstName = fullName.split(" ")[0];
             userProfile.lastName = fullName.split(" ")[1];
@@ -177,11 +217,15 @@ exports.profileController = {
             userAuth.name = userName;
             yield UserAuthRepo.save(userAuth);
             yield ProfileRepo.save(userProfile);
-            return res.status(200).json({ success: true, message: 'Profile updated successfully' });
+            return res
+                .status(200)
+                .json({ success: true, message: "Profile updated successfully" });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
-    })
+    }),
 };

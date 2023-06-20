@@ -48,7 +48,7 @@ export const bankAccountController = {
       });
 
       const newBankAccount = new BankAccountPassword();
-      newBankAccount.user = findUser?.id;
+      newBankAccount.user = findUser?.id as any;
       newBankAccount.bank_name = bank_name;
       newBankAccount.website = website;
       newBankAccount.user_name = user_name;

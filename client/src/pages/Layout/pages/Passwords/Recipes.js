@@ -23,7 +23,7 @@ import SignOut from "../../../../assets/images/SignOut.png";
 import Group86 from "../../../../assets/images/Group 86.png";
 import NotePencil from "../../../../assets/images/NotePencil.png";
 import OptionMenuSettings from "../../../../components/common/OptionMenuSettings";
-import BackTransactions from "../../../TransactionsPaymentHistory/BackTransactions";
+import BackTransactions from "../../../TransactionsPaymentHistory/BackTransactions/PasswordBack";
 import folder from "../../../../assets/images/folder.png";
 import File from "../../../../assets/images/file.svg";
 import { Box } from "@mui/material";
@@ -123,7 +123,7 @@ const Recipes = () => {
 
         const res = await createFolder(t, { name: field });
         if (!res.data.success) {
-            return toast(res.data.message);
+            return toast.error(res.data.message);
         }
         setField("");
         setOpen(false);
@@ -133,7 +133,7 @@ const Recipes = () => {
     const deleteFolder = async (id) => {
         const res = await deleteFolderApi(t, id)
         if (!res.data.success) {
-            return toast(res.data.message)
+            return toast.error(res.data.message)
         }
         getAllFolders()
     }

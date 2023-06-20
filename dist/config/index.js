@@ -23,7 +23,7 @@ const AppDataSource = new typeorm_1.DataSource({
     ssl: false, // Disable SSL
 });
 exports.AppDataSource = AppDataSource;
-const twilio = (0, twilio_1.default)(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_TOKEN);
+const twilio = (0, twilio_1.default)(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 exports.twilio = twilio;
 const s3 = new aws_sdk_1.default.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

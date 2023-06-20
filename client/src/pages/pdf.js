@@ -25,7 +25,7 @@ const PdfViewer = () => {
         try {
             const res = await getFile(t, id)
 
-            if (!res.data.success) toast(res.data.message)
+            if (!res.data.success) toast.error(res.data.message)
 
             const { url, ext } = res.data.data
             setUrl(url)

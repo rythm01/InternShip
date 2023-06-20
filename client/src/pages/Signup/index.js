@@ -365,7 +365,7 @@ export default function Signup() {
             onSuccess={HandleAppleLogin}
             onError={({ error }) =>
               error !== "popup_closed_by_user" &&
-              toast(`Apple SignIn Error: \n ${error}`)
+              toast.error(`Apple SignIn Error: \n ${error}`)
             }
             skipScript={false}
             render={(props) => (

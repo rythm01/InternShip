@@ -75,7 +75,7 @@ export const PaymentForm = () => {
     });
     if (error) {
       console.log("[error]", error);
-      toast(error.message);
+      toast.error(error.message);
     } else {
       console.log("[PaymentMethod]", paymentMethod);
 

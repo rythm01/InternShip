@@ -20,17 +20,31 @@ exports.notificationController = {
         try {
             const user = yield userRepo.findOne({ where: { id: req.user } });
             if (!user) {
-                return res.status(200).json({ success: false, message: 'User does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "User does not exist" });
             }
-            const notification = yield notificationRepo.find({ where: { email: user.email } });
+            const notification = yield notificationRepo.find({
+                where: { email: user.email },
+            });
             if (!notification) {
-                return res.status(200).json({ success: false, message: 'No notification found' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No notification found" });
             }
-            return res.status(200).json({ success: true, message: 'Notification found', data: notification });
+            return res
+                .status(200)
+                .json({
+                success: true,
+                message: "Notification found",
+                data: notification,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
 };

@@ -9,39 +9,40 @@ import { ReactComponent as PeopleIcon } from "../../../assets/images/people.svg"
 const routes = [
   {
     name: "Home",
-    pathname: "/",
+    pathname: [ "/",],
     Icon: IoHomeOutline
   },
   {
     name: "My Buddies",
     to: "my-buddies",
-    pathname: "/my-buddies",
+    pathname: ["/my-buddies"],
     Icon: PeopleIcon
   },
   {
-    name:"Passwords",
-    to:"passwords",
-    pathname:"/passwords",
+    name: "Passwords",
+    to: "passwords",
+    pathname: ["/passwords","/password-type-form","/password-type-form?form=2", "/password-type-form?form=3", "/password-type-form?form=4", "/password-type-form?form=5", "/password-type-form?form=6", "/password-type-form?form=7"],
     Icon: RiLockPasswordLine
   },
   {
     name: "Documents",
     to: "documents",
-    pathname: "/documents",
+    pathname: ["/documents"],
     Icon: IoDocumentTextOutline
   },
   {
     name: "Shared",
     to: "shared",
-    pathname: "/shared",
+    pathname: ["/shared"],
     Icon: IoDocumentTextOutline
   },
   {
     name: "About Us",
     to: "about",
-    pathname: "/about",
+    pathname: ["/about"],
     Icon: IoInformationCircleOutline
   }
-]
+];
+
 
 export default routes

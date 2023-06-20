@@ -27,17 +27,19 @@ const PaymentMethod = () => {
 
     const getCLientSecerete = async () => {
         var res = await createPaymentIntent(t, { amount: 1099 })
-        if (!res.data.success) return toast("Something went wrong!")
+        if (!res.data.success) return toast.error("Something went wrong!")
         setClientSecerete(res.data.paymentIntent.client_secret)
     }
 
 
 
     return (
-        <Elements stripe={stripePromise} options={{ clientSecret: "pi_3MpVzSBCCU9427w30TtfStju_secret_u7yfB1CJvCtlKYN4IIpY0N8B9" }}>
+        <>
             <Toaster />
-            <PaymentForm />
-        </Elements>
+            <Elements stripe={stripePromise} options={{ clientSecret: "pi_3MpVzSBCCU9427w30TtfStju_secret_u7yfB1CJvCtlKYN4IIpY0N8B9" }}>
+                <PaymentForm />
+            </Elements>
+        </>
     );
 }
 

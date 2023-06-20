@@ -121,7 +121,7 @@ export default function Passwords() {
 
         const res = await createFolder(t, { name: field })
         if (!res.data.success) {
-            return toast(res.data.message)
+            return toast.error(res.data.message)
         }
         setField("")
         setOpen(false)
@@ -132,13 +132,10 @@ export default function Passwords() {
     const deleteFolder = async (id) => {
         const res = await deleteFolderApi(t, id)
         if (!res.data.success) {
-            return toast(res.data.message)
+            return toast.error(res.data.message)
         }
         getAllFolders()
     }
-
-
-
 
     const { width } = useWindowSize();
 
@@ -154,7 +151,7 @@ export default function Passwords() {
         <Toaster />
             <Row
                 width="100%"
-                height="73px"
+                height="73px"r
                 padding="24px 0"
                 alignItems="center"
                 justifyContent="space-between"

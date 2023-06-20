@@ -17,7 +17,7 @@ import {
 } from "../../components/common";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import files from "../../assets/images/files.png";
-import BackTransactions from "../TransactionsPaymentHistory/BackTransactions";
+import BackTransactions from "../TransactionsPaymentHistory/BackTransactions/DocumentBack";
 import { Box, Stack } from "@mui/material";
 import FolderContainer from "../Layout/pages/Home/FolderContainer";
 import { NewFile } from "../../components/Home";
@@ -70,7 +70,7 @@ export default function Folder() {
     formData.append("file", file);
     formData.append("folderId", folderId);
     const res = await createFile(t, formData);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getFolderDetails();
     setIsFileUploading(false);
   };
@@ -89,7 +89,7 @@ export default function Folder() {
     setIsLoading(true);
 
     const res = await deleteFileData(t, fileId);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     getFolderDetails();
     setSelectedFileId(null)
     setIsLoading(false);
@@ -98,7 +98,7 @@ export default function Folder() {
   //get buddies function
   const getBuddiesData = async () => {
     const res = await getBuddiesApi(t);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setBuddies(res.data.data);
   };
 
@@ -106,7 +106,7 @@ export default function Folder() {
   const getFolderDetails = async () => {
     setIsLoading(true);
     const res = await getFolder(t, params.id);
-    if (!res.data.success) return toast(res.data.message);
+    if (!res.data.success) return toast.error(res.data.message);
     setFolder(res.data.data);
     setIsLoading(false);
   }

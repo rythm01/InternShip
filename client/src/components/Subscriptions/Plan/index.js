@@ -93,7 +93,7 @@ export default function Plan({
   };
 
   const choosePlanSubscried = () => {
-    toast("plan already Subscribed");
+    toast.error("plan already Subscribed");
   };
 
   const viewAddon = () => {

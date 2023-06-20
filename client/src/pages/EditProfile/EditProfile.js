@@ -161,10 +161,10 @@ export default function EditProfile() {
     const res = await updateProfile(t, formData);
 
     setLoading(false);
-    if (!res.data.success) return toast(res.data.message)
+    if (!res.data.success) return toast.error(res.data.message)
     const update = await getProfile(t);
     setLoading(false);
-    if (!update.data.success) return toast(update.data.message)
+    if (!update.data.success) return toast.error(update.data.message)
 
     setProfile(update.data.data)
 
