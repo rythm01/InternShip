@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 
@@ -77,12 +77,15 @@ const Container = styled.form`
 `;
 
 const BankForm = () => {
+  const formRef = useRef(null);
+
 
   const handleSubmit = (values, { setSubmitting }) => {
-    console.log(values);
+    console.log('Form submitted...!', values);
+    formRef.current.reset();
     setSubmitting(false);
-
   };
+
   return (
     <Container>
       <Formik
@@ -95,8 +98,7 @@ const BankForm = () => {
           routing: "",
           account_nick_name: "",
         }}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         {({
           values,
           errors,
@@ -106,7 +108,7 @@ const BankForm = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <Form onSubmit={handleSubmit}>
+          <Form ref={formRef}>
             <h1>Bank Account Password Storage Form</h1>
 
             <fieldset>
