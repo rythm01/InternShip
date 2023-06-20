@@ -9,43 +9,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Notification = void 0;
 const typeorm_1 = require("typeorm");
-let Notification = class Notification {
+const UserAuth_1 = require("./UserAuth");
+let CreditCardPassword = class CreditCardPassword {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", Number)
-], Notification.prototype, "id", void 0);
+], CreditCardPassword.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Notification.prototype, "message", void 0);
+    (0, typeorm_1.ManyToOne)((type) => UserAuth_1.UserAuth),
+    __metadata("design:type", UserAuth_1.UserAuth)
+], CreditCardPassword.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "type", void 0);
+], CreditCardPassword.prototype, "credit_card_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "status", void 0);
+], CreditCardPassword.prototype, "website", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "data", void 0);
+], CreditCardPassword.prototype, "user_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "email", void 0);
+], CreditCardPassword.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], CreditCardPassword.prototype, "credit_card_number", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], CreditCardPassword.prototype, "payment_date", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], CreditCardPassword.prototype, "account_nick_name", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], Notification.prototype, "createdAt", void 0);
+], CreditCardPassword.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], Notification.prototype, "updatedAt", void 0);
-Notification = __decorate([
+], CreditCardPassword.prototype, "updatedAt", void 0);
+CreditCardPassword = __decorate([
     (0, typeorm_1.Entity)()
-], Notification);
-exports.Notification = Notification;
+], CreditCardPassword);
+exports.default = CreditCardPassword;

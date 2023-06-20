@@ -19,7 +19,6 @@ const UserAuth_1 = require("../../../models/UserAuth");
 const admin_1 = require("../../../models/admin");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const generateOtp_1 = __importDefault(require("../../../../utils/generateOtp"));
-const config_2 = require("../../../../config");
 const google_auth_library_1 = require("google-auth-library");
 const UserRepo = config_1.AppDataSource.getRepository(UserAuth_1.UserAuth);
 const AdminRepo = config_1.AppDataSource.getRepository(admin_1.Admin);
@@ -117,27 +116,52 @@ exports.authController = {
             newUser.password = bcrypt_1.default.hashSync(password, 10);
             newUser.phoneNumber = phoneNumber;
             yield UserRepo.save(newUser);
-            const mailOptions = {
-                from: 'Store And Share Vault',
-                to: email,
-                subject: 'Welcome Email',
-                html: `<p>${name}</p>
-
-                <p>Welcome to Store &amp; Share Vault, your central location for managing and sharing important files, documents and photos with loved ones. Let others know you care about them by adding them as a Buddy and sharing this information with them in a closed network. Find comfort in the fact that you and your loved ones will never have to frantically search for important information ever again!</p>
-                
-                <p>Feel free to reach out to our Customer Support Team at anytime with questions, comments or concerns. Info@StoreAndShareVault.io</p>`,
-            };
-            config_2.transporter.sendMail(mailOptions, function (error, info) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (error) {
-                        console.log(error);
-                    }
-                    else {
-                    }
-                });
+            // const mailOptions = {
+            //     from: 'Store And Share Vault',
+            //     to: email,
+            //     subject: 'Welcome Email',
+            //     html: `<p>${name}</p>
+            //     <p>Welcome to Store &amp; Share Vault, your central location for managing and sharing important files, documents and photos with loved ones. Let others know you care about them by adding them as a Buddy and sharing this information with them in a closed network. Find comfort in the fact that you and your loved ones will never have to frantically search for important information ever again!</p>
+            //     <p>Feel free to reach out to our Customer Support Team at anytime with questions, comments or concerns. Info@StoreAndShareVault.io</p>`,
+            // };
+            // transporter.sendMail(mailOptions, async function (error, info) {
+            //     if (error) {
+            //         console.log(error);
+            //     } else {
+            //     }
+            // });
+            //Sending registraion success message
+            if (!newUser.is2fa) {
+                const token = jsonwebtoken_1.default.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || "hcjhad7842687ahdcb");
+                return res.json({ token, newUser, success: true, is2fa: false });
+            }
+            // console.log(name + email + password + phoneNumber);
+            // Generate OTP
+            const OTP = (0, generateOtp_1.default)();
+            // Send OTP to the user's phone number
+            config_1.twilio.messages.create({
+                body: `Hi! ${newUser.name}, your Store And Share Vault verification OTP is ${OTP}..`,
+                to: newUser.phoneNumber,
+                from: process.env.TWILIO_PHONE
+            }).then((message) => __awaiter(void 0, void 0, void 0, function* () {
+                if (!message.sid) {
+                    // Handle error when OTP sending fails
+                    console.error('Failed to send OTP');
+                }
+                else {
+                    // Save the generated OTP and its expiration time
+                    const date = new Date();
+                    newUser.generatedOTP = OTP;
+                    newUser.otpExpiresIn = new Date(date.getTime() + 300000);
+                    yield UserRepo.save(newUser);
+                    // Handle successful OTP sending
+                    return res.json({ id: newUser.id, success: true, message: 'OTP sent successfully', is2fa: true });
+                }
+            })).catch((error) => {
+                // Handle error when OTP sending fails
+                console.error(error);
+                return res.json({ success: false, message: 'Something went wrong!' });
             });
-            const token = jsonwebtoken_1.default.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || "hcjhad7842687ahdcb");
-            res.json({ token, success: true });
         }
         catch (error) {
             console.log(error);

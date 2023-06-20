@@ -9,43 +9,51 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Notification = void 0;
 const typeorm_1 = require("typeorm");
-let Notification = class Notification {
+const UserAuth_1 = require("./UserAuth");
+let MerchantAccountPassword = class MerchantAccountPassword {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", Number)
-], Notification.prototype, "id", void 0);
+], MerchantAccountPassword.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Notification.prototype, "message", void 0);
+    (0, typeorm_1.ManyToOne)((type) => UserAuth_1.UserAuth),
+    __metadata("design:type", UserAuth_1.UserAuth)
+], MerchantAccountPassword.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "type", void 0);
+], MerchantAccountPassword.prototype, "merchant_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "status", void 0);
+], MerchantAccountPassword.prototype, "website", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "data", void 0);
+], MerchantAccountPassword.prototype, "user_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Notification.prototype, "email", void 0);
+], MerchantAccountPassword.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], MerchantAccountPassword.prototype, "account_number", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], MerchantAccountPassword.prototype, "account_nick_name", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], Notification.prototype, "createdAt", void 0);
+], MerchantAccountPassword.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], Notification.prototype, "updatedAt", void 0);
-Notification = __decorate([
+], MerchantAccountPassword.prototype, "updatedAt", void 0);
+MerchantAccountPassword = __decorate([
     (0, typeorm_1.Entity)()
-], Notification);
-exports.Notification = Notification;
+], MerchantAccountPassword);
+exports.default = MerchantAccountPassword;

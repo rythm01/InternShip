@@ -94,9 +94,8 @@ exports.profileController = {
                 Body: file.buffer,
             };
             //upload file to aws s3
-            const data = yield config_1.s3.upload(params).promise();
-            if (!data)
-                return res.status(200).json({ success: false, message: "something went wrong!" });
+            // const data = await s3.upload(params).promise()
+            // if (!data) return res.status(200).json({ success: false, message: "something went wrong!" })
             const profile = new UserProfile_1.UserProfile();
             profile.userAuth = userAuth;
             profile.firstName = fname;
@@ -104,8 +103,8 @@ exports.profileController = {
             profile.plan = plan;
             profile.location = location;
             profile.verficationPeriod = verificationPeriod;
-            profile.profilePicture = data.Location;
-            profile.profilePictureKey = data.Key;
+            // profile.profilePicture = data.Location;
+            // profile.profilePictureKey = data.Key;
             profile.storage = (plan === null || plan === void 0 ? void 0 : plan.storage.toString()) || (1024 * 1024).toString();
             profile.storageLeft = (plan === null || plan === void 0 ? void 0 : plan.storage.toString()) || (1024 * 1024).toString();
             var response = yield ProfileRepo.save(profile);
