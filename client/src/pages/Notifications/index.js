@@ -50,7 +50,7 @@ const Notifications = () => {
     try {
 
       const res = await getNotificationApi(t)
-      if (!res.data.success) return toast(res.data.message)
+      if (!res.data.success) return toast.error(res.data.message)
       setData(res.data.data)
     } catch (err) {
       console.log(err)
@@ -61,7 +61,7 @@ const Notifications = () => {
   const accept = async (data) => {
     try {
       const res = await createBuddyApi(t, data.inviterId)
-      if (!res.data.success) return toast(res.data.message)
+      if (!res.data.success) return toast.error(res.data.message)
       getNotifications()
     } catch (err) {
       console.log(err)

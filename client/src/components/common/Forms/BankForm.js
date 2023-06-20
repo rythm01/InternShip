@@ -1,8 +1,8 @@
-
-import React from "react";
+import React, { useContext, useRef } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
-
+import { AuthContext } from "../../../context/AuthContext";
+import postBankAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -77,12 +77,14 @@ const Container = styled.form`
 `;
 
 const BankForm = () => {
-
+  const { t } = useContext(AuthContext);
+  const formRef = useRef(null);
   const handleSubmit = (values, { setSubmitting }) => {
-    console.log(values);
+    postBankAccountForm(t, values);
     setSubmitting(false);
 
   };
+
   return (
     <Container>
       <Formik
@@ -106,7 +108,7 @@ const BankForm = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <Form onSubmit={handleSubmit}>
+          <Form ref={formRef}>
             <h1>Bank Account Password Storage Form</h1>
 
             <fieldset>

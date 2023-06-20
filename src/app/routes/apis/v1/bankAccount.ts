@@ -7,8 +7,10 @@ import { authenticateUser } from "../../../../middlewares/verifyUsers";
 const router = Router();
 
 router.use(authenticateUser);
-router.post("/bank-password", bankAccountController.postBankAccount);
-
+router.post(
+  "/password-type/bank-password",
+  bankAccountController.postBankAccount
+);
 // router.get('/user', authController.getUser);
 
 export default router;

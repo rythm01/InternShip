@@ -123,7 +123,7 @@ const CryptoPassword = () => {
 
         const res = await createFolder(t, { name: field });
         if (!res.data.success) {
-            return toast(res.data.message);
+            return toast.error(res.data.message);
         }
         setField("");
         setOpen(false);
@@ -133,7 +133,7 @@ const CryptoPassword = () => {
     const deleteFolder = async (id) => {
         const res = await deleteFolderApi(t, id)
         if (!res.data.success) {
-            return toast(res.data.message)
+            return toast.error(res.data.message)
         }
         getAllFolders()
     }
