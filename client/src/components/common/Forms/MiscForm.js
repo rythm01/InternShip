@@ -1,4 +1,7 @@
 import React, { useRef } from 'react';
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+// import postMiscForm from "../../../networks/passwordTypeForms";
 import styled from 'styled-components';
 
 const Container = styled.form`
@@ -23,10 +26,10 @@ const Container = styled.form`
       margin-bottom: 8px;
     }
 
-    input[type="text"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="date"] {
+    Field[type="text"],
+    Field[type="password"],
+    Field[type="tel"],
+    Field[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -53,7 +56,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -74,63 +77,88 @@ const Container = styled.form`
 `;
 
 export default function MiscForm() {
-    const formRef = useRef(null);
+  const formRef = useRef(null);
+  const { t } = useContext(AuthContext);
 
-    const handleFormSubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        const formData = new FormData(formRef.current);
-        console.log('Form submitted...!', formData);
-        //first display all form data & then
-        formRef.current.reset(); // Clear all input fields
+  const handleSubmit = (values, { setSubmitting }) => {
+    // event.preventDefault(); // Prevent the default form submission behavior
+    // const formData = new FormData(formRef.current);
+    // console.log('Form submitted...!', formData);
+    // //first display all form data & then
+    // formRef.current.reset(); // Clear all Field fields
 
-    };
+    // postMiscForm(t, values);
+    setSubmitting(false);
 
-    const handleKeyPress = (event) => {
-        console.log("Handle KEy Press..")
-        const keyCode = event.which || event.keyCode;
-        const keyValue = String.fromCharCode(keyCode);
+  };
 
-        // Allow only numbers (0-9)
-        if (!/^[0-9]+$/.test(keyValue)) {
-            event.preventDefault();
-        }
-    };
-    
-    return (
-        <Container ref={formRef} onSubmit={handleFormSubmit}>
-        
+  const handleKeyPress = (event) => {
+    console.log("Handle KEy Press..")
+    const keyCode = event.which || event.keyCode;
+    const keyValue = String.fromCharCode(keyCode);
+
+    // Allow only numbers (0-9)
+    if (!/^[0-9]+$/.test(keyValue)) {
+      event.preventDefault();
+    }
+  };
+
+  return (
+    <Container>
+      <Formik
+        initialValues={{
+          account_name: "",
+          webiste: "",
+          user_name: "",
+          password: "",
+          account: "",
+          account_nick_name: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form ref={formRef}>
 
 
-                <h1>Misc Account Password Storage Form</h1>
+            <h1>Misc Account Password Storage Form</h1>
 
-                <fieldset>
-                    <label for="name">Account Name:</label>
-                    <input type="text" id="name" name="name" placeholder="Enter Accountname" required />
+            <fieldset>
+              <label for="name">Account Name:</label>
+              <Field type="text" name="account_name" placeholder="Enter Accountname"  />
 
-                    <label for="url">Website/URL:</label>
-                    <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+              <label for="url">Website/URL:</label>
+              <Field type="text" name="website" placeholder="Enter url/website"  />
 
-                    <label for="username">User Name:</label>
-                    <input type="text" id="username" name="username" placeholder="Enter username" required />
+              <label for="username">User Name:</label>
+              <Field type="text" name="user_name" placeholder="Enter username"  />
 
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="user_password" placeholder="Enter passowrd" required />
+              <label for="password">Password:</label>
+              <Field type="password" name="password" placeholder="Enter passowrd"  />
 
-                    <label for="account">Account:</label>
-                    <input type="tel" id="account" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress} required />
+              <label for="account">Account:</label>
+              <Field type="tel" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress}  />
 
-                    <label for="nickname">Account Nick Name:</label>
-                    <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
+              <label for="nickname">Account Nick Name:</label>
+              <Field type="text" name="account_nick_name" placeholder="Enter account nickname"  />
 
-                    <label for="password">Password Recovery:</label>
-                    <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead for added security.</p>
+              <label for="password">Password Recovery:</label>
+              <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead for added security.</p>
 
-                </fieldset>
-                <div class="subbutton">
-                    <button type="submit">Sign up</button>
-                </div>
-
-           
-        </Container>
-    )
+            </fieldset>
+            <div class="subbutton">
+              <span onClick={handleSubmit}>Sign up</span>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </Container>
+  )
 }

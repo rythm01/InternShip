@@ -1,4 +1,7 @@
 import React, { useRef } from 'react';
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+// import postSignUpForm from "../../../networks/passwordTypeForms";
 import styled from 'styled-components';
 
 const Container = styled.form`
@@ -23,10 +26,10 @@ const Container = styled.form`
       margin-bottom: 8px;
     }
 
-    input[type="text"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="date"] {
+    Field[type="text"],
+    Field[type="password"],
+    Field[type="tel"],
+    Field[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -53,7 +56,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -74,15 +77,18 @@ const Container = styled.form`
 `;
 const SignUp = () => {
   const formRef = useRef(null);
+  const { t } = useContext(AuthContext);
 
 
+  const handleSubmit = (values, { setSubmitting }) => {
+    // event.preventDefault(); // Prevent the default form submission behavior
+    // const formData = new FormData(formRef.current);
+    // console.log('Form submitted...!', formData);
+    // //first display all form data & then
+    // formRef.current.reset(); // Clear all Field fields
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
+    // postSignUpForm(t, values);
+    setSubmitting(false);
 
   };
 
@@ -97,37 +103,56 @@ const SignUp = () => {
     }
   };
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
+    <Container>
+      <Formik
+        initialValues={{
+          user_name: "",
+          user_email: "",
+          contact: "",
+          password: "",
+          region: "",
+          monthlynum: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form ref={formRef}>
+            <h1>Sign Up</h1>
 
+            <fieldset>
+              <label for="name">Full Name</label>
+              <Field type="text" name="user_name" placeholder="Enter Name"/>
 
+              <label for="email">Email</label>
+              <Field type="email" name="user_email" placeholder="Enter Email"  />
 
-      <h1>Sign Up</h1>
+              <label for="phone">Phone number</label>
+              <Field type="tel" name="contact" placeholder="Enter Phone number" onKeyPress={handleKeyPress}  />
 
-      <fieldset>
-        <label for="name">Full Name</label>
-        <input type="text" id="name" name="user_name" placeholder="Enter Name" required />
+              <label for="password">Password</label>
+              <Field type="password" name="password" placeholder="Enter PAssword"  />
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="user_email" placeholder="Enter Email" required />
+              <label for="region">Supported Region</label>
+              <Field type="text" name="region" placeholder="Enter supported region"  />
 
-        <label for="phone">Phone number</label>
-        <input type="tel" id="phone" name="contact" placeholder="Enter Phone number" onKeyPress={handleKeyPress} required />
+              <label for="monthlynum">Estimated Monthly Number</label>
+              <Field type="tel" name="monthlynum" placeholder="Enter estimate monthly number" onKeyPress={handleKeyPress}  />
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="user_password" placeholder="Enter PAssword" required />
-
-        <label for="region">Supported Region</label>
-        <input type="text" id="region" name="region" placeholder="Enter supported region" required />
-
-        <label for="monthlynum">Estimated Monthly Number</label>
-        <input type="tel" id="monthlynum" name="monthlynum" placeholder="Enter estimate monthly number" onKeyPress={handleKeyPress} required />
-
-      </fieldset>
-      <div class="subbutton">
-        <button type="submit" >Sign up</button>
-      </div>
-
-
+            </fieldset>
+            <div class="subbutton">
+              <span onClick={handleSubmit}>Sign up</span>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </Container>
   )
 }
