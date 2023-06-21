@@ -1,5 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef,useContext } from 'react';
 import styled from 'styled-components';
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+// import postLoanAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -53,7 +56,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -76,52 +79,80 @@ const Container = styled.form`
 const LoanAccountForm = () => {
 
   const formRef = useRef(null);
+  const { t } = useContext(AuthContext);
 
 
+  const handleSubmit = (values, { setSubmitting }) => {
+    // event.preventDefault(); // Prevent the default form submission behavior
+    // const formData = new FormData(formRef.current);
+    // console.log('Form submitted...!', formData);
+    // //first display all form data & then
+    // formRef.current.reset(); // Clear all Field fields
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
-
+    // postLoanAccountForm(t,values);
+    setSubmitting(false);  
+    console.log(values); 
   };
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
-      <h1>Loan Account Password Storage Form</h1>
+    <Container>
+      <Formik
+        initialValues={{
+          creditor_name: "",
+          website: "",
+          user_name: "",
+          password: "",
+          user_loan: "",
+          payment_date: "",
+          account_nick_name: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form ref={formRef}>
+            <h1>Loan Account Password Storage Form</h1>
 
-      <fieldset>
-        <label htmlFor="name">Creditors Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter Name" required />
+            <fieldset>
+              <label htmlFor="name">Creditors Name:</label>
+              <Field type="text" id="name" name="creditor_name" placeholder="Enter Name"  />
 
-        <label htmlFor="url">Website/URL</label>
-        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+              <label htmlFor="url">Website/URL</label>
+              <Field type="text" id="url" name="website" placeholder="Enter url/website"  />
 
-        <label htmlFor="username">User Name:</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required />
+              <label htmlFor="username">User Name:</label>
+              <Field type="text" id="username" name="user_name" placeholder="Enter username"  />
 
-        <label htmlFor="password">Password:</label>
-        <input type="password" id="password" name="user_password" placeholder="Enter password" required />
+              <label htmlFor="password">Password:</label>
+              <Field type="password" id="password" name="password" placeholder="Enter password"  />
 
-        <label htmlFor="loan">Loan:</label>
-        <input type="text" id="loan" name="user_loan" placeholder="Enter loan" required />
+              <label htmlFor="loan">Loan:</label>
+              <Field type="text" id="loan" name="user_loan" placeholder="Enter loan"  />
 
-        <label htmlFor="date">Payment Date:</label>
-        <input type="date" id="date" name="date" placeholder="Enter payment date" required />
+              <label htmlFor="date">Payment Date:</label>
+              <Field type="date" id="date" name="payment_date" placeholder="Enter payment date"  />
 
-        <label htmlFor="nickname">Account Nick Name:</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
+              <label htmlFor="nickname">Account Nick Name:</label>
+              <Field type="text" id="nickname" name="account_nick_name" placeholder="Enter account nickname"  />
 
-        <label htmlFor="password">Password Recovery:</label>
-        <p>
-          We do not recommend storing questions and answers to recover your password. Please reset your password instead for added security.
-        </p>
-      </fieldset>
+              <label htmlFor="password">Password Recovery:</label>
+              <p>
+                We do not recommend storing questions and answers to recover your password. Please reset your password instead for added security.
+              </p>
+            </fieldset>
 
-      <div className="subbutton">
-        <button type="submit">Sign up</button>
-      </div>
+            <div className="subbutton">
+              <span onClick={handleSubmit}>Sign up</span>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </Container>
   );
 };
