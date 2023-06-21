@@ -82,7 +82,7 @@ const BankForm = () => {
   const handleSubmit = (values, { setSubmitting }) => {
     postBankAccountForm(t, values);
     setSubmitting(false);
-
+    console.log(values);
   };
 
   return (
@@ -90,7 +90,7 @@ const BankForm = () => {
       <Formik
         initialValues={{
           bank_name: "",
-          webiste: "",
+          website: "",
           user_name: "",
           password: "",
           account_number: "",
@@ -118,7 +118,7 @@ const BankForm = () => {
               <label>Website/URL</label>
               <Field
                 type="text"
-                name="webiste"
+                name="website"
                 placeholder="Enter url/website"
               />
 

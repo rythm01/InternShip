@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef,useContext } from 'react';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postSignUpForm from "../../../networks/passwordTypeForms";
@@ -26,10 +26,10 @@ const Container = styled.form`
       margin-bottom: 8px;
     }
 
-    Field[type="text"],
-    Field[type="password"],
-    Field[type="tel"],
-    Field[type="date"] {
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -89,6 +89,7 @@ const SignUp = () => {
 
     // postSignUpForm(t, values);
     setSubmitting(false);
+    console.log(values);
 
   };
 

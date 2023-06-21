@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef,useContext } from 'react';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postCreditCardForm from "../../../networks/passwordTypeForms";
@@ -26,10 +26,10 @@ const Container = styled.form`
       margin-bottom: 8px;
     }
 
-    Field[type="text"],
-    Field[type="password"],
-    Field[type="tel"],
-    Field[type="date"] {
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -90,6 +90,7 @@ const CreditcardForm = () => {
     
     // postCreditCardForm(t, values);
     setSubmitting(false);
+    console.log(values);
   };
 
   const handleKeyPress = (event) => {
@@ -108,7 +109,7 @@ const CreditcardForm = () => {
       <Formik
         initialValues={{
           credit_card_name: "",
-          webiste: "",
+          website: "",
           user_name: "",
           password: "",
           credit_card: "",
@@ -130,32 +131,32 @@ const CreditcardForm = () => {
             <h1>Credit Card Account Password Storage Form</h1>
 
             <fieldset>
-              <label for="name">Credit Card Name:</label>
+              <label htmlFor="name">Credit Card Name:</label>
               <Field type="text" id="name" name="credit_card_name" placeholder="Enter Name"  />
 
-              <label for="url">Website/URL</label>
-              <Field type="text" id="url" name="webiste" placeholder="Enter url/website"  />
+              <label htmlFor="url">Website/URL</label>
+              <Field type="text" id="url" name="website" placeholder="Enter url/website"  />
 
-              <label for="username">User Name:</label>
+              <label htmlFor="username">User Name:</label>
               <Field type="text" id="username" name="user_name" placeholder="Enter username"  />
 
-              <label for="password">Password:</label>
-              <Field type="password" id="password" name="user_password" placeholder="Enter passowrd"  />
+              <label htmlFor="password">Password:</label>
+              <Field type="password" id="password" name="password" placeholder="Enter passowrd"  />
 
-              <label for="Creditcard">Credit Card:</label>
+              <label htmlFor="Creditcard">Credit Card:</label>
               <Field type="text" id="creditcard" name="credit_card" placeholder="Enter Creditcard"  onKeyPress={handleKeyPress} />
 
-              <label for="date">Payment Date:</label>
+              <label htmlFor="date">Payment Date:</label>
               <Field type="date" id="date" name="payment_date" placeholder="enter paymentdate"  />
 
-              <label for="nickname">Account Nick Name:</label>
+              <label htmlFor="nickname">Account Nick Name:</label>
               <Field type="text" id="nickname" name="account_nick_name" placeholder="Enter account nickname"  />
 
-              <label for="password">Password Recovery:</label>
-              <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
+              <label htmlFor="password">Password Recovery:</label>
+              <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead htmlFor added security.</p>
 
             </fieldset>
-            <div class="subbutton">
+            <div className="subbutton">
               <span onClick={handleSubmit}>Submit</span>
             </div>
           </Form>

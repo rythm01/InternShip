@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef,useContext } from 'react';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postMiscForm from "../../../networks/passwordTypeForms";
@@ -26,10 +26,10 @@ const Container = styled.form`
       margin-bottom: 8px;
     }
 
-    Field[type="text"],
-    Field[type="password"],
-    Field[type="tel"],
-    Field[type="date"] {
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"] {
       background: #fff;
       border: 1px solid rgba(41, 45, 50, 0.2);
       border-radius: 10px;
@@ -89,6 +89,7 @@ export default function MiscForm() {
 
     // postMiscForm(t, values);
     setSubmitting(false);
+    console.log(values);
 
   };
 
@@ -108,7 +109,7 @@ export default function MiscForm() {
       <Formik
         initialValues={{
           account_name: "",
-          webiste: "",
+          website: "",
           user_name: "",
           password: "",
           account: "",
@@ -131,29 +132,29 @@ export default function MiscForm() {
             <h1>Misc Account Password Storage Form</h1>
 
             <fieldset>
-              <label for="name">Account Name:</label>
+              <label htmlFor="name">Account Name:</label>
               <Field type="text" name="account_name" placeholder="Enter Accountname"  />
 
-              <label for="url">Website/URL:</label>
+              <label htmlFor="url">Website/URL:</label>
               <Field type="text" name="website" placeholder="Enter url/website"  />
 
-              <label for="username">User Name:</label>
+              <label htmlFor="username">User Name:</label>
               <Field type="text" name="user_name" placeholder="Enter username"  />
 
-              <label for="password">Password:</label>
+              <label htmlFor="password">Password:</label>
               <Field type="password" name="password" placeholder="Enter passowrd"  />
 
-              <label for="account">Account:</label>
+              <label htmlFor="account">Account:</label>
               <Field type="tel" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress}  />
 
-              <label for="nickname">Account Nick Name:</label>
+              <label htmlFor="nickname">Account Nick Name:</label>
               <Field type="text" name="account_nick_name" placeholder="Enter account nickname"  />
 
-              <label for="password">Password Recovery:</label>
-              <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead for added security.</p>
+              <label htmlFor="password">Password Recovery:</label>
+              <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead htmlFor added security.</p>
 
             </fieldset>
-            <div class="subbutton">
+            <div className="subbutton">
               <span onClick={handleSubmit}>Sign up</span>
             </div>
           </Form>

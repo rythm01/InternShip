@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef , useContext, useState} from 'react';
 import styled from "styled-components";
 import Select from "react-select";
 import { components } from "react-select";
@@ -42,10 +42,11 @@ fieldset {
     margin-bottom: 8px;
   }
 
-  Field[type="text"],
-  Field[type="password"],
-  Field[type="tel"],
-  Field[type="date"] {
+  input[type="text"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="textarea"],
+  input[type="date"] {
     background: #fff;
     border: 1px solid rgba(41, 45, 50, 0.2);
     border-radius: 10px;
@@ -144,9 +145,10 @@ fieldset {
     </div>
   );
   const formRef = useRef(null);
+  const [ingredient,setIngredient] = useState("Select Type");
   const { t } = useContext(AuthContext);
 
-  const handleFormSubmit = (values, { setSubmitting }) => {
+  const handleSubmit = (values, { setSubmitting }) => {
     // event.preventDefault(); // Prevent the default form submission behavior
     // const formData = new FormData(formRef.current);
     // console.log('Form submitted...!', formData);
@@ -155,6 +157,7 @@ fieldset {
 
     // postRecipeForm(t, values);
     setSubmitting(false);
+    console.log(values);
 
   };
 
@@ -168,21 +171,28 @@ fieldset {
     <Container>
       <Formik
         initialValues={{
-          name: "",
+          recipe_name: "",
           ingredient1: "",
           amount1: "",
+          type1:"",
           ingredient2: "",
           amount2: "",
+          type2:"",
           ingredient3: "",
           amount3: "",
+          type3:"",
           ingredient4: "",
           amount4: "",
+          type4:"",
           ingredient5: "",
           amount5: "",
+          type5:"",
           ingredient6: "",
           amount6: "",
+          type6:"",
           ingredient7: "",
           amount7: "",
+          type7:"",
           cd: "",
         }}
         onSubmit={handleSubmit}
@@ -200,18 +210,16 @@ fieldset {
             <h1>Recipe</h1>
 
             <fieldset>
-              <label for="name">Recipe Name:</label>
+              <label htmlFor="name">Recipe Name:</label>
               <Field
                 type="text"
-                id="name"
-                name="name"
+                name="recipe_name"
                 placeholder="Enter Recipe Name"
-                
               />
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 1</label>
+                  <label htmlFor="ingredient1">Ingredient 1</label>
                   <Field
                     type="text"
                     id="ingredient1"
@@ -219,7 +227,7 @@ fieldset {
                     placeholder="Enter Ingredient 1"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount1">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -230,9 +238,15 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type1 ? values.type1 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type1}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type1", value: selectedValue } });
+                    }}
+                    name="type1"
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -243,7 +257,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 2</label>
+                  <label htmlFor="ingredient2">Ingredient 2</label>
                   <Field
                     type="text"
                     id="ingredient2"
@@ -251,7 +265,7 @@ fieldset {
                     placeholder="Enter Ingredient 2"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount2">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -262,9 +276,14 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type2 ? values.type2 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type2}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type2", value: selectedValue } });
+                    }}
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -275,7 +294,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 3</label>
+                  <label htmlFor="url">Ingredient 3</label>
                   <Field
                     type="text"
                     id="ingredient3"
@@ -283,7 +302,7 @@ fieldset {
                     placeholder="Enter Ingredient 3"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount3">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -294,9 +313,14 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type3 ? values.type3 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type3}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type3", value: selectedValue } });
+                    }}
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -307,7 +331,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 4</label>
+                  <label htmlFor="ingredient4">Ingredient 4</label>
                   <Field
                     type="text"
                     id="ingredient4"
@@ -315,7 +339,7 @@ fieldset {
                     placeholder="Enter Ingredient 4"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount4">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -326,9 +350,14 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type4 ? values.type4 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type4}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type4", value: selectedValue } });
+                    }}
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -339,7 +368,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 5</label>
+                  <label htmlFor="ingredient5">Ingredient 5</label>
                   <Field
                     type="text"
                     id="ingredient5"
@@ -347,7 +376,7 @@ fieldset {
                     placeholder="Enter Ingredient 5"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount5">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -358,9 +387,14 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type5 ? values.type5 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type5}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type5", value: selectedValue } });
+                    }}
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -371,7 +405,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 6</label>
+                  <label htmlFor="ingredient6">Ingredient 6</label>
                   <Field
                     type="text"
                     id="ingredient6"
@@ -379,7 +413,7 @@ fieldset {
                     placeholder="Enter Ingredient 6"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount6">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -390,9 +424,14 @@ fieldset {
                   />
                   <Select
                     styles={customStyles}
-                    placeholder="Select type"
+                    placeholder={values.type6 ? values.type6 : "Select-Type"}
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
+                    value={values.type6}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption ? selectedOption.name : "";
+                      handleChange({ target: { name: "type6", value: selectedValue } });
+                    }}
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -403,7 +442,7 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label for="url">Ingredient 7</label>
+                  <label htmlFor="ingredient7">Ingredient 7</label>
                   <Field
                     type="text"
                     id="ingredient7"
@@ -411,7 +450,7 @@ fieldset {
                     placeholder="Enter Ingredient 7"
                   />
                 </div>
-                <label for="url">Amount</label>
+                <label htmlFor="amount7">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
@@ -421,20 +460,26 @@ fieldset {
                     placeholder=""
                   />
                   <Select
-                    styles={customStyles}
-                    placeholder="Select type"
-                    options={PasswordSelectNames}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    components={{
-                      Option,
-                    }}
-                  />
+                  styles={customStyles}
+                  placeholder={values.type7 ? values.type7 : "Select-Type"}
+                  options={PasswordSelectNames}
+                  closeMenuOnSelect={false}
+                  value={values.type7}
+
+                  onChange={(selectedOption) => {
+                    const selectedValue = selectedOption ? selectedOption.name : "";
+                    handleChange({ target: { name: "type7", value: selectedValue } });
+                  }}
+                  hideSelectedOptions={false}
+                  components={{
+                    Option,
+                  }}
+                />
                 </div>
               </div>
 
               <label htmlFor="cd">Cooking Direction:</label>
-              <Field as="textarea" id="cd" name="cd" cols="30" rows="5"></Field>
+              <Field as="textarea" id="cd" name="cd" cols="70" rows="5"></Field>
             </fieldset>
             <div class="subbutton">
               <span onClick={handleSubmit}>Submit</span>
