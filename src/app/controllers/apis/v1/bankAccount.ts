@@ -7,7 +7,6 @@ import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
 
 const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
-const UserRepo = AppDataSource.getRepository(UserAuth);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const bankAccountController = {
