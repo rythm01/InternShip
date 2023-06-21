@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
-import { postBankAccountForm } from "../../../networks/passwordTypeForms";
+import {
+  getBankAccountDetail,
+  postBankAccountForm,
+  updateBankAccountForm,
+} from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -77,13 +81,25 @@ const Container = styled.form`
   }
 `;
 
-const BankForm = () => {
+const BankForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [getAccountData, setAccountData] = useState();
+  useEffect(() => {
+    if (id && isEdit) {
+      getBankAccountDetail(t, id)
+        .then((res) => setAccountData(res?.data?.data))
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      await postBankAccountForm(t, values);
+      if (id && isEdit) {
+        await updateBankAccountForm(t, id, values);
+      } else {
+        await postBankAccountForm(t, values);
+      }
       navigate("/passwords/bankaccountpassword");
       setSubmitting(false);
     } catch (error) {
@@ -94,26 +110,19 @@ const BankForm = () => {
   return (
     <Container>
       <Formik
+        enableReinitialize
         initialValues={{
-          bank_name: "",
-          website: "",
-          user_name: "",
-          password: "",
-          account_number: "",
-          routing: "",
-          account_nick_name: "",
+          bank_name: getAccountData?.bank_name || "",
+          website: getAccountData?.website || "",
+          user_name: getAccountData?.user_name || "",
+          password: getAccountData?.password || "",
+          account_number: getAccountData?.account_number || "",
+          routing: getAccountData?.routing || "",
+          account_nick_name: getAccountData?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
+        {({ handleSubmit }) => (
           <Form>
             <h1>Bank Account Password Storage Form</h1>
 
@@ -166,7 +175,7 @@ const BankForm = () => {
               </p>
             </fieldset>
             <div class="subbutton">
-              <span onClick={handleSubmit}>Submit</span>
+              <span onClick={handleSubmit}>{isEdit ? "Edit" : "Submit"}</span>
             </div>
           </Form>
         )}

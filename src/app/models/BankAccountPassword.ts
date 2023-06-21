@@ -12,7 +12,7 @@ import { UserProfile } from "./UserProfile";
 
 @Entity()
 class BankAccountPassword {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)

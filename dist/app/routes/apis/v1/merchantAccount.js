@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const merchantAccount_1 = require("../../../controllers/apis/v1/merchantAccount");
+const router = (0, express_1.Router)();
+router.use(verifyUsers_1.authenticateUser);
+router.post("/", merchantAccount_1.merchantAccountController.postMerchantAccount);
+router.get("/", merchantAccount_1.merchantAccountController.getMerchantAccount);
+// router.get('/user', authController.getUser);
+exports.default = router;

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const creditCardPassword_1 = require("../../../controllers/apis/v1/creditCardPassword");
+const router = (0, express_1.Router)();
+router.use(verifyUsers_1.authenticateUser);
+router.post("/", creditCardPassword_1.creditCardController.postCreditCard);
+router.get("/", creditCardPassword_1.creditCardController.getCreditCard);
+// router.get('/user', authController.getUser);
+exports.default = router;

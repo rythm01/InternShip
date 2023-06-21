@@ -7,5 +7,6 @@ const router = (0, express_1.Router)();
 router.use(verifyUsers_1.authenticateUser);
 router.post("/", bankAccount_1.bankAccountController.postBankAccount);
 router.get("/", bankAccount_1.bankAccountController.getBankAccount);
+router.get("/:id", bankAccount_1.bankAccountController.deleteBankAccount);
 // router.get('/user', authController.getUser);
 exports.default = router;

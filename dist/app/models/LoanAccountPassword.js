@@ -10,17 +10,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
-const UserAuth_1 = require("./UserAuth");
+const UserProfile_1 = require("./UserProfile");
 let LoanAccountPassword = class LoanAccountPassword {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], LoanAccountPassword.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => UserAuth_1.UserAuth),
-    __metadata("design:type", UserAuth_1.UserAuth)
-], LoanAccountPassword.prototype, "user", void 0);
+    (0, typeorm_1.ManyToOne)(() => UserProfile_1.UserProfile, (userProfile) => userProfile.id),
+    (0, typeorm_1.JoinColumn)({ name: "userProfileId" }),
+    __metadata("design:type", UserProfile_1.UserProfile)
+], LoanAccountPassword.prototype, "userProfile", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)

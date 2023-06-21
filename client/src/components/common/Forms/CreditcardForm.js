@@ -1,5 +1,8 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import { Formik } from "formik";
+import React, { useContext, useRef } from "react";
+import { Form, useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { AuthContext } from "../../../context/AuthContext";
 
 const Container = styled.form`
   max-width: 500px;
@@ -73,71 +76,120 @@ const Container = styled.form`
   }
 `;
 const CreditcardForm = () => {
-  const formRef = useRef(null);
-
-
-
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
-
-  };
-
-  const handleKeyPress = (event) => {
-    console.log("Handle KEy Press..")
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
-
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-
-      event.preventDefault();
+  const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      navigate("/passwords/creditcardpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
+    <Container>
+      <Formik
+        initialValues={{
+          bank_name: "",
+          website: "",
+          user_name: "",
+          password: "",
+          account_number: "",
+          routing: "",
+          account_nick_name: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form>
+            <h1>Credit Card Account Password Storage Form</h1>
 
+            <fieldset>
+              <label for="name">Credit Card Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter Name"
+                required
+              />
 
+              <label for="url">Website/URL</label>
+              <input
+                type="text"
+                id="url"
+                name="url"
+                placeholder="Enter url/website"
+                required
+              />
 
-      <h1>Credit Card Account Password Storage Form</h1>
+              <label for="username">User Name:</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter username"
+                required
+              />
 
-      <fieldset>
-        <label for="name">Credit Card Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter Name" required />
+              <label for="password">Password:</label>
+              <input
+                type="password"
+                id="password"
+                name="user_password"
+                placeholder="Enter passowrd"
+                required
+              />
 
-        <label for="url">Website/URL</label>
-        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+              <label for="Creditcard">Credit Card:</label>
+              <input
+                type="text"
+                id="creditcard"
+                name="creditcard"
+                placeholder="Enter Creditcard"
+                required
+              />
 
-        <label for="username">User Name:</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required />
+              <label for="date">Payment Date:</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                placeholder="enter paymentdate"
+                required
+              />
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="user_password" placeholder="Enter passowrd" required />
+              <label for="nickname">Account Nick Name:</label>
+              <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                placeholder="Enter account nickname"
+                required
+              />
 
-        <label for="Creditcard">Credit Card:</label>
-        <input type="text" id="creditcard" name="creditcard" placeholder="Enter Creditcard" required onKeyPress={handleKeyPress} />
-
-        <label for="date">Payment Date:</label>
-        <input type="date" id="date" name="date" placeholder="enter paymentdate" required />
-
-        <label for="nickname">Account Nick Name:</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
-
-        <label for="password">Password Recovery:</label>
-        <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
-
-      </fieldset>
-      <div class="subbutton">
-        <button type="submit">Sign up</button>
-      </div>
-
-
+              <label for="password">Password Recovery:</label>
+              <p>
+                we do not recommend stroing questions and answer to recoer your
+                password. Please reset your password instead for added security.
+              </p>
+            </fieldset>
+            <div class="subbutton">
+              <button type="submit">Sign up</button>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </Container>
-  )
-}
+  );
+};
 
-export default CreditcardForm
+export default CreditcardForm;

@@ -22,25 +22,36 @@ const UserProfileRepo = config_1.AppDataSource.getRepository(UserProfile_1.UserP
 exports.folderController = {
     getFolders: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile does not exist" });
             }
             const options = {
                 where: Object.assign({ user: {
-                        id: userProfile.id
+                        id: userProfile.id,
                     } }, req.query),
-                relations: ['files']
+                relations: ["files"],
             };
             const folders = yield FolderRepo.find(options);
             if (folders.length <= 0) {
-                return res.json({ message: 'Folders does not exist' });
+                return res.json({ message: "Folders does not exist" });
             }
-            return res.json({ success: true, message: 'Folders found successfully', data: folders });
+            return res.json({
+                success: true,
+                message: "Folders found successfully",
+                data: folders,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
     createFolder: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,21 +59,34 @@ exports.folderController = {
             const { name } = req.body;
             console.log(req.body);
             if (!name) {
-                return res.status(200).json({ success: false, message: 'Please provide a name' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Please provide a name" });
             }
-            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile does not exist" });
             }
             const folder = new Folder_1.default();
             folder.name = name + "|" + (0, crypto_1.default)(16);
             folder.user = userProfile;
             yield FolderRepo.save(folder);
-            return res.json({ success: true, message: 'Folder created successfully', data: folder });
+            return res.json({
+                success: true,
+                message: "Folder created successfully",
+                data: folder,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
     updateFolder: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,71 +94,119 @@ exports.folderController = {
             const { name } = req.body;
             const { id } = req.params;
             if (!name) {
-                return res.status(200).json({ success: false, message: 'Please provide a name' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Please provide a name" });
             }
-            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile does not exist" });
             }
             //find folder based on folder id and user profile id
-            const folder = yield FolderRepo.createQueryBuilder("folder").innerJoin("folder.user", "user").where("user.id = :id", { id: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id }).andWhere("folder.id = :folderId", { folderId: id }).getOne();
+            const folder = yield FolderRepo.createQueryBuilder("folder")
+                .innerJoin("folder.user", "user")
+                .where("user.id = :id", { id: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id })
+                .andWhere("folder.id = :folderId", { folderId: id })
+                .getOne();
             if (!folder) {
-                return res.status(200).json({ success: false, message: 'Folder does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Folder does not exist" });
             }
-            if (folder.name.split("|")[0] == 'root') {
-                return res.status(200).json({ success: false, message: 'Root folder cannot be updated' });
+            if (folder.name.split("|")[0] == "root") {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Root folder cannot be updated" });
             }
             folder.name = name + "|" + (0, crypto_1.default)(16);
             yield FolderRepo.save(folder);
-            return res.json({ success: true, message: 'Folder updated successfully', data: folder });
+            return res.json({
+                success: true,
+                message: "Folder updated successfully",
+                data: folder,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
     getFolder: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile does not exist" });
             }
             const options = {
                 where: {
                     id: parseInt(req.params.id),
                 },
-                relations: ['files']
+                relations: ["files"],
             };
             const folder = yield FolderRepo.findOne(options);
             if (!folder) {
-                return res.json({ message: 'Folders does not exist' });
+                return res.json({ message: "Folders does not exist" });
             }
-            return res.json({ success: true, message: 'Folders found successfully', data: folder });
+            return res.json({
+                success: true,
+                message: "Folders found successfully",
+                data: folder,
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
     deleteFolder: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile").innerJoinAndSelect("userProfile.userAuth", "UserAuth").where("userProfile.userAuth = :id", { id: req.user }).getOne();
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
             if (!userProfile) {
-                return res.status(200).json({ success: false, message: 'Profile does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Profile does not exist" });
             }
-            const findFolder = yield FolderRepo.findOne({ where: { id: parseInt(req.params.id), user: { id: userProfile.id } } });
+            const findFolder = yield FolderRepo.findOne({
+                where: { id: parseInt(req.params.id), user: { id: userProfile.id } },
+            });
             if (!findFolder) {
-                return res.status(200).json({ success: false, message: 'Folder does not exist' });
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Folder does not exist" });
             }
-            if (findFolder.name.split("|")[0] == 'root') {
-                return res.status(200).json({ success: false, message: 'Root folder cannot be updated' });
+            if (findFolder.name.split("|")[0] == "root") {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "Root folder cannot be updated" });
             }
             yield FolderRepo.delete(findFolder.id);
-            return res.json({ success: true, message: 'Folder deleted successfully' });
+            return res.json({
+                success: true,
+                message: "Folder deleted successfully",
+            });
         }
         catch (error) {
             console.log(error);
-            return res.status(200).json({ success: false, message: 'Internal server error' });
+            return res
+                .status(200)
+                .json({ success: false, message: "Internal server error" });
         }
     }),
 };

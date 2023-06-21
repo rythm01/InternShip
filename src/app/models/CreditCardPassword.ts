@@ -6,16 +6,18 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  JoinColumn,
 } from "typeorm";
-import { UserAuth } from "./UserAuth";
+import { UserProfile } from "./UserProfile";
 
 @Entity()
 class CreditCardPassword {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => UserAuth)
-  user: UserAuth;
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
+  @JoinColumn({ name: "userProfileId" })
+  userProfile: UserProfile;
 
   @Column()
   credit_card_name: string;
@@ -30,7 +32,7 @@ class CreditCardPassword {
   password: string;
 
   @Column()
-  credit_card_number: number;
+  credit_card_number: string;
 
   @Column()
   payment_date: string;

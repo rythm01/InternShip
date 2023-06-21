@@ -10,15 +10,18 @@ import Recipe from "../../components/common/Forms/Recipe";
 
 const PasswordTypeForms = () => {
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id");
+  const formType = searchParams.get("form");
   return (
     <div>
-      {location.search === "?form=6" && <BankForm />}
-      {location.search === "?form=3" && <CreditcardForm />}
-      {location.search === "?form=1" && <LoanAccountForm />}
-      {location.search === "?form=7" && <MerchantAccountForm />}
-      {location.search === "?form=5" && <MiscForm />}
-      {location.search === "?form=2" && <PasswordStotageForm />}
-      {location.search === "?form=4" && <Recipe />}
+      {formType === "6" && <BankForm id={id} isEdit={id && true} />}
+      {formType === "3" && <CreditcardForm />}
+      {formType === "1" && <LoanAccountForm />}
+      {formType === "7" && <MerchantAccountForm />}
+      {formType === "5" && <MiscForm />}
+      {formType === "2" && <PasswordStotageForm />}
+      {formType === "4" && <Recipe />}
     </div>
   );
 };
