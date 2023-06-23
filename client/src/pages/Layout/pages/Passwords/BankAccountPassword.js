@@ -151,7 +151,7 @@ const BankAccountPassword = () => {
 
     return (
         <>
-        <Toaster />
+            <Toaster />
             <Row
                 width="100%"
                 height="73px"
@@ -201,180 +201,139 @@ const BankAccountPassword = () => {
                 </Row>
             </Row>
 
-            {!Boolean(allFolders?.length) ? (
-                <>
-                    <Row height="100vh">
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                marginTop: width <= 600 && "-40px",
-                            }}
-                        >
-                            <div style={{ width: "160px", height: "160px" }}>
-                                <img
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                        objectPosition: "center",
-                                    }}
-                                    src={File}
-                                />
-                            </div>
-                            <div className="text-center">
-                                <h1
-                                    style={{
-                                        fontFamily: "TT Commons",
-                                        fontWeight: 400,
-                                        fontSize: "24px",
-                                        marginTop: "30px",
-                                    }}
-                                >
-                                    Uploaded file will be displayed here
-                                </h1>
-                            </div>
-                        </div>
-                    </Row>
-                </>
-            ) : (
-                <Box>
-                    <div>
-                        <Box width="100%" height="auto">
-                            <Row justifyContent="flex-end">
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        marginLeft: "auto",
-                                    }}
-                                >
 
-                                </div>
-                            </Row>
-
-
-                            <Box
+            <Box>
+                <div>
+                    <Box width="100%" height="auto">
+                        <Row justifyContent="flex-end">
+                            <div
                                 style={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        width > 1200
-                                            ? "repeat(4,1fr)"
-                                            : width > 950
-                                                ? "repeat(3,1fr)"
-                                                : width > 600
-                                                    ? "repeat(2,1fr)"
-                                                    : "repeat(2,1fr)",
-                                    gridGap: "1rem",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    marginLeft: "auto",
                                 }}
                             >
-                                {
-                                    Files.map((element) => {
-                                        return <>
-                                            <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
-                                                <div
-                                                // onClick={() =>
-                                                //     navigate(`${element.navigate}`)
-                                                // }
-                                                >
-                                                    <FolderContainer
 
-                                                        width="100%"
-                                                        height="173px"
-                                                        flexDirection="column"
-                                                        justifyContent="flex-start"
-                                                        alignItems="flex-start"
-                                                        padding="10px"
-                                                        borderRadius="7px"
+                            </div>
+                        </Row>
+
+
+                        <Box
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                    width > 1200
+                                        ? "repeat(4,1fr)"
+                                        : width > 950
+                                            ? "repeat(3,1fr)"
+                                            : width > 600
+                                                ? "repeat(2,1fr)"
+                                                : "repeat(2,1fr)",
+                                gridGap: "1rem",
+                            }}
+                        >
+                            {
+                                Files.map((element) => {
+                                    return <>
+                                        <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
+                                            <div
+                                            // onClick={() =>
+                                            //     navigate(`${element.navigate}`)
+                                            // }
+                                            >
+                                                <FolderContainer
+
+                                                    width="100%"
+                                                    height="173px"
+                                                    flexDirection="column"
+                                                    justifyContent="flex-start"
+                                                    alignItems="flex-start"
+                                                    padding="10px"
+                                                    borderRadius="7px"
+                                                >
+                                                    <div
+                                                        style={{
+                                                            width: "100%",
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                        }}
                                                     >
                                                         <div
                                                             style={{
-                                                                width: "100%",
+                                                                width: "40px",
+                                                                height: "40px",
+                                                                borderRadius: "50%",
+                                                                backgroundColor: "#00A6521A",
                                                                 display: "flex",
-                                                                justifyContent: "space-between",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
                                                             }}
                                                         >
-                                                            <div
-                                                                style={{
-                                                                    width: "40px",
-                                                                    height: "40px",
-                                                                    borderRadius: "50%",
-                                                                    backgroundColor: "#00A6521A",
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                }}
-                                                            >
-                                                                <img width="20px" height="20px" src={fileimage} />
-                                                            </div>
+                                                            <img width="20px" height="20px" src={fileimage} />
                                                         </div>
-                                                        <Title
-                                                            fontSize="22px"
-                                                            margin={
-                                                                width > 600
-                                                                    ? "20px 0px 0px 3px"
-                                                                    : "8px 0px 0px 3px"
-                                                            }
-                                                            lineHeight="38px"
-                                                            fontWeight="600"
-                                                            fontFamily="TT Commons"
-                                                        >
-                                                            {element.filename}
-                                                        </Title>
-                                                        <Paragraph fontSize="14px">
-                                                            Edited On <strong> {element.editedon} </strong>
-                                                        </Paragraph>
-                                                        <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
-                                                            Created On <strong> {element.createdon} </strong>
+                                                    </div>
+                                                    <Title
+                                                        fontSize="22px"
+                                                        margin={
+                                                            width > 600
+                                                                ? "20px 0px 0px 3px"
+                                                                : "8px 0px 0px 3px"
+                                                        }
+                                                        lineHeight="38px"
+                                                        fontWeight="600"
+                                                        fontFamily="TT Commons"
+                                                    >
+                                                        {element.filename}
+                                                    </Title>
+                                                    <Paragraph fontSize="14px">
+                                                        Edited On <strong> {element.editedon} </strong>
+                                                    </Paragraph>
+                                                    <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
+                                                        Created On <strong> {element.createdon} </strong>
 
-                                                        </Paragraph>
+                                                    </Paragraph>
 
-                                                    </FolderContainer>
-                                                </div>
-                                                <OptionsMenu
-                                                    color="rgba(0, 0, 0, 0.4)"
-                                                    orientation="horizontal"
-                                                    options={[
-                                                        {
-                                                            text: "Open",
-                                                            onClick: () => {
-                                                                //   navigate(`/documents/folder/${item.id}`);
-                                                            },
-                                                        },
-                                                        {
-                                                            text: "Rename",
-
-                                                        },
-                                                        {
-                                                            text: "Delete",
-
-                                                        },
-                                                    ]}
-                                                    position="absolute"
-                                                />
+                                                </FolderContainer>
                                             </div>
+                                            <OptionsMenu
+                                                color="rgba(0, 0, 0, 0.4)"
+                                                orientation="horizontal"
+                                                options={[
+                                                    {
+                                                        text: "Open",
+                                                        onClick: () => {
+                                                            //   navigate(`/documents/folder/${item.id}`);
+                                                        },
+                                                    },
+                                                    {
+                                                        text: "Rename",
 
-                                        </>
-                                    })
-                                }
+                                                    },
+                                                    {
+                                                        text: "Delete",
 
-                                {/* Folder Box */}
+                                                    },
+                                                ]}
+                                                position="absolute"
+                                            />
+                                        </div>
+
+                                    </>
+                                })
+                            }
+
+                            {/* Folder Box */}
 
 
 
-
-
-                            </Box>
 
 
                         </Box>
-                    </div>
-                </Box>
-            )}
+
+
+                    </Box>
+                </div>
+            </Box>
 
 
         </>
