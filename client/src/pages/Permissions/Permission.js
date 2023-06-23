@@ -1,19 +1,56 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styled from 'styled-components';
 import Divider from '@mui/material/Divider';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import data from './data.js';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 function Permission() {
+    const navigate = useNavigate();
+
+    function handleClick() {
+        navigate('/permission', { state: { isNewBuddy: true } });
+    }
+
+    const location = useLocation();
+    const [updatedData, setUpdatedData] = useState([]);
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const dataParam = searchParams.get('data');
+
+        if (dataParam) {
+            const decodedData = decodeURIComponent(dataParam);
+            const parsedData = JSON.parse(decodedData);
+            setUpdatedData(parsedData);
+        }
+
+        if (location.state && location.state.isNewBuddy) {
+            const newBuddy = {
+                username: 'New Buddy',
+                email: 'newbuddy@example.com',
+                checked: 'false',
+                share: '',
+            };
+
+            setUpdatedData((prevData) => [...prevData, newBuddy]);
+        }
+    }, [location.search, location.state]);
+
+    const handleDeleteClick = (username) => {
+        const updatedDataAfterDelete = updatedData.filter((item) => item.username !== username);
+        setUpdatedData(updatedDataAfterDelete);
+    };
+
     return (
         <>
             <Container>
                 <div className='container'>
                     <div className='permissionForm'>
                         <div className='backButton'>
-                            <ArrowBackIcon color="success" style={{ 'cursor': 'pointer' }} />
+                            <ArrowBackIcon color='success' style={{ cursor: 'pointer' }} />
                         </div>
                         <div className='permission'>
                             <h1 className='heading'>Permissions</h1>
@@ -21,39 +58,52 @@ function Permission() {
                         <div className='main'>
                             <h4 className='heading'>The file has been shared with</h4>
                             <Divider />
-                            {
-                                data.length !== 0 ? data.map((d) => {
-                                    return (
-                                        <div className='buddy' style={{ position: "relative" }}>
-                                            <ul className='info'>
-                                                <li className='buddyName'>{d.username}</li>
-                                                <li className='email'>{d.email}</li>
-                                                <li className='share'>{d.share}</li>
-                                                <DeleteOutlineIcon sx={{
-                                                    position: "absolute",
-                                                    top: "4px",
-                                                    right: "15px",
-                                                    // color:"green"
-                                                }} />
-                                            </ul>
-                                            <Divider/>
-                                        </div>
-                                    )
+                            {updatedData.length !== 0 ? (
+                                updatedData.map((d) => {
+                                    if (d.checked === 'true') {
+                                        return (
+                                            <div className='buddy' key={d.username} style={{ position: 'relative' }}>
+                                                <ul className='info'>
+                                                    <li className='buddyName'>{d.username}</li>
+                                                    <li className='email'>{d.email}</li>
+                                                    <li className='share'>{d.share}</li>
+                                                    <DeleteOutlineIcon
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: '4px',
+                                                            right: '15px',
+                                                            color: 'green',
+                                                        }}
+                                                        onClick={() => handleDeleteClick(d.username)}
+                                                    />
+                                                </ul>
+                                                <Divider />
+                                            </div>
+                                        );
+                                    }
+                                    return null;
                                 })
-                                    : <AddCircleOutlineIcon sx={{ fontSize: 150 }} style={{ 'margin': '110px' }} color="success" />
-                            }
+                            ) : (
+                                <div>
+                                    {updatedData.length === 0 && (
+                                        <AddCircleOutlineIcon sx={{ fontSize: 150 }} style={{ margin: '110px' }} color='success' />
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        <div class="subbutton">
-                            <button type="submit">Add new permission</button>
+                        <div className='subbutton'>
+                            <button type='submit' onClick={handleClick}>
+                                Add new permission
+                            </button>
                         </div>
                     </div>
                 </div>
             </Container>
         </>
-    )
+    );
 }
 
-export default Permission
+export default Permission;
 
 const Container = styled.div`
   .container{
@@ -71,8 +121,9 @@ const Container = styled.div`
         border-radius: 8px;
         .subbutton{
             display:flex;
-            justify-content:center;
+            // justify-content:center;
             align-items:center;
+            background-color:black;
             button {
                 padding: 19px 39px 18px 39px;
                 color: #FFF;
@@ -87,6 +138,7 @@ const Container = styled.div`
                 border-radius: 10px;
                 box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
                 margin-bottom: 10px;
+                margin-left:100px;
                 font-weight:600;
                 cursor: pointer;
                 position:absolute;
