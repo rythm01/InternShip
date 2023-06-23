@@ -39,7 +39,7 @@ export const passwordStorageController = {
       newLoanAccount.userProfile = userProfile?.id as any;
       newLoanAccount.website = website;
       newLoanAccount.user_name = user_name;
-      newLoanAccount.password = bcrypt.hashSync(password, 10);
+      newLoanAccount.password = password;
       newLoanAccount.account_nick_name = account_nick_name;
 
       await PasswordStorageRepo.save(newLoanAccount);

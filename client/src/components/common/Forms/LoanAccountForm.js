@@ -8,6 +8,7 @@ import {
   postLoanAccount,
   updateLoanAccount,
 } from "../../../networks/passwordTypeForms";
+import moment from "moment";
 // import postLoanAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
@@ -129,7 +130,8 @@ const LoanAccountForm = ({ isEdit, id }) => {
           user_name: getLoanAccount?.user_name || "",
           password: getLoanAccount?.password || "",
           loan_amount: getLoanAccount?.loan_amount || "",
-          payment_date: getLoanAccount?.payment_date || "",
+          payment_date:
+            moment(getLoanAccount?.payment_date).format("YYYY-MM-DD") || "",
           account_nick_name: getLoanAccount?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}

@@ -51,7 +51,7 @@ export const merchantAccountController = {
       newLoanAccount.merchant_name = merchant_name;
       newLoanAccount.website = website;
       newLoanAccount.user_name = user_name;
-      newLoanAccount.password = bcrypt.hashSync(password, 10);
+      newLoanAccount.password = password;
       newLoanAccount.account_number = account_number;
       newLoanAccount.account_nick_name = account_nick_name;
 

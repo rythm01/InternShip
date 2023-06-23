@@ -90,7 +90,10 @@ const CreditcardForm = ({ isEdit, id }) => {
   useEffect(() => {
     if (id && isEdit) {
       getCreditCardDetail(t, id)
-        .then((res) => setCreditCard(res?.data?.data))
+        .then((res) => {
+          setCreditCard(res?.data?.data);
+          setIsData(true);
+        })
         .catch((e) => console.log(e));
     }
   }, []);
@@ -114,7 +117,6 @@ const CreditcardForm = ({ isEdit, id }) => {
       console.log(error);
     }
   };
-
   return (
     <Container>
       <Formik
@@ -126,7 +128,7 @@ const CreditcardForm = ({ isEdit, id }) => {
           password: getCreditCard?.password || "",
           credit_card_number: getCreditCard?.credit_card_number || "",
           payment_date:
-            moment(getCreditCard?.payment_date).format("YYYY/MM/DD") || "",
+            moment(getCreditCard?.payment_date).format("YYYY-MM-DD") || "",
           account_nick_name: getCreditCard?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}
