@@ -1,10 +1,11 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styled from 'styled-components';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import data from './data.js';
 import { Divider } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 function AddPermission() {
     const [isBuddyDropdownOpen, setIsBuddyDropdownOpen] = useState(false);
@@ -20,64 +21,171 @@ function AddPermission() {
         setIsBuddyDropdownOpen(false);
     };
 
+    const [updatedData, setUpdatedData] = useState(data);
+    const [selectedShareOption, setSelectedShareOption] = useState(null);
+
+    const handleCheckboxChange = (e, username) => {
+        const isChecked = e.target.checked;
+        const existingData = updatedData.find((item) => item.username === username);
+
+        if (existingData) {
+            const updatedCheckboxData = updatedData.map((item) => {
+                if (item.username === username) {
+                    return {
+                        ...item,
+                        checked: isChecked ? 'true' : 'false',
+                    };
+                }
+                return item;
+            });
+            setUpdatedData(updatedCheckboxData);
+        } else {
+            const newPermission = {
+                username,
+                checked: isChecked ? 'true' : 'false',
+                email: '',
+                share: '',
+            };
+            setUpdatedData([...updatedData, newPermission]);
+        }
+    };
+
+    const handleRadioChange = (option) => {
+        setSelectedShareOption(option);
+
+        const updatedShareData = updatedData.map((item) => {
+            if (item.checked === 'true') {
+                return {
+                    ...item,
+                    share: option,
+                };
+            }
+            return item;
+        });
+
+        setUpdatedData(updatedShareData);
+    };
+
     return (
         <>
+            {/* <Permission updatedData={updatedData}/> */}
             <Container>
                 <div className='container'>
                     <div className='permissionForm'>
                         <div className='backButton'>
-                            <ArrowBackIcon color="success" style={{ 'cursor': 'pointer' }} />
+                            <ArrowBackIcon color='success' style={{ cursor: 'pointer' }} />
                         </div>
                         <div className='permission'>
                             <h1 className='heading'>Add Permissions</h1>
                         </div>
                         <div className='main'>
                             <div className='selectBuddies'>
-                                <h4 className='heading' style={{ marginBottom: "6px", marginTop: "0" }}>Whom do you want to share?</h4>
+                                <h4 className='heading' style={{ marginBottom: '6px', marginTop: '0' }}>
+                                    Whom do you want to share?
+                                </h4>
                                 <div className='dropdown-header' onClick={handleSelectBuddiesDropdownToggle}>
-                                    <span style={{ marginLeft: "20px" }}>Select buddies</span>
-                                    {isBuddyDropdownOpen ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+                                    <span style={{ marginLeft: '20px' }}>Select buddies</span>
+                                    {isBuddyDropdownOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                 </div>
-                                {isBuddyDropdownOpen && <ul className='option'>
-                                    {
-                                        data.map((d) => {
-                                            return (<li style={{ "listStyle": "none" }}><input type="checkbox" id={d.username} name="buddy" />
-                                                <label for={d.username}>{d.username}</label><Divider /></li>
-                                            )
-                                        })
-                                    }
-                                    <li style={{ margin: "9px" }}>Add Buddy</li>
-                                </ul>}
+                                {isBuddyDropdownOpen && (
+                                    <ul className='option'>
+                                        {updatedData.map((d) => (
+                                            <li style={{ listStyle: 'none' }}>
+                                                <input
+                                                    type='checkbox'
+                                                    id={d.username}
+                                                    name='buddy'
+                                                    checked={d.checked === 'true'}
+                                                    onChange={(e) => handleCheckboxChange(e, d.username)}
+                                                />
+                                                <label htmlFor={d.username}>{d.username}</label>
+                                                <Divider />
+                                            </li>
+                                        ))}
+                                        <li style={{ margin: '9px' }}>Add Buddy</li>
+                                    </ul>
+                                )}
                             </div>
                             <div className='selectTime'>
-                                <h4 className='heading' style={{ marginBottom: "6px", marginTop: "0" }}>When do you want to share?</h4>
+                                <h4 className='heading' style={{ marginBottom: '6px', marginTop: '0' }}>
+                                    When do you want to share?
+                                </h4>
                                 <div className='dropdown-header' onClick={handleSelectTimeDropdownToggle}>
-                                    <span style={{ marginLeft: "20px" }}>Select time period</span>
-                                    {isTimeDropdownOpen ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+                                    <span style={{ marginLeft: '20px' }}>Select time period</span>
+                                    {isTimeDropdownOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                 </div>
-                                {isTimeDropdownOpen && <ul className='option'>
-                                    <li style={{ "listStyle": "none" }}><input type="radio" id="immediate" name="buddy" />
-                                        <label for="immediate">Immediate Access</label></li><Divider />
-                                    <li style={{ "listStyle": "none" }}><input type="radio" id="timed" name="buddy" />
-                                        <label for="timed">Timed Release</label></li><Divider />
-                                    <li style={{ "listStyle": "none" }}><input type="radio" id="unshared" name="buddy" />
-                                        <label for="unshared">Unshared</label></li>
-                                </ul>}
+                                {isTimeDropdownOpen && (
+                                    <ul className='option'>
+                                        <li style={{ listStyle: 'none' }}>
+                                            <input
+                                                type='radio'
+                                                id='immediate'
+                                                name='buddy'
+                                                checked={selectedShareOption === 'Immediate Access'}
+                                                onChange={() => handleRadioChange('Immediate Access')}
+                                            />
+                                            <label htmlFor='immediate'>Immediate Access</label>
+                                        </li>
+                                        <Divider />
+                                        <li style={{ listStyle: 'none' }}>
+                                            <input
+                                                type='radio'
+                                                id='timed'
+                                                name='buddy'
+                                                checked={selectedShareOption === 'Timed release'}
+                                                onChange={() => handleRadioChange('Timed release')}
+                                            />
+                                            <label htmlFor='immediate'>Timed release</label>
+                                        </li>
+                                        <Divider />
+                                        <li style={{ listStyle: 'none' }}>
+                                            <input
+                                                type='radio'
+                                                id='unshared'
+                                                name='buddy'
+                                                checked={selectedShareOption === 'Unshared'}
+                                                onChange={() => handleRadioChange('Unshared')}
+                                            />
+                                            <label htmlFor='immediate'>Unshared</label>
+                                        </li>
+                                    </ul>
+                                )}
                             </div>
                         </div>
-                        {isTimeDropdownOpen || isBuddyDropdownOpen? <div className="subbutton">
-                            <button type="submit">Confirm</button>
-                        </div> : <div className="subbutton1">
-                            <button type="submit">Confirm</button>
-                        </div>}
+                        {(isTimeDropdownOpen || isBuddyDropdownOpen) ? (
+                            <div className='subbutton'>
+                                <button type='submit'>
+                                    <Link
+                                        to={`/?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                    >
+                                        Confirm
+                                    </Link>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className='subbutton1'>
+                                <button type='submit'>
+                                    <Link
+                                        to={`/?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                    >
+                                        Confirm
+                                    </Link>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Container>
         </>
-    )
+    );
 }
 
-export default AddPermission
+export default AddPermission;
+
+
+
 
 const Container = styled.div`
 .container{
