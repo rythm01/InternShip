@@ -201,47 +201,7 @@ const Recipes = () => {
                 </Row>
             </Row>
 
-            {!Boolean(allFolders?.length) ? (
-                <>
-                    <Row height="100vh">
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                marginTop: width <= 600 && "-40px",
-                            }}
-                        >
-                            <div style={{ width: "160px", height: "160px" }}>
-                                <img
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                        objectPosition: "center",
-                                    }}
-                                    src={File}
-                                />
-                            </div>
-                            <div className="text-center">
-                                <h1
-                                    style={{
-                                        fontFamily: "TT Commons",
-                                        fontWeight: 400,
-                                        fontSize: "24px",
-                                        marginTop: "30px",
-                                    }}
-                                >
-                                    Uploaded file will be displayed here
-                                </h1>
-                            </div>
-                        </div>
-                    </Row>
-                </>
-            ) : (
+          
                 <Box>
                     <div>
                         <Box width="100%" height="auto">
@@ -374,7 +334,7 @@ const Recipes = () => {
                         </Box>
                     </div>
                 </Box>
-            )}
+         
 
 
         </>

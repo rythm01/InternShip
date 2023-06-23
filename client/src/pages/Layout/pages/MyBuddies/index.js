@@ -15,7 +15,9 @@ import {
   Table,
   TableBodyRow,
   TableHeadRow,
+ 
 } from "../../../../components/MyBuddies";
+import  LimitExistModal from "../../../../components/MyBuddies/LimitExistModal";
 import { useModal } from "../../../../context/modal-context";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +34,8 @@ import LoadingSpinner from "../../../../components/common/LoadingSpinner";
 import styled from "styled-components";
 import { AuthContext } from "../../../../context/AuthContext";
 import { addBuddyApi, deleteBuddyApi, getBuddiesApi } from "../../../../networks/buddies";
+import StorageFullModal from "../Home/StorageFullModal";
+
 
 const Row = styled.div`
   display: flex;
@@ -135,13 +139,17 @@ export default function MyBuddies() {
   const addNewBuddy = () => {
     if (buddies.length >= 1 || invitations.length >= 1) {
       setModal(
-        <AlertModal
-          message={"We are currently in beta testing mode once we are live you will be able to add more buddies"}
-          buttonText={"Sounds good"}
-          onSubmit={() => {
-            navigate("/my-buddies");
-          }}
-        />
+        // <AlertModal
+        //   message={"We are currently in beta testing mode once we are live you will be able to add more buddies"}
+        //   buttonText={"Sounds good"}
+        //   onSubmit={() => {
+        //     navigate("/my-buddies");
+        //   }}
+        // />
+        <LimitExistModal></LimitExistModal>
+      
+     
+        
       );
     } else {
       setModal(<AddBuddyModal onSubmit={addBuddy} />);

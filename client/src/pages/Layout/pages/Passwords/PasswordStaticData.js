@@ -4,7 +4,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022393/loadpasswordfolder_ii5i7s.png",
         title: "Loan Account Password",
         bg: "#FFBE9D1A",
-        navigate:"loanaccountpassword"
+        navigate:"loanaccountpassword",
+        item:"1",
 
 
     },
@@ -13,7 +14,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/nonbankpassword_kjnhdb.png",
         title: "Password (Non Banker)",
         bg: "#F19ECE1A",
-        navigate:"nonbankerpassword"
+        navigate:"nonbankerpassword",
+        item:"2",
 
     },
     {
@@ -21,7 +23,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/creditcardpasswordfolder_dxuk2c.png",
         title: "Creditcard Password",
         bg: "#1877F21A",
-        navigate:"creditcardpassword"
+        navigate:"creditcardpassword",
+        item:"3",
 
 
     },
@@ -30,7 +33,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/miscpasswordfolder_kxhoa7.png",
         title: "Misc Form",
         bg: "#F878661A",
-        navigate:"miscpassword"
+        navigate:"miscpassword",
+        item:"4",
 
     },
     {
@@ -38,7 +42,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/bankaccpasswordfolder_gmax5r.png",
         title: "Bank Account Password",
         bg: "#F878661A",
-        navigate:"bankaccountpassword"
+        navigate:"bankaccountpassword",
+        item:"5",
 
 
     },
@@ -47,7 +52,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/cryptopasswordfolder_swr240.png",
         title: "Crypto Accounts",
         bg: "#00A6521A",
-        navigate:"cryptopassword"
+        navigate:"cryptopassword",
+        item:"6",
 
     },
     {
@@ -55,7 +61,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/merchantaccfolder_f1lrud.png",
         title: "Merchant Account",
         bg: "#FFBE9D1A",
-        navigate:"merchantaccount"
+        navigate:"merchantaccount",
+        item:"7",
 
     },
     {
@@ -63,7 +70,8 @@ const Passwords = [
         icon: "https://res.cloudinary.com/dlsxq98fr/image/upload/v1687022345/receipsfolder_jd41uz.png",
         title: "Recipes",
         bg: "#F19ECE1A",
-        navigate:"recipes"
+        navigate:"recipes",
+        item:"8",
 
     },
 
