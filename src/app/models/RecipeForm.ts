@@ -20,73 +20,73 @@ class RecipeForm {
   @JoinColumn({ name: "userProfileId" })
   userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   recipe_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_one: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_one_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_one_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_two: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_two_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_two_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_three: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_three_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_three_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_four: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_four_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_four_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_five: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_five_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_five_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_six: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_six_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_six_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_seven: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_seven_amount: string;
 
-  @Column()
+  @Column({ nullable: true })
   ingredient_seven_amount_type: string;
 
-  @Column()
+  @Column({ nullable: true })
   cooking_description: string;
 
   @CreateDateColumn()

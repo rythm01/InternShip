@@ -85,13 +85,24 @@ const BankForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getAccountData, setAccountData] = useState();
+  const [isData, setIsData] = useState(true);
+
   useEffect(() => {
     if (id && isEdit) {
       getBankAccountDetail(t, id)
-        .then((res) => setAccountData(res?.data?.data))
+        .then((res) => {
+          setAccountData(res?.data?.data);
+          setIsData(true);
+        })
         .catch((e) => console.log(e));
     }
   }, []);
+
+  useEffect(() => {
+    if (id && isEdit && !getAccountData) {
+      setIsData(false);
+    }
+  }, [getAccountData]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
@@ -126,57 +137,74 @@ const BankForm = ({ isEdit, id }) => {
           <Form>
             <h1>Bank Account Password Storage Form</h1>
 
-            <fieldset>
-              <label>Bank Name:</label>
-              <Field type="text" name="bank_name" placeholder="Enter Name" />
+            {isData ? (
+              <>
+                <fieldset>
+                  <label>Bank Name:</label>
+                  <Field
+                    type="text"
+                    name="bank_name"
+                    placeholder="Enter Name"
+                  />
 
-              <label>Website/URL</label>
-              <Field
-                type="text"
-                name="website"
-                placeholder="Enter url/website"
-              />
+                  <label>Website/URL</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    placeholder="Enter url/website"
+                  />
 
-              <label>User Name:</label>
-              <Field
-                type="text"
-                name="user_name"
-                placeholder="Enter username"
-              />
+                  <label>User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    placeholder="Enter username"
+                  />
 
-              <label>Password:</label>
-              <Field
-                type="password"
-                name="password"
-                placeholder="Enter password"
-              />
+                  <label>Password:</label>
+                  <Field
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"
+                  />
 
-              <label>Account:</label>
-              <Field
-                type="tel"
-                name="account_number"
-                placeholder="Enter Account"
-              />
+                  <label>Account:</label>
+                  <Field
+                    type="tel"
+                    name="account_number"
+                    placeholder="Enter Account"
+                  />
 
-              <label>Routing:</label>
-              <Field type="text" name="routing" placeholder="Enter Routing" />
+                  <label>Routing:</label>
+                  <Field
+                    type="text"
+                    name="routing"
+                    placeholder="Enter Routing"
+                  />
 
-              <label>Account Nick Name:</label>
-              <Field
-                type="text"
-                name="account_nick_name"
-                placeholder="Enter account nickname"
-              />
+                  <label>Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    placeholder="Enter account nickname"
+                  />
 
-              <label>Password Recovery:</label>
-              <p>
-                we do not recommend storing questions and answer to recover your
-                password. Please reset your password instead for added security.
-              </p>
-            </fieldset>
-            <div class="subbutton">
-              <span onClick={handleSubmit}>{isEdit ? "Edit" : "Submit"}</span>
-            </div>
+                  <label>Password Recovery:</label>
+                  <p>
+                    we do not recommend storing questions and answer to recover
+                    your password. Please reset your password instead for added
+                    security.
+                  </p>
+                </fieldset>
+                <div class="subbutton">
+                  <span onClick={handleSubmit}>
+                    {isEdit ? "Edit" : "Submit"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
           </Form>
         )}
       </Formik>

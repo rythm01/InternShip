@@ -1,5 +1,14 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React, { useRef, useContext, useState, useEffect } from "react";
+import styled from "styled-components";
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  getMerchantAccountDetails,
+  postMerchantAccount,
+  updateMerchantAccount,
+} from "../../../networks/passwordTypeForms";
+// import postMerchantAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -53,7 +62,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -73,65 +82,127 @@ const Container = styled.form`
   }
 `;
 
-const MerchantAccountForm = () => {
-  const formRef = useRef(null);
+const MerchantAccountForm = ({ id, isEdit }) => {
+  const { t } = useContext(AuthContext);
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
+  const navigate = useNavigate();
+  const [getMerchantAccount, setMerchantAccount] = useState();
+  const [isData, setIsData] = useState(true);
 
-  };
-  const handleKeyPress = (event) => {
-    console.log("Handle Key Press..");
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
+  useEffect(() => {
+    if (id && isEdit) {
+      getMerchantAccountDetails(t, id)
+        .then((res) => {
+          setMerchantAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-      event.preventDefault();
+  useEffect(() => {
+    if (id && isEdit && !getMerchantAccount) {
+      setIsData(false);
+    }
+  }, [getMerchantAccount]);
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        await updateMerchantAccount(t, id, values);
+      } else {
+        await postMerchantAccount(t, values);
+      }
+      navigate("/passwords/merchantaccount");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
-      <h1>Merchant Account Password Storage Form</h1>
+    <Container>
+      <Formik
+        enableReinitialize
+        initialValues={{
+          merchant_name: getMerchantAccount?.merchant_name || "",
+          website: getMerchantAccount?.website || "",
+          user_name: getMerchantAccount?.user_name || "",
+          password: getMerchantAccount?.password || "",
+          account_number: getMerchantAccount?.account_number || "",
+          account_nick_name: getMerchantAccount?.account_nick_name || "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit }) => (
+          <Form>
+            <h1>Merchant Account Password Storage Form</h1>
 
-      <fieldset>
-        <label htmlFor="name">Merchant Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter Name" required />
+            {isData ? (
+              <>
+                {" "}
+                <fieldset>
+                  <label htmlFor="name">Merchant Name:</label>
+                  <Field
+                    type="text"
+                    name="merchant_name"
+                    placeholder="Enter Name"
+                  />
 
-        <label htmlFor="url">Website/URL</label>
-        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+                  <label htmlFor="url">Website/URL</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    placeholder="Enter url/website"
+                  />
 
-        <label htmlFor="username">User Name:</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    placeholder="Enter username"
+                  />
 
-        <label htmlFor="password">Password:</label>
-        <input type="password" id="password" name="user_password" placeholder="Enter password" required />
+                  <label htmlFor="password">Password:</label>
+                  <Field
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"
+                  />
 
-        <label htmlFor="account">Account:</label>
-        <input
-          type="tel"
-          id="account"
-          name="account"
-          placeholder="Enter Account"
-          onKeyPress={handleKeyPress}
-          required
-        />
+                  <label htmlFor="account">Account:</label>
+                  <Field
+                    type="tel"
+                    name="account_number"
+                    placeholder="Enter Account"
+                  />
 
-        <label htmlFor="nickname">Account Nick Name:</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    placeholder="Enter account nickname"
+                  />
 
-        <label htmlFor="password">Password Recovery:</label>
-        <p>We do not recommend storing questions and answers to recover your password. Please reset your password instead for added security.</p>
-      </fieldset>
-
-      <div className="subbutton">
-        <button type="submit">Sign up</button>
-      </div>
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    We do not recommend storing questions and answers to recover
+                    your password. Please reset your password instead for added
+                    security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span onClick={handleSubmit}>
+                    {isEdit ? "Update" : "Submit"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
+          </Form>
+        )}
+      </Formik>
     </Container>
   );
 };

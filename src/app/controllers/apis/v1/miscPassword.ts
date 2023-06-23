@@ -3,30 +3,28 @@ import { Request } from "../../../../utils/@types";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
-import CreditCardPassword from "../../../models/CreditCardPassword";
+import MiscPasswordStorage from "../../../models/MiscPasswordForm";
 
-const CreditCardRepo = AppDataSource.getRepository(CreditCardPassword);
+const MiscPasswordRepo = AppDataSource.getRepository(MiscPasswordStorage);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
-export const creditCardController = {
-  postCreditCard: async (req: Request, res: Response, next: any) => {
+export const miscPasswordController = {
+  postMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const {
-        credit_card_name,
+        account_name,
         website,
         user_name,
         password,
-        credit_card_number,
-        payment_date,
+        account_number,
         account_nick_name,
       } = req.body;
       const requiredFields = [
-        "credit_card_name",
+        "account_name",
         "website",
         "user_name",
         "password",
-        "credit_card_number",
-        "payment_date",
+        "account_number",
         "account_nick_name",
       ];
 
@@ -46,27 +44,26 @@ export const creditCardController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
-      const newCreditCard = new CreditCardPassword();
-      newCreditCard.userProfile = userProfile?.id as any;
-      newCreditCard.credit_card_name = credit_card_name;
-      newCreditCard.website = website;
-      newCreditCard.user_name = user_name;
-      newCreditCard.password = bcrypt.hashSync(password, 10);
-      newCreditCard.credit_card_number = credit_card_number;
-      newCreditCard.payment_date = payment_date;
-      newCreditCard.account_nick_name = account_nick_name;
+      const newMiscPassword = new MiscPasswordStorage();
+      newMiscPassword.userProfile = userProfile?.id as any;
+      newMiscPassword.account_name = account_name;
+      newMiscPassword.website = website;
+      newMiscPassword.user_name = user_name;
+      newMiscPassword.password = password;
+      newMiscPassword.account_number = account_number;
+      newMiscPassword.account_nick_name = account_nick_name;
 
-      await CreditCardRepo.save(newCreditCard);
+      await MiscPasswordRepo.save(newMiscPassword);
 
       return res.status(200).json({
-        message: "Credit Card saved Successfully",
+        message: "Saved Successfully",
       });
     } catch (error) {
       next(error);
     }
   },
 
-  getCreditCard: async (req: Request, res: Response, next: any) => {
+  getMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
@@ -76,32 +73,35 @@ export const creditCardController = {
         .getOne();
 
       if (!userProfile) {
-        return res
-          .status(200)
-          .json({ success: false, message: "No credit cards to display" });
+        return res.status(200).json({
+          success: false,
+          message: "No misc Password forms to display",
+        });
       }
-      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
-        .where("creditCard.userProfile = :userProfile", {
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
+      )
+        .where("miscPassword.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
         .getMany();
 
-      if (!isCreditCard) {
+      if (!isMiscPassword) {
         return res.status(400).json({
-          message: "No credit cards attached",
+          message: "No misc Password forms attached",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isCreditCard,
+        data: isMiscPassword,
       });
     } catch (error) {
       next(error);
     }
   },
 
-  deleteCreditCard: async (req: Request, res: Response, next: any) => {
+  deleteMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -114,23 +114,25 @@ export const creditCardController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No Data to display" });
       }
-      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
-        .innerJoin("creditCard.userProfile", "userProfile")
-        .where("creditCard.id = :id", { id: id })
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
+      )
+        .innerJoin("miscPassword.userProfile", "userProfile")
+        .where("miscPassword.id = :id", { id: id })
         .andWhere("userProfile.id = :userProfileId", {
           userProfileId: userProfile.id,
         })
         .getOne();
 
-      if (!isCreditCard) {
+      if (!isMiscPassword) {
         return res.status(400).json({
           message: "No records found",
         });
       }
 
-      await CreditCardRepo.delete({ id: parseInt(id) });
+      await MiscPasswordRepo.delete({ id: parseInt(id) });
 
       return res.status(200).send({
         message: "Delete Successfull",
@@ -140,7 +142,11 @@ export const creditCardController = {
     }
   },
 
-  getCreditCardDetailsById: async (req: Request, res: Response, next: any) => {
+  getMiscPasswordDetailsById: async (
+    req: Request,
+    res: Response,
+    next: any
+  ) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -156,39 +162,44 @@ export const creditCardController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
-        .where("creditCard.userProfile = :userProfile", {
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
+      )
+        .where("miscPassword.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("creditCard.id = :id", { id: id })
+        .andWhere("miscPassword.id = :id", { id: id })
         .getOne();
 
-      if (!isCreditCard) {
+      if (!isMiscPassword) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isCreditCard,
+        data: isMiscPassword,
       });
     } catch (error) {
       next(error);
     }
   },
 
-  updateCreditCardById: async (req: Request, res: Response, next: any) => {
+  updateMiscPasswordDetailsById: async (
+    req: Request,
+    res: Response,
+    next: any
+  ) => {
     try {
       const { id } = req.params;
       const data = req.body;
       const requiredFields = [
-        "credit_card_name",
+        "account_name",
         "website",
         "user_name",
         "password",
-        "credit_card_number",
-        "payment_date",
+        "account_number",
         "account_nick_name",
       ];
 
@@ -210,30 +221,31 @@ export const creditCardController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No data found" });
       }
 
-      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
-        .where("creditCard.userProfile = :userProfile", {
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
+      )
+        .where("miscPassword.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("creditCard.id = :id", { id: id })
+        .andWhere("miscPassword.id = :id", { id: id })
         .getOne();
 
-      if (!isCreditCard) {
+      if (!isMiscPassword) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
-      isCreditCard.credit_card_name = data?.credit_card_name;
-      isCreditCard.website = data?.website;
-      isCreditCard.user_name = data?.user_name;
-      isCreditCard.password = data?.password;
-      isCreditCard.credit_card_number = data?.credit_card_number;
-      isCreditCard.payment_date = `${new Date(data.payment_date)}`;
-      isCreditCard.account_nick_name = data?.account_nick_name;
+      isMiscPassword.account_name = data?.account_name;
+      isMiscPassword.website = data?.website;
+      isMiscPassword.user_name = data?.user_name;
+      isMiscPassword.password = data?.password;
+      isMiscPassword.account_number = data?.account_number;
+      isMiscPassword.account_nick_name = data?.account_nick_name;
 
-      await CreditCardRepo.save(isCreditCard);
+      await MiscPasswordRepo.save(isMiscPassword);
 
       return res.status(200).send({
         message: " Updated successfully",

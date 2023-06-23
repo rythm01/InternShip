@@ -20,22 +20,22 @@ class MerchantAccountPassword {
   @JoinColumn({ name: "userProfileId" })
   userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   merchant_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   website: string;
 
-  @Column()
+  @Column({ nullable: true })
   user_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   account_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   account_nick_name: string;
 
   @CreateDateColumn()

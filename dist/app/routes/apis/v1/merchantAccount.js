@@ -7,5 +7,8 @@ const router = (0, express_1.Router)();
 router.use(verifyUsers_1.authenticateUser);
 router.post("/", merchantAccount_1.merchantAccountController.postMerchantAccount);
 router.get("/", merchantAccount_1.merchantAccountController.getMerchantAccount);
+router.delete("/:id", merchantAccount_1.merchantAccountController.deleteMerchantAccount);
+router.get("/:id", merchantAccount_1.merchantAccountController.getMerchantAccountDetailsById);
+router.put("/:id", merchantAccount_1.merchantAccountController.updateMerchantAccountDetailsById);
 // router.get('/user', authController.getUser);
 exports.default = router;

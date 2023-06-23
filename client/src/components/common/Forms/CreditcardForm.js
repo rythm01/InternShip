@@ -1,8 +1,14 @@
-import { Formik } from "formik";
-import React, { useContext, useRef } from "react";
-import { Form, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Field, Formik, Form } from "formik";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AuthContext } from "../../../context/AuthContext";
+import {
+  getCreditCardDetail,
+  postCreditCard,
+  updateCreditCard,
+} from "../../../networks/passwordTypeForms";
+import moment from "moment";
 
 const Container = styled.form`
   max-width: 500px;
@@ -56,7 +62,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -75,116 +81,136 @@ const Container = styled.form`
     }
   }
 `;
-const CreditcardForm = () => {
+const CreditcardForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [getCreditCard, setCreditCard] = useState();
+  const [isData, setIsData] = useState(true);
+
+  useEffect(() => {
+    if (id && isEdit) {
+      getCreditCardDetail(t, id)
+        .then((res) => setCreditCard(res?.data?.data))
+        .catch((e) => console.log(e));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (id && isEdit && !getCreditCard) {
+      setIsData(false);
+    }
+  }, [getCreditCard]);
+
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
+      if (isEdit) {
+        await updateCreditCard(t, id, values);
+      } else {
+        await postCreditCard(t, values);
+      }
       navigate("/passwords/creditcardpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <Container>
       <Formik
+        enableReinitialize
         initialValues={{
-          bank_name: "",
-          website: "",
-          user_name: "",
-          password: "",
-          account_number: "",
-          routing: "",
-          account_nick_name: "",
+          credit_card_name: getCreditCard?.credit_card_name || "",
+          website: getCreditCard?.website || "",
+          user_name: getCreditCard?.user_name || "",
+          password: getCreditCard?.password || "",
+          credit_card_number: getCreditCard?.credit_card_number || "",
+          payment_date:
+            moment(getCreditCard?.payment_date).format("YYYY/MM/DD") || "",
+          account_nick_name: getCreditCard?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
+        {({ handleSubmit }) => (
           <Form>
             <h1>Credit Card Account Password Storage Form</h1>
 
-            <fieldset>
-              <label for="name">Credit Card Name:</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Enter Name"
-                required
-              />
+            {isData ? (
+              <>
+                {" "}
+                <fieldset>
+                  <label htmlFor="name">Credit Card Name:</label>
+                  <Field
+                    type="text"
+                    id="name"
+                    name="credit_card_name"
+                    placeholder="Enter Name"
+                  />
 
-              <label for="url">Website/URL</label>
-              <input
-                type="text"
-                id="url"
-                name="url"
-                placeholder="Enter url/website"
-                required
-              />
+                  <label htmlFor="url">Website/URL</label>
+                  <Field
+                    type="text"
+                    id="url"
+                    name="website"
+                    placeholder="Enter url/website"
+                  />
 
-              <label for="username">User Name:</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter username"
-                required
-              />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    id="username"
+                    name="user_name"
+                    placeholder="Enter username"
+                  />
 
-              <label for="password">Password:</label>
-              <input
-                type="password"
-                id="password"
-                name="user_password"
-                placeholder="Enter passowrd"
-                required
-              />
+                  <label htmlFor="password">Password:</label>
+                  <Field
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter passowrd"
+                  />
 
-              <label for="Creditcard">Credit Card:</label>
-              <input
-                type="text"
-                id="creditcard"
-                name="creditcard"
-                placeholder="Enter Creditcard"
-                required
-              />
+                  <label htmlFor="Creditcard">Credit Card:</label>
+                  <Field
+                    type="text"
+                    id="creditcard"
+                    name="credit_card_number"
+                    placeholder="Enter Creditcard"
+                  />
 
-              <label for="date">Payment Date:</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                placeholder="enter paymentdate"
-                required
-              />
+                  <label htmlFor="date">Payment Date:</label>
+                  <Field
+                    type="date"
+                    id="date"
+                    name="payment_date"
+                    placeholder="enter paymentdate"
+                  />
 
-              <label for="nickname">Account Nick Name:</label>
-              <input
-                type="text"
-                id="nickname"
-                name="nickname"
-                placeholder="Enter account nickname"
-                required
-              />
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    id="nickname"
+                    name="account_nick_name"
+                    placeholder="Enter account nickname"
+                  />
 
-              <label for="password">Password Recovery:</label>
-              <p>
-                we do not recommend stroing questions and answer to recoer your
-                password. Please reset your password instead for added security.
-              </p>
-            </fieldset>
-            <div class="subbutton">
-              <button type="submit">Sign up</button>
-            </div>
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    we do not recommend stroing questions and answer to recoer
+                    your password. Please reset your password instead htmlFor
+                    added security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span onClick={handleSubmit}>
+                    {isEdit ? "Update" : "Submit"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
           </Form>
         )}
       </Formik>

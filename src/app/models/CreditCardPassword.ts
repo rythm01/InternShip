@@ -19,25 +19,25 @@ class CreditCardPassword {
   @JoinColumn({ name: "userProfileId" })
   userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   credit_card_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   website: string;
 
-  @Column()
+  @Column({ nullable: true })
   user_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   credit_card_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   payment_date: string;
 
-  @Column()
+  @Column({ nullable: true })
   account_nick_name: string;
 
   @CreateDateColumn()

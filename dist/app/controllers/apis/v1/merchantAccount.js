@@ -91,4 +91,124 @@ exports.merchantAccountController = {
             next(error);
         }
     }),
+    deleteMerchantAccount: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isMerchantAccount = yield MerchantAccountPasswordRepo.createQueryBuilder("merchantAccount")
+                .innerJoin("merchantAccount.userProfile", "userProfile")
+                .where("merchantAccount.id = :id", { id: id })
+                .andWhere("userProfile.id = :userProfileId", {
+                userProfileId: userProfile.id,
+            })
+                .getOne();
+            if (!isMerchantAccount) {
+                return res.status(400).json({
+                    message: "No records found",
+                });
+            }
+            yield MerchantAccountPasswordRepo.delete({ id: parseInt(id) });
+            return res.status(200).send({
+                message: "Delete Successfull",
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    getMerchantAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isMerchantAccount = yield MerchantAccountPasswordRepo.createQueryBuilder("merchantAccount")
+                .where("merchantAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("merchantAccount.id = :id", { id: id })
+                .getOne();
+            if (!isMerchantAccount) {
+                return res.status(400).json({
+                    message: "No data found",
+                });
+            }
+            return res.status(200).send({
+                message: "Success",
+                data: isMerchantAccount,
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    updateMerchantAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const data = req.body;
+            const requiredFields = [
+                "merchant_name",
+                "website",
+                "user_name",
+                "password",
+                "account_number",
+                "account_nick_name",
+            ];
+            for (let i = 0; i < requiredFields.length; i++) {
+                if (!req.body[requiredFields[i]]) {
+                    return res.status(400).send({
+                        code: 400,
+                        message: "Please fill all required fields " + requiredFields[i],
+                    });
+                }
+            }
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No data found" });
+            }
+            const isMerchantAccount = yield MerchantAccountPasswordRepo.createQueryBuilder("merchantAccount")
+                .where("merchantAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("merchantAccount.id = :id", { id: id })
+                .getOne();
+            if (!isMerchantAccount) {
+                return res.status(400).json({
+                    message: "No data found",
+                });
+            }
+            isMerchantAccount.merchant_name = data === null || data === void 0 ? void 0 : data.merchant_name;
+            isMerchantAccount.website = data === null || data === void 0 ? void 0 : data.website;
+            isMerchantAccount.user_name = data === null || data === void 0 ? void 0 : data.user_name;
+            isMerchantAccount.password = data === null || data === void 0 ? void 0 : data.password;
+            isMerchantAccount.account_number = data === null || data === void 0 ? void 0 : data.account_number;
+            isMerchantAccount.account_nick_name = data === null || data === void 0 ? void 0 : data.account_nick_name;
+            yield MerchantAccountPasswordRepo.save(isMerchantAccount);
+            return res.status(200).send({
+                message: " Updated successfully",
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
 };

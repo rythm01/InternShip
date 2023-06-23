@@ -1,5 +1,14 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React, { useRef, useContext, useState, useEffect } from "react";
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+// import postPasswordStotageForm from "../../../networks/passwordTypeForms";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import {
+  getPasswordStorageDetails,
+  postPasswordStorage,
+  updatePasswordStorage,
+} from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -53,7 +62,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -72,49 +81,107 @@ const Container = styled.form`
     }
   }
 `;
-const PasswordStotageForm = () => {
-  const formRef = useRef(null);
+const PasswordStotageForm = ({ id, isEdit }) => {
+  const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [getMerchantAccount, setMerchantAccount] = useState();
+  const [isData, setIsData] = useState(true);
 
+  useEffect(() => {
+    if (id && isEdit) {
+      getPasswordStorageDetails(t, id)
+        .then((res) => {
+          setMerchantAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
+  useEffect(() => {
+    if (id && isEdit && !getMerchantAccount) {
+      setIsData(false);
+    }
+  }, [getMerchantAccount]);
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
-
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        await updatePasswordStorage(t, id, values);
+      } else {
+        await postPasswordStorage(t, values);
+      }
+      navigate("/passwords/nonbankerpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
+    <Container>
+      <Formik
+        enableReinitialize
+        initialValues={{
+          website: getMerchantAccount?.website || "",
+          user_name: getMerchantAccount?.user_name || "",
+          password: getMerchantAccount?.password || "",
+          account_nick_name: getMerchantAccount?.account_nick_name || "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit }) => (
+          <Form>
+            <h1>Password Storage Form</h1>
 
-      <h1>Password Storage Form</h1>
+            {isData ? (
+              <>
+                <fieldset>
+                  <label htmlFor="url">Website/URL</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    placeholder="Enter url/website"
+                  />
 
-      <fieldset>
-        <label for="url">Website/URL</label>
-        <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    placeholder="Enter username"
+                  />
 
-        <label for="username">User Name:</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required />
+                  <label htmlFor="password">Password:</label>
+                  <Field type="password" name="password" placeholder="Name" />
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="user_password" placeholder="Name" required />
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    placeholder="Enter account nickname"
+                  />
 
-        <label for="nickname">Account Nick Name:</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
-
-        <label for="password">Password Recovery:</label>
-        <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead for added security.</p>
-
-      </fieldset>
-      <div class="subbutton">
-        <button type="submit">Sign up</button>
-      </div>
-
-
-
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    we do not recommend stroing questions and answer to recoer
+                    your password. Please reset your password instead htmlFor
+                    added security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span onClick={handleSubmit}>
+                    {isEdit ? "Update" : "Submit"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
+          </Form>
+        )}
+      </Formik>
     </Container>
-  )
-}
+  );
+};
 
-export default PasswordStotageForm
+export default PasswordStotageForm;

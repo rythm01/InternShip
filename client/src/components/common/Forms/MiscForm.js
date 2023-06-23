@@ -1,5 +1,14 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React, { useRef, useContext, useState, useEffect } from "react";
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+// import postMiscForm from "../../../networks/passwordTypeForms";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import {
+  getMiscPasswordDetails,
+  postMiscPassword,
+  updateMiscPassword,
+} from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -53,7 +62,7 @@ const Container = styled.form`
     justify-content: center;
     align-items: center;
 
-    button {
+    span {
       padding: 19px 39px 18px 39px;
       color: #fff;
       background-color: #00a652;
@@ -73,64 +82,124 @@ const Container = styled.form`
   }
 `;
 
-export default function MiscForm() {
-    const formRef = useRef(null);
+export default function MiscForm({ id, isEdit }) {
+  const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [getMiscAccount, setMiscAccount] = useState();
+  const [isData, setIsData] = useState(true);
 
-    const handleFormSubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        const formData = new FormData(formRef.current);
-        console.log('Form submitted...!', formData);
-        //first display all form data & then
-        formRef.current.reset(); // Clear all input fields
+  useEffect(() => {
+    if (id && isEdit) {
+      getMiscPasswordDetails(t, id)
+        .then((res) => {
+          setMiscAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
-    };
+  useEffect(() => {
+    if (id && isEdit && !getMiscAccount) {
+      setIsData(false);
+    }
+  }, [getMiscAccount]);
 
-    const handleKeyPress = (event) => {
-        console.log("Handle KEy Press..")
-        const keyCode = event.which || event.keyCode;
-        const keyValue = String.fromCharCode(keyCode);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        await updateMiscPassword(t, id, values);
+      } else {
+        await postMiscPassword(t, values);
+      }
+      navigate("/passwords/miscpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-        // Allow only numbers (0-9)
-        if (!/^[0-9]+$/.test(keyValue)) {
-            event.preventDefault();
-        }
-    };
-    
-    return (
-        <Container ref={formRef} onSubmit={handleFormSubmit}>
-        
-
-
-                <h1>Misc Account Password Storage Form</h1>
-
+  return (
+    <Container>
+      <Formik
+        enableReinitialize
+        initialValues={{
+          account_name: getMiscAccount?.account_name || "",
+          website: getMiscAccount?.website || "",
+          user_name: getMiscAccount?.user_name || "",
+          password: getMiscAccount?.password || "",
+          account_number: getMiscAccount?.account_number || "",
+          account_nick_name: getMiscAccount?.account_nick_name || "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit }) => (
+          <Form>
+            <h1>Misc Account Password Storage Form</h1>
+            {isData ? (
+              <>
                 <fieldset>
-                    <label for="name">Account Name:</label>
-                    <input type="text" id="name" name="name" placeholder="Enter Accountname" required />
+                  <label htmlFor="name">Account Name:</label>
+                  <Field
+                    type="text"
+                    name="account_name"
+                    placeholder="Enter Accountname"
+                  />
 
-                    <label for="url">Website/URL:</label>
-                    <input type="text" id="url" name="url" placeholder="Enter url/website" required />
+                  <label htmlFor="url">Website/URL:</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    placeholder="Enter url/website"
+                  />
 
-                    <label for="username">User Name:</label>
-                    <input type="text" id="username" name="username" placeholder="Enter username" required />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    placeholder="Enter username"
+                  />
 
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="user_password" placeholder="Enter passowrd" required />
+                  <label htmlFor="password">Password:</label>
+                  <Field
+                    type="password"
+                    name="password"
+                    placeholder="Enter passowrd"
+                  />
 
-                    <label for="account">Account:</label>
-                    <input type="tel" id="account" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress} required />
+                  <label htmlFor="account_number">Account:</label>
+                  <Field
+                    type="tel"
+                    name="account_number"
+                    placeholder="Enter Account"
+                  />
 
-                    <label for="nickname">Account Nick Name:</label>
-                    <input type="text" id="nickname" name="nickname" placeholder="Enter account nickname" required />
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    placeholder="Enter account nickname"
+                  />
 
-                    <label for="password">Password Recovery:</label>
-                    <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead for added security.</p>
-
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    we do not recommend stroing questions and answer to recover
+                    your password. Please reset your password instead htmlFor
+                    added security.
+                  </p>
                 </fieldset>
-                <div class="subbutton">
-                    <button type="submit">Sign up</button>
+                <div className="subbutton">
+                  <span onClick={handleSubmit}>
+                    {isEdit ? "Update" : "Submit"}
+                  </span>
                 </div>
-
-           
-        </Container>
-    )
+              </>
+            ) : (
+              "No Data Found"
+            )}
+          </Form>
+        )}
+      </Formik>
+    </Container>
+  );
 }

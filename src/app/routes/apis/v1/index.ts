@@ -25,5 +25,6 @@ app.use(
   require("./merchantAccount").default
 );
 app.use("/password-type/recipe-account", require("./recipe").default);
+app.use("/password-type/misc-password", require("./miscPassWord").default);
 
 export default app;

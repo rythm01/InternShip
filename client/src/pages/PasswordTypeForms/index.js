@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import BankForm from "../../components/common/Forms/BankForm";
 import CreditcardForm from "../../components/common/Forms/CreditcardForm";
 import LoanAccountForm from "../../components/common/Forms/LoanAccountForm";
@@ -16,12 +16,12 @@ const PasswordTypeForms = () => {
   return (
     <div>
       {formType === "6" && <BankForm id={id} isEdit={id && true} />}
-      {formType === "3" && <CreditcardForm />}
-      {formType === "1" && <LoanAccountForm />}
-      {formType === "7" && <MerchantAccountForm />}
-      {formType === "5" && <MiscForm />}
-      {formType === "2" && <PasswordStotageForm />}
-      {formType === "4" && <Recipe />}
+      {formType === "3" && <CreditcardForm id={id} isEdit={id && true} />}
+      {formType === "1" && <LoanAccountForm id={id} isEdit={id && true} />}
+      {formType === "7" && <MerchantAccountForm id={id} isEdit={id && true} />}
+      {formType === "5" && <MiscForm id={id} isEdit={id && true} />}
+      {formType === "2" && <PasswordStotageForm id={id} isEdit={id && true} />}
+      {formType === "4" && <Recipe id={id} isEdit={id && true} />}
     </div>
   );
 };

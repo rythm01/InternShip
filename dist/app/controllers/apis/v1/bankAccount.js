@@ -14,12 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bankAccountController = void 0;
 const BankAccountPassword_1 = __importDefault(require("../../../models/BankAccountPassword"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../../../config");
-const UserAuth_1 = require("../../../models/UserAuth");
 const UserProfile_1 = require("../../../models/UserProfile");
 const BankAccountRepo = config_1.AppDataSource.getRepository(BankAccountPassword_1.default);
-const UserRepo = config_1.AppDataSource.getRepository(UserAuth_1.UserAuth);
 const UserProfileRepo = config_1.AppDataSource.getRepository(UserProfile_1.UserProfile);
 exports.bankAccountController = {
     postBankAccount: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,7 +48,7 @@ exports.bankAccountController = {
             newBankAccount.bank_name = bank_name;
             newBankAccount.website = website;
             newBankAccount.user_name = user_name;
-            newBankAccount.password = bcrypt_1.default.hashSync(password, 10);
+            newBankAccount.password = password;
             newBankAccount.account_number = account_number;
             newBankAccount.routing = routing;
             newBankAccount.account_nick_name = account_nick_name;
@@ -97,7 +94,6 @@ exports.bankAccountController = {
     deleteBankAccount: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { id } = req.params;
-            console.log(id);
             const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
                 .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
                 .where("userProfile.userAuth = :id", { id: req.user })
@@ -107,12 +103,13 @@ exports.bankAccountController = {
                     .status(200)
                     .json({ success: false, message: "No Bank Account to display" });
             }
-            const isBankAccount = yield BankAccountRepo.findOne({
-                where: {
-                    id: parseInt(id),
-                    userProfile: userProfile.id,
-                },
-            });
+            const isBankAccount = yield BankAccountRepo.createQueryBuilder("bankAccount")
+                .innerJoin("bankAccount.userProfile", "userProfile")
+                .where("bankAccount.id = :id", { id: id })
+                .andWhere("userProfile.id = :userProfileId", {
+                userProfileId: userProfile.id,
+            })
+                .getOne();
             if (!isBankAccount) {
                 return res.status(400).json({
                     message: "No records found",
@@ -121,6 +118,94 @@ exports.bankAccountController = {
             yield BankAccountRepo.delete({ id: parseInt(id) });
             return res.status(200).send({
                 message: "Delete Successfull",
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    getBankAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isBankAccount = yield BankAccountRepo.createQueryBuilder("bankAccount")
+                .where("bankAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("bankAccount.id = :id", { id: id })
+                .getOne();
+            if (!isBankAccount) {
+                return res.status(400).json({
+                    message: "No bank account attached",
+                });
+            }
+            return res.status(200).send({
+                message: "Success",
+                data: isBankAccount,
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    updateBankAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const data = req.body;
+            const requiredFields = [
+                "bank_name",
+                "website",
+                "user_name",
+                "password",
+                "account_number",
+                "routing",
+                "account_nick_name",
+            ];
+            for (let i = 0; i < requiredFields.length; i++) {
+                if (!req.body[requiredFields[i]]) {
+                    return res.status(400).send({
+                        code: 400,
+                        message: "Please fill all required fields " + requiredFields[i],
+                    });
+                }
+            }
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isBankAccount = yield BankAccountRepo.createQueryBuilder("bankAccount")
+                .where("bankAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("bankAccount.id = :id", { id: id })
+                .getOne();
+            if (!isBankAccount) {
+                return res.status(400).json({
+                    message: "No bank account attached",
+                });
+            }
+            isBankAccount.bank_name = data === null || data === void 0 ? void 0 : data.bank_name;
+            isBankAccount.website = data === null || data === void 0 ? void 0 : data.website;
+            isBankAccount.user_name = data === null || data === void 0 ? void 0 : data.user_name;
+            isBankAccount.password = data === null || data === void 0 ? void 0 : data.password;
+            isBankAccount.account_number = data === null || data === void 0 ? void 0 : data.account_number;
+            isBankAccount.account_nick_name = data === null || data === void 0 ? void 0 : data.account_nick_name;
+            yield BankAccountRepo.save(isBankAccount);
+            return res.status(200).send({
+                message: " Updated successfully",
             });
         }
         catch (error) {

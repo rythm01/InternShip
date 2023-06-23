@@ -7,5 +7,8 @@ const router = (0, express_1.Router)();
 router.use(verifyUsers_1.authenticateUser);
 router.post("/", creditCardPassword_1.creditCardController.postCreditCard);
 router.get("/", creditCardPassword_1.creditCardController.getCreditCard);
+router.delete("/:id", creditCardPassword_1.creditCardController.deleteCreditCard);
+router.get("/:id", creditCardPassword_1.creditCardController.getCreditCardDetailsById);
+router.put("/:id", creditCardPassword_1.creditCardController.updateCreditCardById);
 // router.get('/user', authController.getUser);
 exports.default = router;

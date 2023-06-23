@@ -93,4 +93,126 @@ exports.loanAccountController = {
             next(error);
         }
     }),
+    deleteLoanAccount: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isLoanAccount = yield LoanAccountPasswordRepo.createQueryBuilder("loanAccount")
+                .innerJoin("loanAccount.userProfile", "userProfile")
+                .where("loanAccount.id = :id", { id: id })
+                .andWhere("userProfile.id = :userProfileId", {
+                userProfileId: userProfile.id,
+            })
+                .getOne();
+            if (!isLoanAccount) {
+                return res.status(400).json({
+                    message: "No records found",
+                });
+            }
+            yield LoanAccountPasswordRepo.delete({ id: parseInt(id) });
+            return res.status(200).send({
+                message: "Delete Successfull",
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    getBankAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No Bank Account to display" });
+            }
+            const isLoanAccount = yield LoanAccountPasswordRepo.createQueryBuilder("loanAccount")
+                .where("loanAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("loanAccount.id = :id", { id: id })
+                .getOne();
+            if (!isLoanAccount) {
+                return res.status(400).json({
+                    message: "No data found",
+                });
+            }
+            return res.status(200).send({
+                message: "Success",
+                data: isLoanAccount,
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
+    updateBankAccountDetailsById: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const data = req.body;
+            const requiredFields = [
+                "creditor_name",
+                "website",
+                "user_name",
+                "password",
+                "loan_amount",
+                "payment_date",
+                "account_nick_name",
+            ];
+            for (let i = 0; i < requiredFields.length; i++) {
+                if (!req.body[requiredFields[i]]) {
+                    return res.status(400).send({
+                        code: 400,
+                        message: "Please fill all required fields " + requiredFields[i],
+                    });
+                }
+            }
+            const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                .where("userProfile.userAuth = :id", { id: req.user })
+                .getOne();
+            if (!userProfile) {
+                return res
+                    .status(200)
+                    .json({ success: false, message: "No data found" });
+            }
+            const isLoanAccount = yield LoanAccountPasswordRepo.createQueryBuilder("loanAccount")
+                .where("loanAccount.userProfile = :userProfile", {
+                userProfile: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+            })
+                .andWhere("loanAccount.id = :id", { id: id })
+                .getOne();
+            if (!isLoanAccount) {
+                return res.status(400).json({
+                    message: "No data found",
+                });
+            }
+            isLoanAccount.creditor_name = data === null || data === void 0 ? void 0 : data.creditor_name;
+            isLoanAccount.website = data === null || data === void 0 ? void 0 : data.website;
+            isLoanAccount.user_name = data === null || data === void 0 ? void 0 : data.user_name;
+            isLoanAccount.password = data === null || data === void 0 ? void 0 : data.password;
+            isLoanAccount.loan_amount = data === null || data === void 0 ? void 0 : data.loan_amount;
+            isLoanAccount.payment_date = data === null || data === void 0 ? void 0 : data.payment_date;
+            isLoanAccount.account_nick_name = data === null || data === void 0 ? void 0 : data.account_nick_name;
+            yield LoanAccountPasswordRepo.save(isLoanAccount);
+            return res.status(200).send({
+                message: " Updated successfully",
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }),
 };

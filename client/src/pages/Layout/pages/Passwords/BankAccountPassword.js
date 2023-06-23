@@ -214,7 +214,7 @@ const BankAccountPassword = () => {
         </Row>
       </Row>
 
-      {!Boolean(allFolders?.length) ? (
+      {!Boolean(allBankForms?.length) ? (
         <>
           <Row height="100vh">
             <div
@@ -282,125 +282,109 @@ const BankAccountPassword = () => {
                   gridGap: "1rem",
                 }}
               >
-                {allBankForms.length > 0 ? (
-                  allBankForms?.map((element) => {
-                    return (
-                      <>
+                {allBankForms?.map((element) => {
+                  return (
+                    <>
+                      <div
+                        style={{ position: "relative", marginTop: "20px" }}
+                        key={element.id}
+                      >
                         <div
-                          style={{ position: "relative", marginTop: "20px" }}
-                          key={element.id}
+                        // onClick={() =>
+                        //     navigate(`${element.navigate}`)
+                        // }
                         >
-                          <div
-                          // onClick={() =>
-                          //     navigate(`${element.navigate}`)
-                          // }
+                          <FolderContainer
+                            width="100%"
+                            height="173px"
+                            flexDirection="column"
+                            justifyContent="flex-start"
+                            alignItems="flex-start"
+                            padding="10px"
+                            borderRadius="7px"
                           >
-                            <FolderContainer
-                              width="100%"
-                              height="173px"
-                              flexDirection="column"
-                              justifyContent="flex-start"
-                              alignItems="flex-start"
-                              padding="10px"
-                              borderRadius="7px"
+                            <div
+                              style={{
+                                width: "100%",
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
                             >
                               <div
                                 style={{
-                                  width: "100%",
+                                  width: "40px",
+                                  height: "40px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "#00A6521A",
                                   display: "flex",
-                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                 }}
                               >
-                                <div
-                                  style={{
-                                    width: "40px",
-                                    height: "40px",
-                                    borderRadius: "50%",
-                                    backgroundColor: "#00A6521A",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <img
-                                    width="20px"
-                                    height="20px"
-                                    src={fileimage}
-                                  />
-                                </div>
+                                <img
+                                  width="20px"
+                                  height="20px"
+                                  src={fileimage}
+                                />
                               </div>
-                              <Title
-                                fontSize="22px"
-                                margin={
-                                  width > 600
-                                    ? "20px 0px 0px 3px"
-                                    : "8px 0px 0px 3px"
-                                }
-                                lineHeight="38px"
-                                fontWeight="600"
-                                fontFamily="TT Commons"
-                                textTransform="capitalize"
-                              >
-                                {element?.account_nick_name}
-                              </Title>
-                              <Paragraph fontSize="14px">
-                                Edited On{" "}
-                                <strong>
-                                  {" "}
-                                  {moment(element?.updatedAt).format(
-                                    "DD MMM YYYY"
-                                  )}{" "}
-                                </strong>
-                              </Paragraph>
-                              <Paragraph
-                                fontSize="14px"
-                                margin="0px 0px 0px 3px"
-                              >
-                                Created On{" "}
-                                <strong>
-                                  {" "}
-                                  {moment(element?.createdAt).format(
-                                    "DD MMM YYYY"
-                                  )}{" "}
-                                </strong>
-                              </Paragraph>
-                            </FolderContainer>
-                          </div>
-                          <OptionsMenu
-                            color="rgba(0, 0, 0, 0.4)"
-                            orientation="horizontal"
-                            options={[
-                              {
-                                text: "Open",
-                                onClick: () => {
-                                  navigate(
-                                    `/password-type-form?form=6&id=${element.id}`
-                                  );
-                                },
-                              },
-                              {
-                                text: "Delete",
-                                onClick: () => deleteAccount(element?.id),
-                              },
-                            ]}
-                            position="absolute"
-                          />
+                            </div>
+                            <Title
+                              fontSize="22px"
+                              margin={
+                                width > 600
+                                  ? "20px 0px 0px 3px"
+                                  : "8px 0px 0px 3px"
+                              }
+                              lineHeight="38px"
+                              fontWeight="600"
+                              fontFamily="TT Commons"
+                              textTransform="capitalize"
+                            >
+                              {element?.account_nick_name}
+                            </Title>
+                            <Paragraph fontSize="14px">
+                              Edited On{" "}
+                              <strong>
+                                {" "}
+                                {moment(element?.updatedAt).format(
+                                  "DD MMM YYYY"
+                                )}{" "}
+                              </strong>
+                            </Paragraph>
+                            <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
+                              Created On{" "}
+                              <strong>
+                                {" "}
+                                {moment(element?.createdAt).format(
+                                  "DD MMM YYYY"
+                                )}{" "}
+                              </strong>
+                            </Paragraph>
+                          </FolderContainer>
                         </div>
-                      </>
-                    );
-                  })
-                ) : (
-                  <Title
-                    fontSize="22px"
-                    margin="20px"
-                    lineHeight="38px"
-                    fontWeight="600"
-                    fontFamily="TT Commons"
-                    textTransform="capitalize"
-                  >
-                    No Records Found
-                  </Title>
-                )}
+                        <OptionsMenu
+                          color="rgba(0, 0, 0, 0.4)"
+                          orientation="horizontal"
+                          options={[
+                            {
+                              text: "Open",
+                              onClick: () => {
+                                navigate(
+                                  `/password-type-form?form=6&id=${element.id}`
+                                );
+                              },
+                            },
+                            {
+                              text: "Delete",
+                              onClick: () => deleteAccount(element?.id),
+                            },
+                          ]}
+                          position="absolute"
+                        />
+                      </div>
+                    </>
+                  );
+                })}
 
                 {/* Folder Box */}
               </Box>

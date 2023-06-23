@@ -19,25 +19,25 @@ class BankAccountPassword {
   @JoinColumn({ name: "userProfileId" })
   userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   bank_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   website: string;
 
-  @Column()
+  @Column({ nullable: true })
   user_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ nullable: true })
   account_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   routing: string;
 
-  @Column()
+  @Column({ nullable: true })
   account_nick_name: string;
 
   @CreateDateColumn()

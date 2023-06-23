@@ -1,9 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import Select from "react-select";
 import { components } from "react-select";
+import { Formik, Form, Field } from "formik";
+import { AuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  getRecipeFormDetails,
+  postRecipeForm,
+  updateRecipeForm,
+} from "../../../networks/passwordTypeForms";
+// import postRecipeForm from "../../../networks/passwordTypeForms";
 
-export default function Recipe() {
+export default function Recipe({ id, isEdit }) {
   // const [selectedOption, setSelectedOption] = useState(null);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -15,6 +24,79 @@ export default function Recipe() {
     { id: 5, name: "liter" },
     { id: 6, name: "pound(s)" },
   ];
+
+  const Container = styled.form`
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: #fff;
+    border-radius: 8px;
+
+    h1 {
+      margin: 0 0 30px 0;
+      text-align: center;
+    }
+
+    fieldset {
+      margin-bottom: 30px;
+      border: none;
+
+      label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="tel"],
+      input[type="textarea"],
+      input[type="date"] {
+        background: #fff;
+        border: 1px solid rgba(41, 45, 50, 0.2);
+        border-radius: 10px;
+        font-size: 16px;
+        height: auto;
+        margin: 0;
+        margin-right: 20px;
+        outline: 0;
+        padding: 15px;
+        width: 100%;
+        background-color: #fff;
+        color: #000;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
+        margin-bottom: 30px;
+      }
+
+      p {
+        font-weight: 300;
+      }
+    }
+
+    .subbutton {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      span {
+        padding: 19px 39px 18px 39px;
+        color: #fff;
+        background-color: #00a652;
+        font-size: 18px;
+        font-style: normal;
+        text-align: center;
+        border-radius: 5px;
+        width: 50%;
+        border: 1px solid #00a652;
+        border-width: 1px 1px 3px;
+        border-radius: 10px;
+        box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
+        margin-bottom: 10px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+  `;
 
   const customStyles = {
     control: (provided, state) => ({
@@ -67,343 +149,437 @@ export default function Recipe() {
       <components.Option {...props}>{props.data.name}</components.Option>
     </div>
   );
-  const formRef = useRef(null);
+  const [ingredient, setIngredient] = useState("Select Type");
+  const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [getMerchantAccount, setMerchantAccount] = useState();
+  const [isData, setIsData] = useState(true);
 
+  useEffect(() => {
+    if (id && isEdit) {
+      getRecipeFormDetails(t, id)
+        .then((res) => {
+          setMerchantAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
+  useEffect(() => {
+    if (id && isEdit && !getMerchantAccount) {
+      setIsData(false);
+    }
+  }, [getMerchantAccount]);
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formData = new FormData(formRef.current);
-    console.log('Form submitted...!', formData);
-    //first display all form data & then
-    formRef.current.reset(); // Clear all input fields
-
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        await updateRecipeForm(t, id, values);
+      } else {
+        await postRecipeForm(t, values);
+      }
+      navigate("/passwords/recipes");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // const handleOptionSelect = (option) => {
-  //     setSelectedOption(option);
-  //     // navigate(`/password-type-form?form=${option.id}`);
-  //     setDropdownOpen(false);
-  //   };
-
   return (
-    <Container ref={formRef} onSubmit={handleFormSubmit}>
+    <Container>
+      <Formik
+        initialValues={{
+          recipe_name: getMerchantAccount?.recipe_name || "",
+          ingredient_one: getMerchantAccount?.ingredient1 || "",
+          ingredient_one_amount:
+            getMerchantAccount?.ingredient_one_amount || "",
+          ingredient_one_amount_type:
+            getMerchantAccount?.ingredient_one_amount_type || "",
+          ingredient_two: getMerchantAccount?.ingredient_two || "",
+          ingredient_two_amount:
+            getMerchantAccount?.ingredient_two_amount || "",
+          ingredient_two_amount_type:
+            getMerchantAccount?.ingredient_two_amount_type || "",
+          ingredient_three: getMerchantAccount?.ingredient_three || "",
+          ingredient_three_amount:
+            getMerchantAccount?.ingredient_three_amount || "",
+          ingredient_three_amount_type:
+            getMerchantAccount?.ingredient_three_amount_type || "",
+          ingredient_four: getMerchantAccount?.ingredient_four || "",
+          ingredient_four_amount:
+            getMerchantAccount?.ingredient_four_amount || "",
+          ingredient_four_amount_type:
+            getMerchantAccount?.ingredient_four_amount_type || "",
+          ingredient_five: getMerchantAccount?.ingredient_five || "",
+          ingredient_five_amount:
+            getMerchantAccount?.ingredient_five_amount || "",
+          ingredient_five_amount_type:
+            getMerchantAccount?.ingredient_five_amount_type || "",
+          ingredient_six: getMerchantAccount?.ingredient_six || "",
+          ingredient_six_amount:
+            getMerchantAccount?.ingredient_six_amount || "",
+          ingredient_six_amount_type:
+            getMerchantAccount?.ingredient_six_amount_type || "",
+          ingredient_seven: getMerchantAccount?.ingredient_seven || "",
+          ingredient_seven_amount:
+            getMerchantAccount?.ingredient_seven_amount || "",
+          ingredient_seven_amount_type:
+            getMerchantAccount?.ingredient_seven_amount_type || "",
+          cooking_description: getMerchantAccount?.cooking_description || "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({ values, handleSubmit, setFieldValue }) => (
+          <Form>
+            <h1>Recipe</h1>
 
-      <h1>Recipe</h1>
+            <fieldset>
+              <label htmlFor="name">Recipe Name:</label>
+              <Field
+                type="text"
+                name="recipe_name"
+                placeholder="Enter Recipe Name"
+              />
 
-      <fieldset>
-        <label for="name">Recipe Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="Enter Recipe Name"
-          required
-        />
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient1">Ingredient 1</label>
+                  <Field
+                    type="text"
+                    id="ingredient1"
+                    name="ingredient1"
+                    placeholder="Enter Ingredient 1"
+                  />
+                </div>
+                <label htmlFor="ingredient_one_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_one_amount"
+                    name="ingredient_one_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_one_amount_type
+                        ? values.ingredient_one_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_one_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_one_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    name="ingredient_one_amount_type"
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 1</label>
-            <input
-              type="text"
-              id="ingredient1"
-              name="ingredient1"
-              placeholder="Enter Ingredient 1"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount1"
-              name="amount1"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient_two">Ingredient 2</label>
+                  <Field
+                    type="text"
+                    id="ingredient_two"
+                    name="ingredient_two"
+                    placeholder="Enter Ingredient 2"
+                  />
+                </div>
+                <label htmlFor="ingredient_two_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_two_amount"
+                    name="ingredient_two_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_two_amount_type
+                        ? values.ingredient_two_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_two_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_two_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 2</label>
-            <input
-              type="text"
-              id="ingredient2"
-              name="ingredient2"
-              placeholder="Enter Ingredient 2"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount2"
-              name="amount2"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="url">Ingredient 3</label>
+                  <Field
+                    type="text"
+                    id="ingredient_three"
+                    name="ingredient_three"
+                    placeholder="Enter Ingredient 3"
+                  />
+                </div>
+                <label htmlFor="ingredient_three_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_three_amount"
+                    name="ingredient_three_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_three_amount_type
+                        ? values.ingredient_three_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_three_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_three_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 3</label>
-            <input
-              type="text"
-              id="ingredient3"
-              name="ingredient3"
-              placeholder="Enter Ingredient 3"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount3"
-              name="amount3"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient_four">Ingredient 4</label>
+                  <Field
+                    type="text"
+                    id="ingredient_four"
+                    name="ingredient_four"
+                    placeholder="Enter Ingredient 4"
+                  />
+                </div>
+                <label htmlFor="ingredient_four_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_four_amount"
+                    name="ingredient_four_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_four_amount_type
+                        ? values.ingredient_four_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_four_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_four_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 4</label>
-            <input
-              type="text"
-              id="ingredient4"
-              name="ingredient4"
-              placeholder="Enter Ingredient 4"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount4"
-              name="amount4"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient_five">Ingredient 5</label>
+                  <Field
+                    type="text"
+                    id="ingredient_five"
+                    name="ingredient_five"
+                    placeholder="Enter Ingredient 5"
+                  />
+                </div>
+                <label htmlFor="ingredient_five_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_five_amount"
+                    name="ingredient_five_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_five_amount_type
+                        ? values.ingredient_five_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_five_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_five_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 5</label>
-            <input
-              type="text"
-              id="ingredient5"
-              name="ingredient5"
-              placeholder="Enter Ingredient 5"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount5"
-              name="amount5"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient_six">Ingredient 6</label>
+                  <Field
+                    type="text"
+                    id="ingredient_six"
+                    name="ingredient_six"
+                    placeholder="Enter Ingredient 6"
+                  />
+                </div>
+                <label htmlFor="ingredient_six_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_six_amount"
+                    name="ingredient_six_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_six_amount_type
+                        ? values.ingredient_six_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_six_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_six_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 6</label>
-            <input
-              type="text"
-              id="ingredient6"
-              name="ingredient6"
-              placeholder="Enter Ingredient 6"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount6"
-              name="amount6"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
+              <div class="ingredient">
+                <div>
+                  <label htmlFor="ingredient_seven">Ingredient 7</label>
+                  <Field
+                    type="text"
+                    id="ingredient_seven"
+                    name="ingredient_seven"
+                    placeholder="Enter Ingredient 7"
+                  />
+                </div>
+                <label htmlFor="ingredient_seven_amount">Amount</label>
+                <div class="flex">
+                  <Field
+                    type="text"
+                    id="ingredient_seven_amount"
+                    name="ingredient_seven_amount"
+                    class="ingamount"
+                    placeholder=""
+                  />
+                  <Select
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_seven_amount_type
+                        ? values.ingredient_seven_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_seven_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_seven_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
+                </div>
+              </div>
 
-        <div class="ingredient">
-          <div>
-            <label for="url">Ingredient 7</label>
-            <input
-              type="text"
-              id="ingredient7"
-              name="ingredient7"
-              placeholder="Enter Ingredient 7"
-            />
-          </div>
-          <label for="url">Amount</label>
-          <div class="flex">
-            <input
-              type="text"
-              id="amount7"
-              name="amount7"
-              class="ingamount"
-              placeholder=""
-            />
-            <Select
-              styles={customStyles}
-              placeholder="Select type"
-              options={PasswordSelectNames}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                Option,
-              }}
-            />
-          </div>
-        </div>
-
-        <label for="">Cooking Direction:</label>
-        <textarea name="cd" id="" cols="30" rows="5"></textarea>
-      </fieldset>
-      <div class="subbutton">
-        <button type="submit">Submit</button>
-      </div>
-
+              <label htmlFor="cooking_description">Cooking Direction:</label>
+              <Field
+                as="textarea"
+                id="cooking_description"
+                name="cooking_description"
+                cols="70"
+                rows="5"
+              ></Field>
+            </fieldset>
+            <div class="subbutton">
+              <span onClick={handleSubmit}>Submit</span>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </Container>
   );
 }
-
-const Container = styled.form`
-  max-width: 500px;
-  margin: 10px auto;
-  padding: 10px 20px;
-  background: #fff;
-  border-radius: 8px;
-
-  h1 {
-    margin: 0 0 30px 0;
-    text-align: center;
-  }
-
-  fieldset {
-    margin-bottom: 30px;
-    border: none;
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="date"] {
-      background: #fff;
-      border: 1px solid rgba(41, 45, 50, 0.2);
-      border-radius: 10px;
-      font-size: 16px;
-      height: auto;
-      margin: 0;
-      margin-right: 20px;
-      outline: 0;
-      padding: 15px;
-      width: 100%;
-      background-color: #fff;
-      color: #000;
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
-      margin-bottom: 30px;
-    }
-
-    p {
-      font-weight: 300;
-    }
-  }
-
-  .subbutton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    button {
-      padding: 19px 39px 18px 39px;
-      color: #fff;
-      background-color: #00a652;
-      font-size: 18px;
-      font-style: normal;
-      text-align: center;
-      border-radius: 5px;
-      width: 50%;
-      border: 1px solid #00a652;
-      border-width: 1px 1px 3px;
-      border-radius: 10px;
-      box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
-      margin-bottom: 10px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-  }
-`;

@@ -76,8 +76,8 @@ const PasswordSelectNames = [
   { id: 1, name: "Loan Account Passwords" },
   { id: 2, name: "Passwords (Non Bank Accounts)" },
   { id: 3, name: "Credit Card Account Passwords" },
-  { id: 4, name: "Misc Accounts Passwords" },
-  { id: 5, name: "Misc Forms" },
+  { id: 4, name: "Recipe Form" },
+  { id: 5, name: "Misc Accounts Passwords" },
   { id: 6, name: "Bank Account Passwords" },
   { id: 7, name: "Merchant Account Passwords" },
 ];

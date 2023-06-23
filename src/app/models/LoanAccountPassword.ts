@@ -33,7 +33,7 @@ class LoanAccountPassword {
   password: string;
 
   @Column()
-  loan_amount: number;
+  loan_amount: string;
 
   @Column()
   payment_date: string;
