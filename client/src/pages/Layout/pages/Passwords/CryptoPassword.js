@@ -180,6 +180,7 @@ const CryptoPassword = () => {
             </Row>
 
 
+
             <Box>
                 <div>
                     <Box width="100%" height="auto">
@@ -318,24 +319,6 @@ const CryptoPassword = () => {
 
 
                         </Box>
-
-
-                    </Box>
-                </div>
-            </Box>
-            {renameModalOpen && (
-
-                <div className="modal">
-                    <input
-                        type="text"
-                        value={newFileName}
-                        onChange={(e) => setNewFileName(e.target.value)}
-                    />
-                    <button onClick={renameFile}>Rename</button>
-                    <button onClick={() => setRenameModalOpen(false)}>Cancel</button>
-                </div>
-
-            )}
 
 
 

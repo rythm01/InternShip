@@ -179,6 +179,7 @@ const MerchantAccountPassword = () => {
             </Row>
 
 
+
             <Box>
                 <div>
                     <Box width="100%" height="auto">
@@ -319,6 +320,7 @@ const MerchantAccountPassword = () => {
                         </Box>
 
 
+
                     </Box>
                 </div>
             </Box>
@@ -335,6 +337,7 @@ const MerchantAccountPassword = () => {
                 </div>
 
             )}
+
 
 
 

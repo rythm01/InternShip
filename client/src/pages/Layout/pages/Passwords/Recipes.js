@@ -178,6 +178,7 @@ const Recipes = () => {
             </Row>
 
 
+
             <Box>
                 <div>
                     <Box width="100%" height="auto">
@@ -318,6 +319,7 @@ const Recipes = () => {
                         </Box>
 
 
+
                     </Box>
                 </div>
             </Box>
@@ -334,6 +336,7 @@ const Recipes = () => {
                 </div>
 
             )}
+
 
 
 
