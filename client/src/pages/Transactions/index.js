@@ -73,7 +73,7 @@ const Transactions = () => {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -81,22 +81,23 @@ const Transactions = () => {
                 Icon: people,
                 text: "Profile",
                 onClick: () => {
-                  navigate("/edit-profile");
+                  navigate("/home/edit-profile");
                 },
               },
               {
                 Icon: SignOut,
                 text: "Logout",
                 onClick: () => {
+                  // window.location.href = "https://sandsvault.io";
                   logout();
-                  window.location.href = "https://sandsvault.io";
+                  navigate("/");
                 },
               },
             ]}
           />
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline size={20} />
@@ -114,7 +115,7 @@ const Transactions = () => {
           height="46px"
           color="#00A652"
           onClick={() => {
-            navigate("/transactions/addPaymentMethod");
+            navigate("/home/transactions/addPaymentMethod");
           }}
         >
           + Add Payment Method
@@ -197,7 +198,7 @@ const Transactions = () => {
           height="46px"
           color="#00A652"
           onClick={() => {
-            navigate("/transactions/payment-history");
+            navigate("/home/transactions/payment-history");
           }}
         >
           View Payment History

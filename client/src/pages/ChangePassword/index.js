@@ -42,7 +42,7 @@ export default function ChangePassword() {
 
   useEffect(() => {
     if (changePasswordSuccess) {
-      navigate("/");
+      navigate("/home");
     }
   }, [changePasswordSuccess, navigate]);
 

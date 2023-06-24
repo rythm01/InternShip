@@ -1,4 +1,5 @@
-import React, { useRef,useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postCreditCardForm from "../../../networks/passwordTypeForms";
@@ -45,7 +46,15 @@ const Container = styled.form`
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
       margin-bottom: 30px;
     }
-
+    .eye {
+      position: relative;
+    }
+    
+    .eye .eye-icon{
+      position : absolute;
+      top : 2vh;
+      right : 1vw;
+    }
     p {
       font-weight: 300;
     }
@@ -78,16 +87,20 @@ const Container = styled.form`
 const CreditcardForm = () => {
   const formRef = useRef(null);
   const { t } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
 
-  const handleSubmit  = (values, { setSubmitting }) => {
+  const handleSubmit = (values, { setSubmitting }) => {
     // event.preventDefault(); // Prevent the default form submission behavior
 
     // const formData = new FormData(formRef.current);
     // console.log('Form submitted...!', formData);
     // //first display all form data & then
     // formRef.current.reset(); // Clear all Field fields
-    
+
     // postCreditCardForm(t, values);
     setSubmitting(false);
     console.log(values);
@@ -132,25 +145,46 @@ const CreditcardForm = () => {
 
             <fieldset>
               <label htmlFor="name">Credit Card Name:</label>
-              <Field type="text" id="name" name="credit_card_name" placeholder="Enter Name"  />
+              <Field type="text" id="name" name="credit_card_name" placeholder="Enter Name" />
 
               <label htmlFor="url">Website/URL</label>
-              <Field type="text" id="url" name="website" placeholder="Enter url/website"  />
+              <Field type="text" id="url" name="website" placeholder="Enter url/website" />
 
               <label htmlFor="username">User Name:</label>
-              <Field type="text" id="username" name="user_name" placeholder="Enter username"  />
+              <Field type="text" id="username" name="user_name" placeholder="Enter username" />
 
               <label htmlFor="password">Password:</label>
-              <Field type="password" id="password" name="password" placeholder="Enter passowrd"  />
+              <div className='eye'>
+                <Field
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter password"
+                />
+                <div className='eye-icon'>
+                  {showPassword ? (
+                    <IoEyeOffOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <IoEyeOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </div>
+              </div>
 
               <label htmlFor="Creditcard">Credit Card:</label>
-              <Field type="text" id="creditcard" name="credit_card" placeholder="Enter Creditcard"  onKeyPress={handleKeyPress} />
+              <Field type="text" id="creditcard" name="credit_card" placeholder="Enter Creditcard" onKeyPress={handleKeyPress} />
 
               <label htmlFor="date">Payment Date:</label>
-              <Field type="date" id="date" name="payment_date" placeholder="enter paymentdate"  />
+              <Field type="date" id="date" name="payment_date" placeholder="enter paymentdate" />
 
               <label htmlFor="nickname">Account Nick Name:</label>
-              <Field type="text" id="nickname" name="account_nick_name" placeholder="Enter account nickname"  />
+              <Field type="text" id="nickname" name="account_nick_name" placeholder="Enter account nickname" />
 
               <label htmlFor="password">Password Recovery:</label>
               <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead htmlFor added security.</p>

@@ -66,12 +66,21 @@ const Row = styled.div`
 const CreditCardAccountPassword = () => {
 
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const [renameModalOpen, setRenameModalOpen] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [newFileName, setNewFileName] = useState('');
-    const [files, setFiles] = useState(Files);
-    const { t } = useContext(AuthContext)
+    const [open, setOpen] = useState(false);
+    const [isRenameModalOpen, toggleRenameModal] = useState(false);
+    const [folderToRename, setFolderToRename] = useState({});
+    const [allFolders, setAllFolders] = useState([])
+
+    const [field, setField] = useState("");
+
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    const [iFrameOpen, setIFrameOpen] = useState(false)
+    const [iFrameFileID, setIFrameFileID] = useState(null)
+
+
+    const { t, logout } = useContext(AuthContext)
 
     const style = {
         position: "absolute",
@@ -141,7 +150,7 @@ const CreditCardAccountPassword = () => {
                                 Icon: people,
                                 text: "My Buddies",
                                 onClick: () => {
-                                    navigate("/my-buddies");
+                                    navigate("/home/my-buddies");
                                 },
                             },
 
@@ -149,21 +158,23 @@ const CreditCardAccountPassword = () => {
                                 Icon: people,
                                 text: "Profile",
                                 onClick: () => {
-                                    navigate("/edit-profile");
+                                    navigate("/home/edit-profile");
                                 },
                             },
                             {
                                 Icon: SignOut,
                                 text: "Logout",
                                 onClick: () => {
-                                    window.location.href = "https://sandsvault.io";
+                                    // window.location.href = "https://sandsvault.io";
+                                    logout();
+                                    navigate("/");
                                 },
                             },
                         ]}
                     />
                     <IconButton
                         onClick={() => {
-                            navigate("/notifications");
+                            navigate("/home/notifications");
                         }}
                     >
                         <IoNotificationsOutline />

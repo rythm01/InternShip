@@ -50,7 +50,7 @@ export default function Landing() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
+  
 
   return (
     <Page height="">
@@ -253,7 +253,7 @@ export default function Landing() {
       <ProductsSection />
       <BottomSection />
 
-      <Footer>©2022 All Rights Reserved by S & S Vault</Footer>
+      <Footer>©{new Date().getFullYear()} All Rights Reserved by S & S Vault</Footer>
     </Page>
   );
 }

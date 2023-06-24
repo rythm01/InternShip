@@ -58,17 +58,71 @@ const Row = styled.div`
   width: ${(props) => props.width};
   margin: ${(props) => props.margin};
   ${(props) => props.link && "cursor:pointer;"}
-`;
+  `;
+  
+  export default function Passwords() {
+      const navigate = useNavigate();
+      const [field, setField] = useState("");
+      const [isLoading, setIsLoading] = useState(false)
+      const { t , logout} = useContext(AuthContext)
+      const [renameModalOpen, setRenameModalOpen] = useState(false);
+      const [selectedFolder, setSelectedFolder] = useState(null);
+      const [newFolderName, setNewFolderName] = useState('');
+      const [passwords, setPasswords] = useState(PasswordsData);
+      const { width } = useWindowSize();
 
-export default function Passwords() {
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const [renameModalOpen, setRenameModalOpen] = useState(false);
-    const [selectedFolder, setSelectedFolder] = useState(null);
-    const [newFolderName, setNewFolderName] = useState('');
-    const [passwords, setPasswords] = useState(PasswordsData);
-    const { t } = useContext(AuthContext);
-    const { width } = useWindowSize();
+
+    useEffect(() => {
+        getAllFolders()
+    }, [t])
+
+    const getAllFolders = async () => {
+        setIsLoading(true)
+        const allFolders = await getFolders(t)
+        const allFoldersWithoutRoot = allFolders.data.data.filter((folder) => folder.name !== "root")
+        setAllFolders(allFoldersWithoutRoot)
+        setIsLoading(false)
+    }
+
+
+
+
+
+    const style = {
+        position: "absolute",
+        transform: "translate(-50%, -50%)",
+        height: "369px",
+        width: "669px",
+        left: "50%",
+        top: "50%",
+        borderRadius: "20px",
+        backgroundColor: "white",
+        outline: "none",
+        boxShadow: 30,
+        p: "45px 15px 25px 15px",
+    };
+
+    const HandleCreateFolder = async () => {
+        // console.log(field)
+
+        const res = await createFolder(t, { name: field })
+        if (!res.data.success) {
+            return toast.error(res.data.message)
+        }
+        setField("")
+        setOpen(false)
+        getAllFolders()
+
+    };
+
+    const deleteFolder = async (id) => {
+        const res = await deleteFolderApi(t, id)
+        if (!res.data.success) {
+            return toast.error(res.data.message)
+        }
+        getAllFolders()
+    }
+
 
 
     const renameFolder = () => {
@@ -126,7 +180,7 @@ export default function Passwords() {
                                 Icon: people,
                                 text: "My Buddies",
                                 onClick: () => {
-                                    navigate("/my-buddies");
+                                    navigate("/home/my-buddies");
                                 },
                             },
 
@@ -134,21 +188,23 @@ export default function Passwords() {
                                 Icon: people,
                                 text: "Profile",
                                 onClick: () => {
-                                    navigate("/edit-profile");
+                                    navigate("/home/edit-profile");
                                 },
                             },
                             {
                                 Icon: SignOut,
                                 text: "Logout",
                                 onClick: () => {
-                                    window.location.href = "https://sandsvault.io";
+                                    // window.location.href = "https://sandsvault.io";
+                                    logout();
+                                    navigate("/");
                                 },
                             },
                         ]}
                     />
                     <IconButton
                         onClick={() => {
-                            navigate("/notifications");
+                            navigate("/home/notifications");
                         }}
                     >
                         <IoNotificationsOutline />

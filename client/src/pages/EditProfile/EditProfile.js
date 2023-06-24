@@ -172,6 +172,7 @@ export default function EditProfile() {
   };
 
   const { width } = useWindowSize();
+  const { logout } = useContext(AuthContext);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -207,7 +208,7 @@ export default function EditProfile() {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -216,14 +217,16 @@ export default function EditProfile() {
                 text: "Logout",
                 onClick: () => {
                   //logout function
-                  window.location.href = "https://sandsvault.io";
+                  // window.location.href = "https://sandsvault.io";
+                  logout();
+                  navigate("/");
                 },
               },
             ]}
           />
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline size={20} />

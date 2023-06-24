@@ -32,15 +32,6 @@ import { useGoogleLogin } from "@react-oauth/google";
 import useWindowSize from "./../../utils/hook/useWindowSize";
 import { AuthContext } from "../../context/AuthContext";
 import { getProfile } from "../../networks/profile";
-import BankForm from "../../components/common/Forms/BankForm";
-import CreditcardForm from "../../components/common/Forms/CreditcardForm";
-import Recipe from "../../components/common/Forms/Recipe";
-import LoanAccountForm from "../../components/common/Forms/LoanAccountForm";
-import MerchantAccountForm from "../../components/common/Forms/MerchantAccountForm";
-import MiscForm from "../../components/common/Forms/MiscForm";
-import { Password } from "@mui/icons-material";
-import PasswordStotageForm from "../../components/common/Forms/PasswordStotageForm";
-import SignUp from "../../components/common/Forms/SignUp";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { Toaster,toast } from "react-hot-toast";
 
@@ -132,18 +123,18 @@ export default function Login() {
     setToken(res.data.token)
 
     const response = await getProfile(res.data.token)
-    if (!response.data.success) return navigate('/create-profile')
+    if (!response.data.success) return navigate('/home/create-profile')
     if (response.data.success) {
       setProfile(response.data.data)
       setLoading(false)
-      return navigate("/")
+      return navigate("/home")
     }
   };
 
 
   useEffect(() => {
     if (t) {
-      navigate("/")
+      navigate("/home")
     }
   }, [t])
 
