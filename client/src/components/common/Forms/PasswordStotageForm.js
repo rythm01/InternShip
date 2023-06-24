@@ -84,11 +84,12 @@ const PasswordStotageForm = () => {
     // const formData = new FormData(formRef.current);
     // console.log('Form submitted...!', formData);
     // //first display all form data & then
-    // formRef.current.reset(); // Clear all Field fields
+  
 
     // postPasswordStotageForm(t, values);
     setSubmitting(false);
     console.log(values);
+    formRef.current.reset(); // Clear all Field fields
   };
   return (
     <Container>
