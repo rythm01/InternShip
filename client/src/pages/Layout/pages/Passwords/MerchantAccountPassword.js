@@ -66,37 +66,12 @@ const Row = styled.div`
 const MerchantAccountPassword = () => {
 
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const [isRenameModalOpen, toggleRenameModal] = useState(false);
-    const [folderToRename, setFolderToRename] = useState({});
-    const [allFolders, setAllFolders] = useState([])
-
-    const [field, setField] = useState("");
-
-
-    const [isLoading, setIsLoading] = useState(false)
-
-    const [iFrameOpen, setIFrameOpen] = useState(false)
-    const [iFrameFileID, setIFrameFileID] = useState(null)
-
-
     const { t, logout } = useContext(AuthContext)
-
-
-    useEffect(() => {
-        getAllFolders()
-    }, [t])
-
-    const getAllFolders = async () => {
-        setIsLoading(true)
-        const allFolders = await getFolders(t)
-        const allFoldersWithoutRoot = allFolders.data.data.filter((folder) => folder.name !== "root")
-        setAllFolders(allFoldersWithoutRoot)
-        setIsLoading(false)
-    }
-
-
-
+    const [isLoading, setIsLoading] = useState(false);
+    const [renameModalOpen, setRenameModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [newFileName, setNewFileName] = useState('');
+    const [files, setFiles] = useState(Files);
 
 
     const style = {
@@ -113,35 +88,35 @@ const MerchantAccountPassword = () => {
         p: "45px 15px 25px 15px",
     };
 
-    const renameFolder = (folder) => {
-        setFolderToRename(folder);
-        toggleRenameModal(true);
-    };
-
-    const HandleCreateFolder = async () => {
-        // console.log(field)
-
-        const res = await createFolder(t, { name: field });
-        if (!res.data.success) {
-            return toast.error(res.data.message);
-        }
-        setField("");
-        setOpen(false);
-        getAllFolders();
-    };
-
-    const deleteFolder = async (id) => {
-        const res = await deleteFolderApi(t, id)
-        if (!res.data.success) {
-            return toast.error(res.data.message)
-        }
-        getAllFolders()
-    }
-
-
-
+  
 
     const { width } = useWindowSize();
+    const renameFile = () => {
+        console.log("Rename");
+      
+        const updatedFiles = files.map((file) => {
+          if (file.id === selectedFile.id) {
+            return {
+              ...file,
+              title: newFileName,
+            };
+          }
+          return file;
+        });
+        setFiles(updatedFiles);
+      
+        setRenameModalOpen(false); // Close the modal
+      };
+      
+
+    const handleDeleteFile = (folderId) => {
+        console.log("Handle Delete Folder");
+        // Implement the logic to delete the folder based on the folderId
+        // You can modify the Passwords array or update the state, depending on your implementation
+        // For example, if using state:
+        const updatedFolders = files.filter(folder => folder.id !== folderId);
+        setFiles(updatedFolders);
+    };
 
 
     if (isLoading) {
@@ -203,180 +178,167 @@ const MerchantAccountPassword = () => {
                 </Row>
             </Row>
 
-            {!Boolean(allFolders?.length) ? (
-                <>
-                    <Row height="100vh">
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                marginTop: width <= 600 && "-40px",
-                            }}
-                        >
-                            <div style={{ width: "160px", height: "160px" }}>
-                                <img
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                        objectPosition: "center",
-                                    }}
-                                    src={File}
-                                />
-                            </div>
-                            <div className="text-center">
-                                <h1
-                                    style={{
-                                        fontFamily: "TT Commons",
-                                        fontWeight: 400,
-                                        fontSize: "24px",
-                                        marginTop: "30px",
-                                    }}
-                                >
-                                    Uploaded file will be displayed here
-                                </h1>
-                            </div>
-                        </div>
-                    </Row>
-                </>
-            ) : (
-                <Box>
-                    <div>
-                        <Box width="100%" height="auto">
-                            <Row justifyContent="flex-end">
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        marginLeft: "auto",
-                                    }}
-                                >
-
-                                </div>
-                            </Row>
 
 
-                            <Box
+            <Box>
+                <div>
+                    <Box width="100%" height="auto">
+                        <Row justifyContent="flex-end">
+                            <div
                                 style={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        width > 1200
-                                            ? "repeat(4,1fr)"
-                                            : width > 950
-                                                ? "repeat(3,1fr)"
-                                                : width > 600
-                                                    ? "repeat(2,1fr)"
-                                                    : "repeat(2,1fr)",
-                                    gridGap: "1rem",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    marginLeft: "auto",
                                 }}
                             >
-                                {
-                                    Files.map((element) => {
-                                        return <>
-                                            <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
-                                                <div
-                                                // onClick={() =>
-                                                //     navigate(`${element.navigate}`)
-                                                // }
-                                                >
-                                                    <FolderContainer
 
-                                                        width="100%"
-                                                        height="173px"
-                                                        flexDirection="column"
-                                                        justifyContent="flex-start"
-                                                        alignItems="flex-start"
-                                                        padding="10px"
-                                                        borderRadius="7px"
+                            </div>
+                        </Row>
+
+
+                        <Box
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                    width > 1200
+                                        ? "repeat(4,1fr)"
+                                        : width > 950
+                                            ? "repeat(3,1fr)"
+                                            : width > 600
+                                                ? "repeat(2,1fr)"
+                                                : "repeat(2,1fr)",
+                                gridGap: "1rem",
+                            }}
+                        >
+                            {
+                                files.map((element) => {
+                                    return <>
+                                        <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
+                                            <div
+                                            // onClick={() =>
+                                            //     navigate(`${element.navigate}`)
+                                            // }
+                                            >
+                                                <FolderContainer
+
+                                                    width="100%"
+                                                    height="173px"
+                                                    flexDirection="column"
+                                                    justifyContent="flex-start"
+                                                    alignItems="flex-start"
+                                                    padding="10px"
+                                                    borderRadius="7px"
+                                                >
+                                                    <div
+                                                        style={{
+                                                            width: "100%",
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                        }}
                                                     >
                                                         <div
                                                             style={{
-                                                                width: "100%",
+                                                                width: "40px",
+                                                                height: "40px",
+                                                                borderRadius: "50%",
+                                                                backgroundColor: "#00A6521A",
                                                                 display: "flex",
-                                                                justifyContent: "space-between",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
                                                             }}
                                                         >
-                                                            <div
-                                                                style={{
-                                                                    width: "40px",
-                                                                    height: "40px",
-                                                                    borderRadius: "50%",
-                                                                    backgroundColor: "#00A6521A",
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                }}
-                                                            >
-                                                                <img width="20px" height="20px" src={fileimage} />
-                                                            </div>
+                                                            <img width="20px" height="20px" src={fileimage} />
                                                         </div>
-                                                        <Title
-                                                            fontSize="22px"
-                                                            margin={
-                                                                width > 600
-                                                                    ? "20px 0px 0px 3px"
-                                                                    : "8px 0px 0px 3px"
-                                                            }
-                                                            lineHeight="38px"
-                                                            fontWeight="600"
-                                                            fontFamily="TT Commons"
-                                                        >
-                                                            {element.filename}
-                                                        </Title>
-                                                        <Paragraph fontSize="14px">
-                                                            Edited On <strong> {element.editedon} </strong>
-                                                        </Paragraph>
-                                                        <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
-                                                            Created On <strong> {element.createdon} </strong>
+                                                    </div>
+                                                    <Title
+                                                        fontSize="22px"
+                                                        margin={
+                                                            width > 600
+                                                                ? "20px 0px 0px 3px"
+                                                                : "8px 0px 0px 3px"
+                                                        }
+                                                        lineHeight="38px"
+                                                        fontWeight="600"
+                                                        fontFamily="TT Commons"
+                                                    >
+                                                        {element.title}
+                                                    </Title>
+                                                    <Paragraph fontSize="14px">
+                                                        Edited On <strong> {element.editedon} </strong>
+                                                    </Paragraph>
+                                                    <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
+                                                        Created On <strong> {element.createdon} </strong>
 
-                                                        </Paragraph>
+                                                    </Paragraph>
 
-                                                    </FolderContainer>
-                                                </div>
-                                                <OptionsMenu
-                                                    color="rgba(0, 0, 0, 0.4)"
-                                                    orientation="horizontal"
-                                                    options={[
-                                                        {
-                                                            text: "Open",
-                                                            onClick: () => {
-                                                                //   navigate(`/documents/folder/${item.id}`);
-                                                            },
-                                                        },
-                                                        {
-                                                            text: "Rename",
-
-                                                        },
-                                                        {
-                                                            text: "Delete",
-
-                                                        },
-                                                    ]}
-                                                    position="absolute"
-                                                />
+                                                </FolderContainer>
                                             </div>
+                                            <OptionsMenu
+                                                color="rgba(0, 0, 0, 0.4)"
+                                                orientation="horizontal"
+                                                options={[
+                                                    {
+                                                        text: "Open",
+                                                        onClick: () => {
+                                                            //   navigate(`/documents/folder/${item.id}`);
+                                                        },
+                                                    },
+                                                    {
+                                                        text: "Rename",
+                                                        onClick: () => {
+                                                            console.log(element);
+                                                            setNewFileName(element.title);
+                                                            setSelectedFile(element);
+                                                            setRenameModalOpen(true);
 
-                                        </>
-                                    })
-                                }
+                                                        },
 
-                                {/* Folder Box */}
+                                                    },
+                                                    {
+                                                        text: "Delete",
+                                                        onClick: () => {
+                                                            console.log(element.id);
+                                                            handleDeleteFile(element.id);
+                                                        }
+
+                                                    },
+                                                ]}
+                                                position="absolute"
+                                            />
+                                        </div>
+
+                                    </>
+                                })
+                            }
+
+                            {/* Folder Box */}
 
 
 
-
-
-                            </Box>
 
 
                         </Box>
-                    </div>
-                </Box>
+
+
+
+                    </Box>
+                </div>
+            </Box>
+            {renameModalOpen && (
+
+                <div className="modal">
+                    <input
+                        type="text"
+                        value={newFileName}
+                        onChange={(e) => setNewFileName(e.target.value)}
+                    />
+                    <button onClick={renameFile}>Rename</button>
+                    <button onClick={() => setRenameModalOpen(false)}>Cancel</button>
+                </div>
+
             )}
+
+
 
 
         </>
