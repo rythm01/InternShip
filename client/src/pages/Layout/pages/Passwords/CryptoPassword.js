@@ -73,7 +73,6 @@ const CryptoPassword = () => {
     const [files, setFiles] = useState(Files);
     const { t } = useContext(AuthContext)
 
-
     const style = {
         position: "absolute",
         transform: "translate(-50%, -50%)",
@@ -87,13 +86,8 @@ const CryptoPassword = () => {
         boxShadow: 30,
         p: "45px 15px 25px 15px",
     };
-
-   
-
-
-
-
     const { width } = useWindowSize();
+
     const renameFile = () => {
         console.log("Rename");
       
@@ -120,8 +114,6 @@ const CryptoPassword = () => {
         const updatedFolders = files.filter(folder => folder.id !== folderId);
         setFiles(updatedFolders);
     };
-
-
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -180,7 +172,6 @@ const CryptoPassword = () => {
             </Row>
 
 
-
             <Box>
                 <div>
                     <Box width="100%" height="auto">
@@ -216,9 +207,7 @@ const CryptoPassword = () => {
                                     return <>
                                         <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
                                             <div
-                                            // onClick={() =>
-                                            //     navigate(`${element.navigate}`)
-                                            // }
+
                                             >
                                                 <FolderContainer
 
@@ -322,8 +311,26 @@ const CryptoPassword = () => {
 
 
 
+                    </Box>
+                </div>
+            </Box>
+            {renameModalOpen && (
+
+                <div className="modal">
+                    <input
+                        type="text"
+                        value={newFileName}
+                        onChange={(e) => setNewFileName(e.target.value)}
+                    />
+                    <button onClick={renameFile}>Rename</button>
+                    <button onClick={() => setRenameModalOpen(false)}>Cancel</button>
+                </div>
+
+            )}
+
+
         </>
     )
 }
 
-export default CryptoPassword;
+export default CryptoPassword
