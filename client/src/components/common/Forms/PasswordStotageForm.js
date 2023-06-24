@@ -3,12 +3,6 @@ import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postPasswordStotageForm from "../../../networks/passwordTypeForms";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import {
-  getPasswordStorageDetails,
-  postPasswordStorage,
-  updatePasswordStorage,
-} from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -98,24 +92,16 @@ const PasswordStotageForm = ({ id, isEdit }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (id && isEdit && !getMerchantAccount) {
-      setIsData(false);
-    }
-  }, [getMerchantAccount]);
+  const handleSubmit = (values, { setSubmitting }) => {
+    // event.preventDefault(); // Prevent the default form submission behavior
+    // const formData = new FormData(formRef.current);
+    // console.log('Form submitted...!', formData);
+    // //first display all form data & then
+    // formRef.current.reset(); // Clear all Field fields
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    try {
-      if (id && isEdit) {
-        await updatePasswordStorage(t, id, values);
-      } else {
-        await postPasswordStorage(t, values);
-      }
-      navigate("/passwords/nonbankerpassword");
-      setSubmitting(false);
-    } catch (error) {
-      console.log(error);
-    }
+    // postPasswordStotageForm(t, values);
+    setSubmitting(false);
+    console.log(values);
   };
 
   return (
