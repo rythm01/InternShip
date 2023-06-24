@@ -15,7 +15,7 @@ import styled from "styled-components";
 import { AuthContext } from "../../context/AuthContext";
 import { getNotificationApi } from "../../networks/notifications";
 import { createBuddyApi } from "../../networks/buddies";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 const Row = styled.div`
   display: flex;
@@ -32,45 +32,35 @@ const Row = styled.div`
 const Notifications = () => {
   const navigate = useNavigate();
 
+  const { profile, logout, t } = useContext(AuthContext);
 
-  const { profile, logout, t } = useContext(AuthContext)
-
-  const [data, setData] = useState([])
-
-
-
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-
-    getNotifications()
-  }, [])
-
+    getNotifications();
+  }, []);
 
   const getNotifications = async () => {
     try {
-
-      const res = await getNotificationApi(t)
-      if (!res.data.success) return toast.error(res.data.message)
-      setData(res.data.data)
+      const res = await getNotificationApi(t);
+      if (!res.data.success) return toast.error(res.data.message);
+      setData(res.data.data);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
-
+  };
 
   const accept = async (data) => {
     try {
-      const res = await createBuddyApi(t, data.inviterId)
-      if (!res.data.success) return toast.error(res.data.message)
-      getNotifications()
+      const res = await createBuddyApi(t, data.inviterId);
+      if (!res.data.success) return toast.error(res.data.message);
+      getNotifications();
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
-
+  };
 
   const renderOneNotification = (item) => {
-
     return (
       <React.Fragment key={item.id}>
         <Grid
@@ -84,11 +74,7 @@ const Notifications = () => {
             <Logo width="41px" height="44px" />
           </Grid>
           <Grid item lg={2.3}>
-            <Paragraph
-              textAlign="justify"
-              color="black"
-              fontSize="20px"
-            >
+            <Paragraph textAlign="justify" color="black" fontSize="20px">
               {JSON.parse(item.data).inviterEmail}
             </Paragraph>
           </Grid>
@@ -100,9 +86,19 @@ const Notifications = () => {
               fontSize="20px"
             >
               {item.message}
-              {
-                item.type == "buddy" ? <span onClick={() => accept(JSON.parse(item.data))} style={{ cursor: 'pointer', marginLeft: 25, textDecoration: 'none', color: "green" }}>Accept Invitation</span> : null
-              }
+              {item.type == "buddy" ? (
+                <span
+                  onClick={() => accept(JSON.parse(item.data))}
+                  style={{
+                    cursor: "pointer",
+                    marginLeft: 25,
+                    textDecoration: "none",
+                    color: "green",
+                  }}
+                >
+                  Accept Invitation
+                </span>
+              ) : null}
             </Paragraph>
           </Grid>
           <Grid item lg={0.5}>
@@ -125,12 +121,12 @@ const Notifications = () => {
           }}
         />
       </React.Fragment>
-    )
-  }
+    );
+  };
 
   return (
     <>
-     <Toaster />
+      <Toaster />
       <Row
         width="100%"
         height="73px"

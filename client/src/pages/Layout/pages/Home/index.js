@@ -56,7 +56,7 @@ import {
   deleteFileData,
 } from "../../../../networks/files";
 import { getNotificationApi } from "../../../../networks/notifications";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 const style2 = {
   position: "absolute",
@@ -286,8 +286,8 @@ export default function Home() {
     const res = await getfiles(t);
     setLoading(false);
     if (!res.data.success) return toast.error(res.data.message);
-    const filesData = res.data.data;
-    setFilesData(filesData);
+    const filesdata = res?.data?.data;
+    setFilesData([...filesdata, ...res?.data?.allowedFile]);
     const pdf = filesData?.filter(
       (file) => file.ext === "pdf" || file.ext === "PDF"
     );
@@ -411,7 +411,7 @@ export default function Home() {
   };
   return (
     <>
-     <Toaster />
+      <Toaster />
       <Row
         width="100%"
         height="100%"

@@ -11,23 +11,24 @@ import {
 import { UserProfile } from "./UserProfile";
 import File from "./File";
 import Buddy from "./Buddies";
+import { UserAuth } from "./UserAuth";
 
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
-  @JoinColumn({ name: "userProfileId" })
-  userProfile: UserProfile;
+  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id)
+  @JoinColumn({ name: "userAuth" })
+  userAuth: UserAuth;
 
   @ManyToOne(() => File, (file) => file.id)
   @JoinColumn({ name: "fileId" })
   file: File;
 
-  @ManyToOne(() => Buddy, (buddy) => buddy.id)
+  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id)
   @JoinColumn({ name: "buddyId" })
-  buddy: Buddy;
+  buddy: UserAuth;
 
   @Column({ default: false })
   canRead: boolean;
