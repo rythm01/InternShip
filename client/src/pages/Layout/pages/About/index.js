@@ -97,7 +97,7 @@ export default function About() {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -105,7 +105,7 @@ export default function About() {
                 Icon: people,
                 text: "Profile",
                 onClick: () => {
-                  navigate("/edit-profile");
+                  navigate("/home/edit-profile");
                 },
               },
               {
@@ -113,7 +113,8 @@ export default function About() {
                 text: "Logout",
                 onClick: () => {
                   logout()
-                  window.location.href = "https://sandsvault.io";
+                  // window.location.href = "https://sandsvault.io";
+                  navigate("/");
                 },
               },
             ]}
@@ -121,7 +122,7 @@ export default function About() {
 
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline />

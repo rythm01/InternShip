@@ -41,7 +41,7 @@ export default function BackTransactions() {
   const navigate = useNavigate();
 
   return (
-    <BackContainer onClick={() => navigate("/passwords")}>
+    <BackContainer onClick={() => navigate("/home/passwords")}>
       {/* <img height={25} src="https://icons.veryicon.com/png/o/miscellaneous/skent-icon/home-225.png" /> */}
       <img height={25} src={back} />
     </BackContainer>

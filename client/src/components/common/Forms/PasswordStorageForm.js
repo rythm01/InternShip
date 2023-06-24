@@ -1,4 +1,5 @@
-import React, { useRef,useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postPasswordStotageForm from "../../../networks/passwordTypeForms";
@@ -45,12 +46,20 @@ const Container = styled.form`
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
       margin-bottom: 30px;
     }
-
+    .eye {
+      position: relative;
+    }
+    
+    .eye .eye-icon{
+      position : absolute;
+      top : 2vh;
+      right : 1vw;
+    }
     p {
       font-weight: 300;
     }
   }
-
+  
   .subbutton {
     display: flex;
     justify-content: center;
@@ -75,9 +84,14 @@ const Container = styled.form`
     }
   }
 `;
-const PasswordStotageForm = () => {
+const PasswordStorageForm = () => {
   const formRef = useRef(null);
   const { t } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
 
   const handleSubmit = (values, { setSubmitting }) => {
     // event.preventDefault(); // Prevent the default form submission behavior
@@ -116,16 +130,36 @@ const PasswordStotageForm = () => {
 
             <fieldset>
               <label htmlFor="url">Website/URL</label>
-              <Field type="text" name="website" placeholder="Enter url/website"  />
+              <Field type="text" name="website" placeholder="Enter url/website" />
 
               <label htmlFor="username">User Name:</label>
-              <Field type="text" name="user_name" placeholder="Enter username"  />
+              <Field type="text" name="user_name" placeholder="Enter username" />
 
               <label htmlFor="password">Password:</label>
-              <Field type="password" name="password" placeholder="Name"  />
-
+              <div className='eye'>
+                <Field
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter password"
+                />
+                <div className='eye-icon'>
+                  {showPassword ? (
+                    <IoEyeOffOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <IoEyeOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </div>
+              </div>
               <label htmlFor="nickname">Account Nick Name:</label>
-              <Field type="text" name="account_nick_name" placeholder="Enter account nickname"  />
+              <Field type="text" name="account_nick_name" placeholder="Enter account nickname" />
 
               <label htmlFor="password">Password Recovery:</label>
               <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead htmlFor added security.</p>
@@ -141,4 +175,4 @@ const PasswordStotageForm = () => {
   )
 }
 
-export default PasswordStotageForm
+export default PasswordStorageForm

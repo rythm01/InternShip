@@ -49,6 +49,15 @@ const stripePromise = loadStripe(`${process.env.STRIPE_PUBLISHABLE_TEST_KEY}`);
 
 const routes = [
   {
+    path: "/",
+    exact: true,
+    element: <Landing />
+  },
+  {
+    path: "/welcome",
+    element: <Welcome />
+  },
+  {
     path: "/login",
     element: <Login />,
   },
@@ -57,7 +66,7 @@ const routes = [
     element: <Signup />,
   },
   {
-    path: "/",
+    path: "/home",
     element: <Layout />,
     routes: [
       {
@@ -180,13 +189,13 @@ const routes = [
       //   element: <Subscriptions />
       // },
       {
-        path: "edit-profile",
-        element: <EditProfile />,
+        path: "create-profile",
+        element: <CreateProfile />,
         isProtected: true,
       },
       {
-        path: "/create-profile",
-        element: <CreateProfile />,
+        path: "edit-profile",
+        element: <EditProfile />,
         isProtected: true,
       },
     ],
@@ -219,7 +228,14 @@ const routes = [
     path: "/change-password",
     element: <ChangePassword />,
   },
-
+  {
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />
+  },
+  {
+    path: "/terms-&-conditions",
+    element: <TermsConditions />
+  },
   {
     path: "/subscriptions",
     routes: [
@@ -236,6 +252,26 @@ const routes = [
         ),
       },
     ],
+  },
+  {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/faq",
+    element: <FAQ />
+  },
+  {
+    path: "/contact-us",
+    element: <ContactUs />
+  },
+  {
+    path: "/how-it-works",
+    element: <HowItWorks />
+  },
+  {
+    path: "/products",
+    element: <Products />
   },
 ];
 

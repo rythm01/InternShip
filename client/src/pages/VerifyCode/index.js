@@ -76,11 +76,11 @@ export default function VerifyCode({ twofactor, imageSrc, title }) {
     const response = await getProfile(res.data.token)
     if (!response.data.success) {
       setIsLoading(false)
-      return navigate('/create-profile')
+      return navigate('/home/create-profile')
     }
     if (response.data.success) {
       setIsLoading(false)
-      return navigate("/")
+      return navigate("/home")
     }
   };
 

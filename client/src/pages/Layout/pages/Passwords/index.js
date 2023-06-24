@@ -78,7 +78,7 @@ export default function Passwords() {
     const [iFrameFileID, setIFrameFileID] = useState(null)
 
 
-    const { t } = useContext(AuthContext)
+    const { t , logout} = useContext(AuthContext)
 
 
     useEffect(() => {
@@ -147,11 +147,11 @@ export default function Passwords() {
 
 
     return (
-        <> 
-        <Toaster />
+        <>
+            <Toaster />
             <Row
                 width="100%"
-                height="73px"r
+                height="73px" r
                 padding="24px 0"
                 alignItems="center"
                 justifyContent="space-between"
@@ -168,7 +168,7 @@ export default function Passwords() {
                                 Icon: people,
                                 text: "My Buddies",
                                 onClick: () => {
-                                    navigate("/my-buddies");
+                                    navigate("/home/my-buddies");
                                 },
                             },
 
@@ -176,21 +176,23 @@ export default function Passwords() {
                                 Icon: people,
                                 text: "Profile",
                                 onClick: () => {
-                                    navigate("/edit-profile");
+                                    navigate("/home/edit-profile");
                                 },
                             },
                             {
                                 Icon: SignOut,
                                 text: "Logout",
                                 onClick: () => {
-                                    window.location.href = "https://sandsvault.io";
+                                    // window.location.href = "https://sandsvault.io";
+                                    logout();
+                                    navigate("/");
                                 },
                             },
                         ]}
                     />
                     <IconButton
                         onClick={() => {
-                            navigate("/notifications");
+                            navigate("/home/notifications");
                         }}
                     >
                         <IoNotificationsOutline />
@@ -274,9 +276,9 @@ export default function Passwords() {
                                         return <>
                                             <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
                                                 <div
-                                                onClick={() =>
-                                                  navigate(`${element.navigate}`)
-                                                }
+                                                    onClick={() =>
+                                                        navigate(`${element.navigate}`)
+                                                    }
                                                 >
                                                     <FolderContainer
 
@@ -320,9 +322,9 @@ export default function Passwords() {
                                                             fontWeight="600"
                                                             fontFamily="TT Commons"
                                                         >
-                                                           {element.title}
+                                                            {element.title}
                                                         </Title>
-                                                       
+
                                                     </FolderContainer>
                                                 </div>
                                                 <OptionsMenu
@@ -354,7 +356,7 @@ export default function Passwords() {
 
                                 {/* Folder Box */}
 
-                               
+
 
 
 

@@ -241,7 +241,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
-      return navigate("/create-profile");
+      return navigate("/home/create-profile");
     getFolderData();
     getfileData();
     getNotification();
@@ -264,7 +264,7 @@ export default function Home() {
 
   const handleOptionSelect = (option) => {
     // setSelectedOption(option);
-    navigate(`/password-type-form?form=${option.id}`);
+    navigate(`/home/password-type-form?form=${option.id}`);
     setDropdownOpen(false);
   };
 
@@ -361,7 +361,7 @@ export default function Home() {
           message={"You have reached your storage limit."}
           buttonText={"Sounds good"}
           onSubmit={() => {
-            navigate("/");
+            navigate("/home");
           }}
         />
       );
@@ -422,7 +422,7 @@ export default function Home() {
       >
         <div
           onClick={() => {
-            navigate("/edit-profile");
+            navigate("/home/edit-profile");
           }}
           className="welcome_flex"
         >
@@ -439,7 +439,7 @@ export default function Home() {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -447,7 +447,7 @@ export default function Home() {
                 Icon: people,
                 text: "Profile",
                 onClick: () => {
-                  navigate("/edit-profile");
+                  navigate("/home/edit-profile");
                 },
               },
               {
@@ -456,14 +456,15 @@ export default function Home() {
                 onClick: () => {
                   //logout functionality should be here
                   logout();
-                  window.location.href = "https://sandsvault.io";
+                  // window.location.href = "https://sandsvault.io";
+                  navigate("/");
                 },
               },
             ]}
           />
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline size={20} />
@@ -509,7 +510,7 @@ export default function Home() {
               width="60%"
               height="349px"
               className="width-100-2"
-              onViewAll={() => navigate("/documents")}
+              onViewAll={() => navigate("/home/documents")}
             >
               <Box
                 width="100%"
@@ -691,7 +692,7 @@ export default function Home() {
                                   {
                                     text: "Open",
                                     onClick: () => {
-                                      navigate("/documents/file/" + item.id);
+                                      navigate(`documents/folder/${item.id}`);
                                     },
                                   },
 

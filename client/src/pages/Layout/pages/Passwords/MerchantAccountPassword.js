@@ -80,7 +80,7 @@ const MerchantAccountPassword = () => {
     const [iFrameFileID, setIFrameFileID] = useState(null)
 
 
-    const { t } = useContext(AuthContext)
+    const { t, logout } = useContext(AuthContext)
 
 
     useEffect(() => {
@@ -158,7 +158,7 @@ const MerchantAccountPassword = () => {
                 alignItems="center"
                 justifyContent="space-between"
             >
-            <Toaster />
+                <Toaster />
                 <BackTransactions />
                 <Title margin={width > 600 ? "8px 0px 0px 80px" : "8px 0px 0px 60px"}>
 
@@ -171,7 +171,7 @@ const MerchantAccountPassword = () => {
                                 Icon: people,
                                 text: "My Buddies",
                                 onClick: () => {
-                                    navigate("/my-buddies");
+                                    navigate("/home/my-buddies");
                                 },
                             },
 
@@ -179,21 +179,23 @@ const MerchantAccountPassword = () => {
                                 Icon: people,
                                 text: "Profile",
                                 onClick: () => {
-                                    navigate("/edit-profile");
+                                    navigate("/home/edit-profile");
                                 },
                             },
                             {
                                 Icon: SignOut,
                                 text: "Logout",
                                 onClick: () => {
-                                    window.location.href = "https://sandsvault.io";
+                                    // window.location.href = "https://sandsvault.io";
+                                    logout();
+                                    navigate("/");
                                 },
                             },
                         ]}
                     />
                     <IconButton
                         onClick={() => {
-                            navigate("/notifications");
+                            navigate("/home/notifications");
                         }}
                     >
                         <IoNotificationsOutline />

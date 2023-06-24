@@ -88,7 +88,7 @@ export default function Shared() {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -96,22 +96,23 @@ export default function Shared() {
                 Icon: people,
                 text: "Profile",
                 onClick: () => {
-                  navigate("/edit-profile");
+                  navigate("/home/edit-profile");
                 },
               },
               {
                 Icon: SignOut,
                 text: "Logout",
                 onClick: () => {
-                  logout()
-                  window.location.href = "https://sandsvault.io";
+                  // window.location.href = "https://sandsvault.io";
+                  logout();
+                  navigate("/");
                 },
               },
             ]}
           />
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline />

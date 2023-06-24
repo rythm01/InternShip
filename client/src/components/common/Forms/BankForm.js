@@ -1,7 +1,8 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import postBankAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
@@ -45,7 +46,15 @@ const Container = styled.form`
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
       margin-bottom: 30px;
     }
-
+    .eye {
+      position: relative;
+    }
+    
+    .eye .eye-icon{
+      position : absolute;
+      top : 2vh;
+      right : 1vw;
+    }
     p {
       font-weight: 300;
     }
@@ -78,6 +87,12 @@ const Container = styled.form`
 
 const BankForm = () => {
   const { t } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
+
   const formRef = useRef(null);
   const handleSubmit = (values, { setSubmitting }) => {
     postBankAccountForm(t, values);
@@ -129,12 +144,29 @@ const BankForm = () => {
                 placeholder="Enter username"
               />
 
-              <label>Password:</label>
-              <Field
-                type="password"
-                name="password"
-                placeholder="Enter password"
-              />
+              <label htmlFor="password">Password:</label>
+              <div className='eye'>
+                <Field
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter password"
+                />
+                <div className='eye-icon'>
+                  {showPassword ? (
+                    <IoEyeOffOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <IoEyeOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </div>
+              </div>
 
               <label>Account:</label>
               <Field

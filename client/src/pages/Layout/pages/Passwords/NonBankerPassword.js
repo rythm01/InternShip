@@ -80,7 +80,7 @@ const NonBankerPassword = () => {
     const [iFrameFileID, setIFrameFileID] = useState(null)
 
 
-    const { t } = useContext(AuthContext)
+    const { t, logout } = useContext(AuthContext)
 
 
     useEffect(() => {
@@ -151,7 +151,7 @@ const NonBankerPassword = () => {
 
     return (
         <>
-        <Toaster />
+            <Toaster />
             <Row
                 width="100%"
                 height="73px"
@@ -171,7 +171,7 @@ const NonBankerPassword = () => {
                                 Icon: people,
                                 text: "My Buddies",
                                 onClick: () => {
-                                    navigate("/my-buddies");
+                                    navigate("/home/my-buddies");
                                 },
                             },
 
@@ -179,21 +179,23 @@ const NonBankerPassword = () => {
                                 Icon: people,
                                 text: "Profile",
                                 onClick: () => {
-                                    navigate("/edit-profile");
+                                    navigate("/home/edit-profile");
                                 },
                             },
                             {
                                 Icon: SignOut,
                                 text: "Logout",
                                 onClick: () => {
-                                    window.location.href = "https://sandsvault.io";
+                                    // window.location.href = "https://sandsvault.io";
+                                    logout();
+                                    navigate("/");
                                 },
                             },
                         ]}
                     />
                     <IconButton
                         onClick={() => {
-                            navigate("/notifications");
+                            navigate("/home/notifications");
                         }}
                     >
                         <IoNotificationsOutline />

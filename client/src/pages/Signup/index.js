@@ -156,11 +156,11 @@ export default function Signup() {
 
     setToken(res.data.token);
     const response = await getProfile(res.data.token)
-    if (!response.data.success) return navigate('/create-profile')
+    if (!response.data.success) return navigate('/home/create-profile')
     if (response.data.success) {
       setProfile(response.data.data)
       setLoading(false)
-      return navigate("/")
+      return navigate("/home")
     }
   };
 
@@ -173,7 +173,7 @@ export default function Signup() {
 
   useEffect(() => {
     if (t) {
-      navigate("/");
+      navigate("/home");
     }
   }, [t]);
 

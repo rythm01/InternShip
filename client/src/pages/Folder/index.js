@@ -173,18 +173,19 @@ export default function Folder() {
         {/* <Row>
           <OptionMenuSettings
             options={[
-              { Icon: people, text: "My Buddies", onClick: () => { navigate('/my-buddies') } },
-              { Icon: Group86, text: "My transactions", onClick: () => { navigate('/transactions') } },
-              { Icon: NotePencil, text: "Send Feedback", onClick: () => { navigate('/send/feedback')} },
+              { Icon: people, text: "My Buddies", onClick: () => { navigate('/home/my-buddies') } },
+              { Icon: Group86, text: "My transactions", onClick: () => { navigate('/home/transactions') } },
+              { Icon: NotePencil, text: "Send Feedback", onClick: () => { navigate('/home/send/feedback')} },
               {
                 Icon: SignOut, text: "Logout", onClick: () => {
                   dispatch(logout())
-                  window.location.href = "https://sandsvault.io"
+                  // window.location.href = "https://sandsvault.io"
+                  navigate("/");
                 }
               }
             ]}
           />
-          <IconButton onClick={() => { navigate('/notifications') }}>
+          <IconButton onClick={() => { navigate('/home/notifications') }}>
             <IoNotificationsOutline />
           </IconButton>
         </Row> */}

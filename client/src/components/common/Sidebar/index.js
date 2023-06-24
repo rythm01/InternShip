@@ -21,7 +21,8 @@ export default function Sidebar() {
   const handleLogout = () => {
     //add logout function
     logout();
-    window.location.href = "http://localhost:3000/login"
+    // window.location.href = "http://localhost:3000/login"
+    navigate("/");
   };
 
   const { width } = useWindowSize();
