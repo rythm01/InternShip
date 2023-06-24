@@ -66,39 +66,12 @@ const Row = styled.div`
 const CreditCardPassword = () => {
 
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const [isRenameModalOpen, toggleRenameModal] = useState(false);
-    const [folderToRename, setFolderToRename] = useState({});
-    const [allFolders, setAllFolders] = useState([])
-
-    const [field, setField] = useState("");
-
-
-    const [isLoading, setIsLoading] = useState(false)
-
-    const [iFrameOpen, setIFrameOpen] = useState(false)
-    const [iFrameFileID, setIFrameFileID] = useState(null)
-
-
-    const { t } = useContext(AuthContext)
-
-
-    useEffect(() => {
-        getAllFolders()
-    }, [t])
-
-    const getAllFolders = async () => {
-        setIsLoading(true)
-        const allFolders = await getFolders(t)
-        const allFoldersWithoutRoot = allFolders.data.data.filter((folder) => folder.name !== "root")
-        setAllFolders(allFoldersWithoutRoot)
-        setIsLoading(false)
-    }
-
-
-
-
-
+    const [renameModalOpen, setRenameModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [newFileName, setNewFileName] = useState('');
+    const [files, setFiles] = useState(Files);
+    const [isLoading, setIsLoading] = useState(false);
+    const { t } = useContext(AuthContext);
     const style = {
         position: "absolute",
         transform: "translate(-50%, -50%)",
@@ -112,36 +85,33 @@ const CreditCardPassword = () => {
         boxShadow: 30,
         p: "45px 15px 25px 15px",
     };
-
-    const renameFolder = (folder) => {
-        setFolderToRename(folder);
-        toggleRenameModal(true);
-    };
-
-    const HandleCreateFolder = async () => {
-        // console.log(field)
-
-        const res = await createFolder(t, { name: field });
-        if (!res.data.success) {
-            return toast.error(res.data.message);
-        }
-        setField("");
-        setOpen(false);
-        getAllFolders();
-    };
-
-    const deleteFolder = async (id) => {
-        const res = await deleteFolderApi(t, id)
-        if (!res.data.success) {
-            return toast.error(res.data.message)
-        }
-        getAllFolders()
-    }
-
-
-
-
     const { width } = useWindowSize();
+    const renameFile = () => {
+        console.log("Rename");
+      
+        const updatedFiles = files.map((file) => {
+          if (file.id === selectedFile.id) {
+            return {
+              ...file,
+              title: newFileName,
+            };
+          }
+          return file;
+        });
+        setFiles(updatedFiles);
+      
+        setRenameModalOpen(false); // Close the modal
+      };
+      
+
+    const handleDeleteFile = (folderId) => {
+        console.log("Handle Delete Folder");
+        // Implement the logic to delete the folder based on the folderId
+        // You can modify the Passwords array or update the state, depending on your implementation
+        // For example, if using state:
+        const updatedFolders = files.filter(folder => folder.id !== folderId);
+        setFiles(updatedFolders);
+    };
 
 
     if (isLoading) {
@@ -215,6 +185,26 @@ const CreditCardPassword = () => {
                                 marginTop: width <= 600 && "-40px",
                             }}
                         >
+
+                            {
+                                files.map((element) => {
+                                    return <>
+                                        <div style={{ position: "relative", marginTop: "20px" }} key={element.id}>
+                                            <div
+                                            // onClick={() =>
+                                            //     navigate(`${element.navigate}`)
+                                            // }
+                                            >
+                                                <FolderContainer
+
+                                                    width="100%"
+                                                    height="173px"
+                                                    flexDirection="column"
+                                                    justifyContent="flex-start"
+                                                    alignItems="flex-start"
+                                                    padding="10px"
+                                                    borderRadius="7px"
+
                             <div style={{ width: "160px", height: "160px" }}>
                                 <img
                                     style={{
@@ -280,6 +270,7 @@ const CreditCardPassword = () => {
                                                 // onClick={() =>
                                                 //     navigate(`${element.navigate}`)
                                                 // }
+
                                                 >
                                                     <FolderContainer
 
@@ -312,55 +303,53 @@ const CreditCardPassword = () => {
                                                                 <img width="20px" height="20px" src={fileimage} />
                                                             </div>
                                                         </div>
-                                                        <Title
-                                                            fontSize="22px"
-                                                            margin={
-                                                                width > 600
-                                                                    ? "20px 0px 0px 3px"
-                                                                    : "8px 0px 0px 3px"
-                                                            }
-                                                            lineHeight="38px"
-                                                            fontWeight="600"
-                                                            fontFamily="TT Commons"
-                                                        >
-                                                            {element.filename}
-                                                        </Title>
-                                                        <Paragraph fontSize="14px">
-                                                            Edited On <strong> {element.editedon} </strong>
-                                                        </Paragraph>
-                                                        <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
-                                                            Created On <strong> {element.createdon} </strong>
 
-                                                        </Paragraph>
+                                                    </div>
+                                                    <Title
+                                                        fontSize="22px"
+                                                        margin={
+                                                            width > 600
+                                                                ? "20px 0px 0px 3px"
+                                                                : "8px 0px 0px 3px"
+                                                        }
+                                                        lineHeight="38px"
+                                                        fontWeight="600"
+                                                        fontFamily="TT Commons"
+                                                    >
+                                                        {element.title}
+                                                    </Title>
+                                                    <Paragraph fontSize="14px">
+                                                        Edited On <strong> {element.editedon} </strong>
+                                                    </Paragraph>
+                                                    <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
+                                                        Created On <strong> {element.createdon} </strong>
 
-                                                    </FolderContainer>
-                                                </div>
-                                                <OptionsMenu
-                                                    color="rgba(0, 0, 0, 0.4)"
-                                                    orientation="horizontal"
-                                                    options={[
-                                                        {
-                                                            text: "Open",
-                                                            onClick: () => {
-                                                                //   navigate(`/documents/folder/${item.id}`);
-                                                            },
-                                                        },
-                                                        {
-                                                            text: "Rename",
 
                                                         },
                                                         {
                                                             text: "Delete",
 
                                                         },
-                                                    ]}
-                                                    position="absolute"
-                                                />
-                                            </div>
 
-                                        </>
-                                    })
-                                }
+                                                    },
+                                                    {
+                                                        text: "Rename",
+                                                        onClick: () => {
+                                                            console.log(element);
+                                                            setNewFileName(element.title);
+                                                            setSelectedFile(element);
+                                                            setRenameModalOpen(true);
+
+                                                        },
+
+                                                    },
+                                                    {
+                                                        text: "Delete",
+                                                        onClick: () => {
+                                                            console.log(element.id);
+                                                            handleDeleteFile(element.id);
+                                                        }
+
 
                                 {/* Folder Box */}
 
@@ -372,8 +361,25 @@ const CreditCardPassword = () => {
 
 
                         </Box>
-                    </div>
-                </Box>
+
+
+
+                    </Box>
+                </div>
+            </Box>
+            {renameModalOpen && (
+
+                <div className="modal">
+                    <input
+                        type="text"
+                        value={newFileName}
+                        onChange={(e) => setNewFileName(e.target.value)}
+                    />
+                    <button onClick={renameFile}>Rename</button>
+                    <button onClick={() => setRenameModalOpen(false)}>Cancel</button>
+                </div>
+
+
             )}
 
 
