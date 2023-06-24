@@ -17,7 +17,35 @@ const BuddyRepo = AppDataSource.getRepository(Buddy);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const permissionsController = {
-  getPermissions: async (req: Request, res: Response) => {},
+  deletePermissions: async (req: Request, res: Response) => {
+    try {
+      const { id, buddyId } = req.params;
+
+      const permissionData = await PermissionRepo.findOne({
+        where: {
+          id: id as any,
+          userAuth: { id: req.user as any },
+          buddy: { id: buddyId as any },
+        },
+      });
+
+      if (!permissionData) {
+        return res.status(400).json({
+          message: "No permission found to this buddy",
+        });
+      }
+
+      await PermissionRepo.delete(id);
+
+      return res.status(200).send({
+        message: "Delete successfully",
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: "Something went wrong",
+      });
+    }
+  },
 
   createPermission: async (req: Request, res: Response) => {
     try {
