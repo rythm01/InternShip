@@ -1,39 +1,52 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
-import { UserProfile } from './UserProfile';
-import File from './File';
-import { UserAuth } from './UserAuth';
-
-
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+  JoinColumn,
+} from "typeorm";
+import { UserProfile } from "./UserProfile";
+import File from "./File";
+import Buddy from "./Buddies";
 
 @Entity()
-export class FilePermission {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Permission {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(type => File)
-    file: File;
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
+  @JoinColumn({ name: "userProfileId" })
+  userProfile: UserProfile;
 
-    @ManyToMany(type => UserAuth)
-    user: UserAuth;
+  @ManyToOne(() => File, (file) => file.id)
+  @JoinColumn({ name: "fileId" })
+  file: File;
 
-    @Column()
-    can_read: boolean;
+  @ManyToOne(() => Buddy, (buddy) => buddy.id)
+  @JoinColumn({ name: "buddyId" })
+  buddy: Buddy;
 
-    @Column()
-    can_write: boolean;
+  @Column({ default: false })
+  canRead: boolean;
 
-    @Column()
-    can_share: boolean;
+  @Column({ default: false })
+  canWrite: boolean;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @Column({ default: false })
+  canShare: boolean;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @Column({ type: "date", nullable: true })
+  timeReleaseDate: Date;
 
-    @Column({ nullable: true })
-    time_release_sharing: boolean;
+  @Column({ type: "timestamp", nullable: true })
+  instantReleaseDate: Date;
 
-    @Column()
-    immediate_sharing: boolean;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

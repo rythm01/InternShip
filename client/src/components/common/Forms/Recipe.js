@@ -26,7 +26,7 @@ export default function Recipe({ id, isEdit }) {
   ];
 
   const Container = styled.form`
-    max-width: 500px;
+    max-width: 640px;
     margin: 10px auto;
     padding: 10px 20px;
     background: #fff;
