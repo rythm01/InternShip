@@ -101,6 +101,23 @@ const Recipes = () => {
     setIsLoading(false);
   };
 
+  // const renameFile = () => {
+  //   console.log("Rename");
+
+  //   const updatedFiles = files.map((file) => {
+  //     if (file.id === selectedFile.id) {
+  //       return {
+  //         ...file,
+  //         title: newFileName,
+  //       };
+  //     }
+  //     return file;
+  //   });
+  //   setFiles(updatedFiles);
+
+  //   setRenameModalOpen(false); // Close the modal
+  // };
+
   const style = {
     position: "absolute",
     transform: "translate(-50%, -50%)",
@@ -356,6 +373,13 @@ const Recipes = () => {
                                 navigate(
                                   `/password-type-form?form=4&id=${element.id}`
                                 );
+                              },
+                            },
+                            {
+                              Icon: people,
+                              text: "My Buddies",
+                              onClick: () => {
+                                navigate("/home/my-buddies");
                               },
                             },
                             {

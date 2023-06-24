@@ -83,7 +83,7 @@ const BankAccountPassword = () => {
   const [iFrameOpen, setIFrameOpen] = useState(false);
   const [iFrameFileID, setIFrameFileID] = useState(null);
 
-  const { t } = useContext(AuthContext);
+  const { t, logout } = useContext(AuthContext);
 
   useEffect(() => {
     getAllFolders();
@@ -127,6 +127,49 @@ const BankAccountPassword = () => {
     const res = await createFolder(t, { name: field });
     if (!res.data.success) {
       return alert(res.data.message);
+    }
+
+    const style = {
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      height: "369px",
+      width: "669px",
+      left: "50%",
+      top: "50%",
+      borderRadius: "20px",
+      backgroundColor: "white",
+      outline: "none",
+      boxShadow: 30,
+      p: "45px 15px 25px 15px",
+    };
+
+    // const renameFile = () => {
+    //   console.log("Rename");
+
+    //   const updatedFiles = files.map((file) => {
+    //     if (file.id === selectedFile.id) {
+    //       return {
+    //         ...file,
+    //         title: newFileName,
+    //       };
+    //     }
+    //     return file;
+    //   });
+    //   setFiles(updatedFiles);
+
+    //   setRenameModalOpen(false); // Close the modal
+    // };
+
+    // const handleDeleteFile = (folderId) => {
+    //   console.log("Handle Delete Folder");
+    //   // Implement the logic to delete the folder based on the folderId
+    //   // You can modify the Passwords array or update the state, depending on your implementation
+    //   // For example, if using state:
+    //   const updatedFolders = files.filter((folder) => folder.id !== folderId);
+    //   setFiles(updatedFolders);
+    // };
+    if (isLoading) {
+      return <LoadingSpinner />;
     }
     setField("");
     setOpen(false);

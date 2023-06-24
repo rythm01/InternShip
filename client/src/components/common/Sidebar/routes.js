@@ -9,37 +9,37 @@ import { ReactComponent as PeopleIcon } from "../../../assets/images/people.svg"
 const routes = [
   {
     name: "Home",
-    pathname: [ "/",],
+    pathname: [ "/home",],
     Icon: IoHomeOutline
   },
   {
     name: "My Buddies",
     to: "my-buddies",
-    pathname: ["/my-buddies"],
+    pathname: ["/home/my-buddies"],
     Icon: PeopleIcon
   },
   {
     name: "Passwords",
     to: "passwords",
-    pathname: ["/passwords","/password-type-form","/password-type-form?form=2", "/password-type-form?form=3", "/password-type-form?form=4", "/password-type-form?form=5", "/password-type-form?form=6", "/password-type-form?form=7"],
+    pathname: ["/home/passwords","/home/password-type-form","/home/password-type-form?form=2", "/home/password-type-form?form=3", "/home/password-type-form?form=4", "/home/password-type-form?form=5", "/home/password-type-form?form=6", "/home/password-type-form?form=7"],
     Icon: RiLockPasswordLine
   },
   {
     name: "Documents",
     to: "documents",
-    pathname: ["/documents"],
+    pathname: ["/home/documents"],
     Icon: IoDocumentTextOutline
   },
   {
     name: "Shared",
     to: "shared",
-    pathname: ["/shared"],
+    pathname: ["/home/shared"],
     Icon: IoDocumentTextOutline
   },
   {
     name: "About Us",
     to: "about",
-    pathname: ["/about"],
+    pathname: ["/home/about"],
     Icon: IoInformationCircleOutline
   }
 ];

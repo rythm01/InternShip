@@ -70,6 +70,7 @@ const CryptoPassword = () => {
   const [isRenameModalOpen, toggleRenameModal] = useState(false);
   const [folderToRename, setFolderToRename] = useState({});
   const [allFolders, setAllFolders] = useState([]);
+  const { width } = useWindowSize();
 
   const [field, setField] = useState("");
 
@@ -113,17 +114,42 @@ const CryptoPassword = () => {
     toggleRenameModal(true);
   };
 
-  const HandleCreateFolder = async () => {
-    // console.log(field)
+  // const HandleCreateFolder = async () => {
+  //   // console.log(field)
 
-    const res = await createFolder(t, { name: field });
-    if (!res.data.success) {
-      return toast.error(res.data.message);
-    }
-    setField("");
-    setOpen(false);
-    getAllFolders();
-  };
+  //   const res = await createFolder(t, { name: field });
+  //   if (!res.data.success) {
+  //     return toast.error(res.data.message);}
+  //     const { width } = useWindowSize();
+
+  // const renameFile = () => {
+  //     console.log("Rename");
+
+  //     const updatedFiles = files.map((file) => {
+  //       if (file.id === selectedFile.id) {
+  //         return {
+  //           ...file,
+  //           title: newFileName,
+  //         };
+  //       }
+  //       return file;
+  //     });
+  //     setFiles(updatedFiles);
+
+  //     setRenameModalOpen(false); // Close the modal
+  //   };
+
+  //   const handleDeleteFile = (folderId) => {
+  //       console.log("Handle Delete Folder");
+  //       // Implement the logic to delete the folder based on the folderId
+  //       // You can modify the Passwords array or update the state, depending on your implementation
+  //       // For example, if using state:
+  //       const updatedFolders = files.filter(folder => folder.id !== folderId);
+  //       setFiles(updatedFolders);
+  //   setField("");
+  //   setOpen(false);
+  //   getAllFolders();
+  // };
 
   const deleteFolder = async (id) => {
     const res = await deleteFolderApi(t, id);
@@ -132,8 +158,6 @@ const CryptoPassword = () => {
     }
     getAllFolders();
   };
-
-  const { width } = useWindowSize();
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -334,6 +358,13 @@ const CryptoPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 //   navigate(`/documents/folder/${item.id}`);
+                              },
+                            },
+                            {
+                              Icon: people,
+                              text: "My Buddies",
+                              onClick: () => {
+                                navigate("/home/my-buddies");
                               },
                             },
                             {

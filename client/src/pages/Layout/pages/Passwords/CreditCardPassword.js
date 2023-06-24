@@ -77,6 +77,7 @@ const CreditCardPassword = () => {
   const [allFolders, setAllFolders] = useState([]);
   const [creditCards, setAllCreditCards] = useState([]);
 
+  const { width } = useWindowSize();
   const [field, setField] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -127,10 +128,70 @@ const CreditCardPassword = () => {
     if (!res.data.success) {
       return toast.error(res.data.message);
     }
-    setField("");
-    setOpen(false);
-    getAllFolders();
+    // const CreditCardAccountPassword = () => {
+
+    //     const navigate = useNavigate();
+    //     const [open, setOpen] = useState(false);
+    //     const [isRenameModalOpen, toggleRenameModal] = useState(false);
+    //     const [folderToRename, setFolderToRename] = useState({});
+    //     const [allFolders, setAllFolders] = useState([])
+
+    //     const [field, setField] = useState("");
+
+    //     const [isLoading, setIsLoading] = useState(false)
+
+    //     const [iFrameOpen, setIFrameOpen] = useState(false)
+    //     const [iFrameFileID, setIFrameFileID] = useState(null)
+
+    //     const { t, logout } = useContext(AuthContext)
+
+    //     const style = {
+    //         position: "absolute",
+    //         transform: "translate(-50%, -50%)",
+    //         height: "369px",
+    //         width: "669px",
+    //         left: "50%",
+    //         top: "50%",
+    //         borderRadius: "20px",
+    //         backgroundColor: "white",
+    //         outline: "none",
+    //         boxShadow: 30,
+    //         p: "45px 15px 25px 15px",
+    //     };
+    //     const { width } = useWindowSize();
+
+    //     const renameFile = () => {
+    //         console.log("Rename");
+
+    //         const updatedFiles = files.map((file) => {
+    //           if (file.id === selectedFile.id) {
+    //             return {
+    //               ...file,
+    //               title: newFileName,
+    //             };
+    //           }
+    //           return file;
+    //         });
+    //         setFiles(updatedFiles);
+
+    //         setRenameModalOpen(false); // Close the modal
+    //       };
+
+    //     const handleDeleteFile = (folderId) => {
+    //         console.log("Handle Delete Folder");
+    //         // Implement the logic to delete the folder based on the folderId
+    //         // You can modify the Passwords array or update the state, depending on your implementation
+    //         // For example, if using state:
+    //         const updatedFolders = files.filter(folder => folder.id !== folderId);
+    //         setFiles(updatedFolders);
   };
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  //   setField("");
+  //   setOpen(false);
+  //   getAllFolders();
+  // };
 
   const deleteFolder = async (id) => {
     const res = await deleteFolderApi(t, id);
@@ -139,12 +200,6 @@ const CreditCardPassword = () => {
     }
     getAllFolders();
   };
-
-  const { width } = useWindowSize();
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <>

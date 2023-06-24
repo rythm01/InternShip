@@ -1,4 +1,5 @@
 import React, { useRef, useContext, useState, useEffect } from "react";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postPasswordStotageForm from "../../../networks/passwordTypeForms";
@@ -51,7 +52,15 @@ const Container = styled.form`
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
       margin-bottom: 30px;
     }
+    .eye {
+      position: relative;
+    }
 
+    .eye .eye-icon {
+      position: absolute;
+      top: 2vh;
+      right: 1vw;
+    }
     p {
       font-weight: 300;
     }
@@ -81,11 +90,16 @@ const Container = styled.form`
     }
   }
 `;
-const PasswordStotageForm = ({ id, isEdit }) => {
+const PasswordStorageForm = ({ id, isEdit }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
   const [isData, setIsData] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   useEffect(() => {
     if (id && isEdit) {
@@ -152,7 +166,28 @@ const PasswordStotageForm = ({ id, isEdit }) => {
                   />
 
                   <label htmlFor="password">Password:</label>
-                  <Field type="password" name="password" placeholder="Name" />
+                  <div className="eye">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Enter password"
+                    />
+                    <div className="eye-icon">
+                      {showPassword ? (
+                        <IoEyeOffOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ) : (
+                        <IoEyeOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      )}
+                    </div>
+                  </div>
 
                   <label htmlFor="nickname">Account Nick Name:</label>
                   <Field
@@ -184,4 +219,4 @@ const PasswordStotageForm = ({ id, isEdit }) => {
   );
 };
 
-export default PasswordStotageForm;
+export default PasswordStorageForm;

@@ -1,4 +1,5 @@
-import React, { useRef,useContext } from 'react';
+import React, { useRef,useContext,useState } from 'react';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postSignUpForm from "../../../networks/passwordTypeForms";
@@ -45,7 +46,15 @@ const Container = styled.form`
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
       margin-bottom: 30px;
     }
-
+    .eye {
+      position: relative;
+    }
+    
+    .eye .eye-icon{
+      position : absolute;
+      top : 2vh;
+      right : 1vw;
+    }
     p {
       font-weight: 300;
     }
@@ -78,7 +87,11 @@ const Container = styled.form`
 const SignUp = () => {
   const formRef = useRef(null);
   const { t } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
 
   const handleSubmit = (values, { setSubmitting }) => {
     // event.preventDefault(); // Prevent the default form submission behavior
@@ -138,8 +151,29 @@ const SignUp = () => {
               <label for="phone">Phone number</label>
               <Field type="tel" name="contact" placeholder="Enter Phone number" onKeyPress={handleKeyPress}  />
 
-              <label for="password">Password</label>
-              <Field type="password" name="password" placeholder="Enter PAssword"  />
+              <label htmlFor="password">Password:</label>
+              <div className='eye'>
+                <Field
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter password"
+                />
+                <div className='eye-icon'>
+                  {showPassword ? (
+                    <IoEyeOffOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <IoEyeOutline
+                      size={24}
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </div>
+              </div>
 
               <label for="region">Supported Region</label>
               <Field type="text" name="region" placeholder="Enter supported region"  />

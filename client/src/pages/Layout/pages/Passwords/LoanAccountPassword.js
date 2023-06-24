@@ -132,6 +132,23 @@ const LoanAccountPassword = () => {
     getAllFolders();
   };
 
+  // const renameFile = () => {
+  //   console.log("Rename");
+
+  //   const updatedFiles = files.map((file) => {
+  //     if (file.id === selectedFile.id) {
+  //       return {
+  //         ...file,
+  //         title: newFileName,
+  //       };
+  //     }
+  //     return file;
+  //   });
+  //   setFiles(updatedFiles);
+
+  //   setRenameModalOpen(false); // Close the modal
+  // };
+
   const deleteFolder = async (id) => {
     const res = await deleteFolderApi(t, id);
     if (!res.data.success) {

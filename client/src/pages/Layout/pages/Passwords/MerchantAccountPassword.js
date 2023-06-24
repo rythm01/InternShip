@@ -118,6 +118,23 @@ const MerchantAccountPassword = () => {
     p: "45px 15px 25px 15px",
   };
 
+  // const renameFile = () => {
+  //   console.log("Rename");
+
+  //   const updatedFiles = files.map((file) => {
+  //     if (file.id === selectedFile.id) {
+  //       return {
+  //         ...file,
+  //         title: newFileName,
+  //       };
+  //     }
+  //     return file;
+  //   });
+  //   setFiles(updatedFiles);
+
+  //   setRenameModalOpen(false); // Close the modal
+  // };
+
   const renameFolder = (folder) => {
     setFolderToRename(folder);
     toggleRenameModal(true);

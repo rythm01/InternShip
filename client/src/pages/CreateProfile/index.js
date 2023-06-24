@@ -23,6 +23,7 @@ import { AuthContext } from "../../context/AuthContext";
 import countries from "../../countires";
 import { createProfile, getProfile } from "../../networks/profile";
 import toast, { Toaster } from 'react-hot-toast';
+import { logout } from "../../store/slice/mainSlice";
 
 const Option = (props) => {
   return (
@@ -62,8 +63,6 @@ export default function CreateProfile() {
   ];
 
   const { profile, setProfile, authData, t } = useContext(AuthContext)
-
-
 
   useEffect(() => {
     if (authData) {
@@ -129,7 +128,8 @@ export default function CreateProfile() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = "https://sandsvault.io";
+    logout();
+    navigate("/");
   };
 
   const onSubmit = async (e) => {
@@ -171,7 +171,7 @@ export default function CreateProfile() {
       localStorage.setItem('profile', JSON.stringify(response.data.data))
       setLoading(false);
       setProfile(response.data.data)
-      navigate("/");
+      navigate("/home");
       return
     }
   };

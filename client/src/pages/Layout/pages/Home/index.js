@@ -239,14 +239,6 @@ export default function Home() {
 
   const { profile, t, setRefresh, refresh } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
-      return navigate("/create-profile");
-    getFolderData();
-    getfileData();
-    getNotification();
-  }, [profile]);
-
   const HandleCreateFolder = async () => {
     // console.log(field)
     if (!field) return toast.error("Please enter folder name");
@@ -263,8 +255,7 @@ export default function Home() {
   };
 
   const handleOptionSelect = (option) => {
-    // setSelectedOption(option);
-    navigate(`/password-type-form?form=${option.id}`);
+    navigate(`/home/password-type-form?form=${option.id}`);
     setDropdownOpen(false);
   };
 
@@ -286,22 +277,22 @@ export default function Home() {
     const res = await getfiles(t);
     setLoading(false);
     if (!res.data.success) return toast.error(res.data.message);
-    const filesdata = res?.data?.data;
-    setFilesData([...filesdata, ...res?.data?.allowedFile]);
-    const pdf = filesData?.filter(
+    const fileData = [...res.data?.data, ...res?.data?.allowedFile];
+    setFilesData(fileData);
+    const pdf = fileData?.filter(
       (file) => file.ext === "pdf" || file.ext === "PDF"
     );
-    const png = filesData?.filter(
+    const png = fileData?.filter(
       (file) => file.ext === "png" || file.ext === "PNG"
     );
-    const jpeg = filesData?.filter(
+    const jpeg = fileData?.filter(
       (file) =>
         file.ext === "jpeg" ||
         file.ext === "jpg" ||
         file.ext === "JPEG" ||
         file.ext === "JPG"
     );
-    const otherFiles = filesData?.filter(
+    const otherFiles = fileData?.filter(
       (file) =>
         file.ext !== "pdf" &&
         file.ext !== "png" &&
@@ -361,7 +352,7 @@ export default function Home() {
           message={"You have reached your storage limit."}
           buttonText={"Sounds good"}
           onSubmit={() => {
-            navigate("/");
+            navigate("/home");
           }}
         />
       );
@@ -377,6 +368,14 @@ export default function Home() {
     setRefresh(!refresh);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
+      return navigate("/home/create-profile");
+    getFolderData();
+    getfileData();
+    getNotification();
+  }, [profile]);
 
   const deleteFolder = async (folder) => {
     const res = await deleteFolderApi(t, folder);
@@ -409,6 +408,7 @@ export default function Home() {
     setRefresh(!refresh);
     setLoading(false);
   };
+
   return (
     <>
       <Toaster />
@@ -422,7 +422,7 @@ export default function Home() {
       >
         <div
           onClick={() => {
-            navigate("/edit-profile");
+            navigate("/home/edit-profile");
           }}
           className="welcome_flex"
         >
@@ -439,7 +439,7 @@ export default function Home() {
                 Icon: people,
                 text: "My Buddies",
                 onClick: () => {
-                  navigate("/my-buddies");
+                  navigate("/home/my-buddies");
                 },
               },
 
@@ -447,7 +447,7 @@ export default function Home() {
                 Icon: people,
                 text: "Profile",
                 onClick: () => {
-                  navigate("/edit-profile");
+                  navigate("/home/edit-profile");
                 },
               },
               {
@@ -456,14 +456,15 @@ export default function Home() {
                 onClick: () => {
                   //logout functionality should be here
                   logout();
-                  window.location.href = "https://sandsvault.io";
+                  // window.location.href = "https://sandsvault.io";
+                  navigate("/");
                 },
               },
             ]}
           />
           <IconButton
             onClick={() => {
-              navigate("/notifications");
+              navigate("/home/notifications");
             }}
           >
             <IoNotificationsOutline size={20} />
@@ -509,7 +510,7 @@ export default function Home() {
               width="60%"
               height="349px"
               className="width-100-2"
-              onViewAll={() => navigate("/documents")}
+              onViewAll={() => navigate("/home/documents")}
             >
               <Box
                 width="100%"
@@ -691,7 +692,7 @@ export default function Home() {
                                   {
                                     text: "Open",
                                     onClick: () => {
-                                      navigate("/documents/file/" + item.id);
+                                      navigate(`documents/folder/${item.id}`);
                                     },
                                   },
 

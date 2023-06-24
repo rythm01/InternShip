@@ -36,7 +36,7 @@ export default function Profile({ user }) {
   return (
     <Container
       onClick={() => {
-        navigate("/edit-profile");
+        navigate("/home/edit-profile");
       }}
     >
       {user && (user.profilePicture || user.profile_picture) ? (

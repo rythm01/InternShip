@@ -104,6 +104,23 @@ const MiscPassword = () => {
     setIsLoading(false);
   };
 
+  // const renameFile = () => {
+  //   console.log("Rename");
+
+  //   const updatedFiles = files.map((file) => {
+  //     if (file.id === selectedFile.id) {
+  //       return {
+  //         ...file,
+  //         title: newFileName,
+  //       };
+  //     }
+  //     return file;
+  //   });
+  //   setFiles(updatedFiles);
+
+  //   setRenameModalOpen(false); // Close the modal
+  // };
+
   const style = {
     position: "absolute",
     transform: "translate(-50%, -50%)",
