@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.passwordStorageController = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../../../config");
 const UserProfile_1 = require("../../../models/UserProfile");
 const PasswordStorageForm_1 = __importDefault(require("../../../models/PasswordStorageForm"));
@@ -45,7 +44,7 @@ exports.passwordStorageController = {
             newLoanAccount.userProfile = userProfile === null || userProfile === void 0 ? void 0 : userProfile.id;
             newLoanAccount.website = website;
             newLoanAccount.user_name = user_name;
-            newLoanAccount.password = bcrypt_1.default.hashSync(password, 10);
+            newLoanAccount.password = password;
             newLoanAccount.account_nick_name = account_nick_name;
             yield PasswordStorageRepo.save(newLoanAccount);
             return res.status(200).json({

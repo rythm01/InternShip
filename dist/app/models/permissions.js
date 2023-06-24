@@ -12,53 +12,60 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FilePermission = void 0;
+exports.Permission = void 0;
 const typeorm_1 = require("typeorm");
 const File_1 = __importDefault(require("./File"));
 const UserAuth_1 = require("./UserAuth");
-let FilePermission = class FilePermission {
+let Permission = class Permission {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], FilePermission.prototype, "id", void 0);
+], Permission.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(type => File_1.default),
-    __metadata("design:type", File_1.default)
-], FilePermission.prototype, "file", void 0);
-__decorate([
-    (0, typeorm_1.ManyToMany)(type => UserAuth_1.UserAuth),
+    (0, typeorm_1.ManyToOne)(() => UserAuth_1.UserAuth, (userAuth) => userAuth.id),
+    (0, typeorm_1.JoinColumn)({ name: "userAuth" }),
     __metadata("design:type", UserAuth_1.UserAuth)
-], FilePermission.prototype, "user", void 0);
+], Permission.prototype, "userAuth", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], FilePermission.prototype, "can_read", void 0);
+    (0, typeorm_1.ManyToOne)(() => File_1.default, (file) => file.id),
+    (0, typeorm_1.JoinColumn)({ name: "fileId" }),
+    __metadata("design:type", File_1.default)
+], Permission.prototype, "file", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], FilePermission.prototype, "can_write", void 0);
+    (0, typeorm_1.ManyToOne)(() => UserAuth_1.UserAuth, (userAuth) => userAuth.id),
+    (0, typeorm_1.JoinColumn)({ name: "buddyId" }),
+    __metadata("design:type", UserAuth_1.UserAuth)
+], Permission.prototype, "buddy", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
-], FilePermission.prototype, "can_share", void 0);
+], Permission.prototype, "canRead", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Permission.prototype, "canWrite", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Permission.prototype, "canShare", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "date", nullable: true }),
+    __metadata("design:type", Date)
+], Permission.prototype, "timeReleaseDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    __metadata("design:type", Date)
+], Permission.prototype, "instantReleaseDate", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], FilePermission.prototype, "createdAt", void 0);
+], Permission.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], FilePermission.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], FilePermission.prototype, "time_release_sharing", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], FilePermission.prototype, "immediate_sharing", void 0);
-FilePermission = __decorate([
+], Permission.prototype, "updatedAt", void 0);
+Permission = __decorate([
     (0, typeorm_1.Entity)()
-], FilePermission);
-exports.FilePermission = FilePermission;
+], Permission);
+exports.Permission = Permission;

@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.merchantAccountController = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../../../config");
 const UserProfile_1 = require("../../../models/UserProfile");
 const MerchantAccountPassword_1 = __importDefault(require("../../../models/MerchantAccountPassword"));
@@ -48,7 +47,7 @@ exports.merchantAccountController = {
             newLoanAccount.merchant_name = merchant_name;
             newLoanAccount.website = website;
             newLoanAccount.user_name = user_name;
-            newLoanAccount.password = bcrypt_1.default.hashSync(password, 10);
+            newLoanAccount.password = password;
             newLoanAccount.account_number = account_number;
             newLoanAccount.account_nick_name = account_nick_name;
             yield MerchantAccountPasswordRepo.save(newLoanAccount);

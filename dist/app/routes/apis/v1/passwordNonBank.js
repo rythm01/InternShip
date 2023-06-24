@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const bankAccount_1 = require("../../../controllers/apis/v1/bankAccount");
 const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const passwordStorage_1 = require("../../../controllers/apis/v1/passwordStorage");
 const router = (0, express_1.Router)();
 router.use(verifyUsers_1.authenticateUser);
-router.post("/", bankAccount_1.bankAccountController.postBankAccount);
-router.get("/", bankAccount_1.bankAccountController.getBankAccount);
+router.post("/", passwordStorage_1.passwordStorageController.postPasswordStorage);
+router.get("/", passwordStorage_1.passwordStorageController.getPasswordStorage);
+router.delete("/:id", passwordStorage_1.passwordStorageController.deletePasswordStorage);
+router.get("/:id", passwordStorage_1.passwordStorageController.getPasswordStorageDetailsById);
+router.put("/:id", passwordStorage_1.passwordStorageController.updatePasswordStorageDetailsById);
 // router.get('/user', authController.getUser);
 exports.default = router;

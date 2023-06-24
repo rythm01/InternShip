@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.creditCardController = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../../../config");
 const UserProfile_1 = require("../../../models/UserProfile");
 const CreditCardPassword_1 = __importDefault(require("../../../models/CreditCardPassword"));
@@ -49,7 +48,7 @@ exports.creditCardController = {
             newCreditCard.credit_card_name = credit_card_name;
             newCreditCard.website = website;
             newCreditCard.user_name = user_name;
-            newCreditCard.password = bcrypt_1.default.hashSync(password, 10);
+            newCreditCard.password = password;
             newCreditCard.credit_card_number = credit_card_number;
             newCreditCard.payment_date = payment_date;
             newCreditCard.account_nick_name = account_nick_name;
@@ -203,6 +202,7 @@ exports.creditCardController = {
             isCreditCard.user_name = data === null || data === void 0 ? void 0 : data.user_name;
             isCreditCard.password = data === null || data === void 0 ? void 0 : data.password;
             isCreditCard.credit_card_number = data === null || data === void 0 ? void 0 : data.credit_card_number;
+            isCreditCard.payment_date = `${new Date(data.payment_date)}`;
             isCreditCard.account_nick_name = data === null || data === void 0 ? void 0 : data.account_nick_name;
             yield CreditCardRepo.save(isCreditCard);
             return res.status(200).send({

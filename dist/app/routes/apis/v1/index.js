@@ -19,4 +19,5 @@ app.use("/password-type/password-non-bank", require("./passwordNonBank").default
 app.use("/password-type/credit-card", require("./creditCard").default);
 app.use("/password-type/merchant-account", require("./merchantAccount").default);
 app.use("/password-type/recipe-account", require("./recipe").default);
+app.use("/password-type/misc-password", require("./miscPassWord").default);
 exports.default = app;

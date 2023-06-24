@@ -182,8 +182,8 @@ export const fileController = {
         },
         relations: ["userAuth"],
       });
-
-      if (isHaveingPermission) {
+      console.log(isHaveingPermission);
+      if (isHaveingPermission.length > 0) {
         const userAllowedProfile = await UserProfileRepo.createQueryBuilder(
           "userProfile"
         )
@@ -211,7 +211,6 @@ export const fileController = {
           },
         });
       }
-
       if (!file)
         return res.status(200).json({
           message: "no files found",
@@ -301,7 +300,7 @@ export const fileController = {
         Key: file.key + "." + file.ext,
       };
 
-      //   await s3.deleteObject(params).promise();
+      await s3.deleteObject(params).promise();
 
       await FileRepo.delete({ id: parseInt(id) });
 

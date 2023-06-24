@@ -40,7 +40,7 @@ __decorate([
 ], LoanAccountPassword.prototype, "password", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], LoanAccountPassword.prototype, "loan_amount", void 0);
 __decorate([
     (0, typeorm_1.Column)(),

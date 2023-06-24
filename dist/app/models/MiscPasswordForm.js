@@ -11,42 +11,50 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const UserProfile_1 = require("./UserProfile");
-let PasswordStorage = class PasswordStorage {
+let MiscPasswordStorage = class MiscPasswordStorage {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], PasswordStorage.prototype, "id", void 0);
+], MiscPasswordStorage.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => UserProfile_1.UserProfile, (userProfile) => userProfile.id),
     (0, typeorm_1.JoinColumn)({ name: "userProfileId" }),
     __metadata("design:type", UserProfile_1.UserProfile)
-], PasswordStorage.prototype, "userProfile", void 0);
+], MiscPasswordStorage.prototype, "userProfile", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], PasswordStorage.prototype, "website", void 0);
+], MiscPasswordStorage.prototype, "account_name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], PasswordStorage.prototype, "user_name", void 0);
+], MiscPasswordStorage.prototype, "website", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], PasswordStorage.prototype, "password", void 0);
+], MiscPasswordStorage.prototype, "user_name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], PasswordStorage.prototype, "account_nick_name", void 0);
+], MiscPasswordStorage.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], MiscPasswordStorage.prototype, "account_number", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], MiscPasswordStorage.prototype, "account_nick_name", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], PasswordStorage.prototype, "createdAt", void 0);
+], MiscPasswordStorage.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], PasswordStorage.prototype, "updatedAt", void 0);
-PasswordStorage = __decorate([
+], MiscPasswordStorage.prototype, "updatedAt", void 0);
+MiscPasswordStorage = __decorate([
     (0, typeorm_1.Entity)()
-], PasswordStorage);
-exports.default = PasswordStorage;
+], MiscPasswordStorage);
+exports.default = MiscPasswordStorage;

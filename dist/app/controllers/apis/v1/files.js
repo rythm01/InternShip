@@ -18,9 +18,11 @@ const config_1 = require("../../../../config");
 const File_1 = __importDefault(require("../../../models/File"));
 const UserProfile_1 = require("../../../models/UserProfile");
 const Folder_1 = __importDefault(require("../../../models/Folder"));
+const permissions_1 = require("../../../models/permissions");
 const FileRepo = config_1.AppDataSource.getRepository(File_1.default);
 const FolderRepo = config_1.AppDataSource.getRepository(Folder_1.default);
 const UserProfileRepo = config_1.AppDataSource.getRepository(UserProfile_1.UserProfile);
+const PermissionRepo = config_1.AppDataSource.getRepository(permissions_1.Permission);
 exports.fileController = {
     getFiles: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -28,10 +30,27 @@ exports.fileController = {
                 .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
                 .where("userProfile.userAuth = :id", { id: req.user })
                 .getOne();
+            const isHaveingPermission = yield PermissionRepo.find({
+                where: {
+                    buddy: { id: req.user },
+                },
+                relations: ["buddy", "file", "userAuth"],
+            });
             if (!userProfile) {
                 return res
                     .status(200)
                     .json({ success: false, message: "Profile does not exist" });
+            }
+            let allowedFile = [];
+            if (isHaveingPermission.length > 0) {
+                for (const file of isHaveingPermission) {
+                    const files = yield FileRepo.findOne({
+                        where: {
+                            id: file.file.id,
+                        },
+                    });
+                    allowedFile.push(files);
+                }
             }
             const options = {
                 relations: ["folder"],
@@ -40,13 +59,11 @@ exports.fileController = {
                     } }, req.query),
             };
             const files = yield FileRepo.find(options);
-            if (files.length <= 0) {
-                return res.json({ success: true, message: "Files does not exist" });
-            }
             return res.json({
                 success: true,
                 message: "Files found successfully",
                 data: files,
+                allowedFile,
             });
         }
         catch (error) {
@@ -100,8 +117,11 @@ exports.fileController = {
                 Body: file.buffer,
             };
             //upload file to aws s3
-            // const data = await s3.upload(params).promise()
-            // if (!data) return res.status(500).json({ success: false, message: "something went wrong!" })
+            const data = yield config_1.s3.upload(params).promise();
+            if (!data)
+                return res
+                    .status(500)
+                    .json({ success: false, message: "something went wrong!" });
             //save file data to database
             const fileForDatabase = new File_1.default();
             fileForDatabase.name = fileData.name;
@@ -125,8 +145,10 @@ exports.fileController = {
         }
     }),
     viewFile: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
         try {
             const { id } = req.params;
+            let file;
             const userProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
                 .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
                 .where("userProfile.userAuth = :id", { id: req.user })
@@ -136,9 +158,40 @@ exports.fileController = {
                     .status(200)
                     .json({ success: false, message: "Profile does not exist" });
             }
-            const file = yield FileRepo.findOne({
-                where: { id: parseInt(id), user: { id: userProfile.id } },
+            const isHaveingPermission = yield PermissionRepo.find({
+                where: {
+                    buddy: { id: req.user },
+                    file: { id: id },
+                },
+                relations: ["userAuth"],
             });
+            console.log(isHaveingPermission);
+            if (isHaveingPermission.length > 0) {
+                const userAllowedProfile = yield UserProfileRepo.createQueryBuilder("userProfile")
+                    .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+                    .where("userProfile.userAuth = :id", {
+                    id: (_a = isHaveingPermission[0]) === null || _a === void 0 ? void 0 : _a.userAuth.id,
+                })
+                    .getOne();
+                file = yield FileRepo.findOne({
+                    where: {
+                        id: parseInt(id),
+                        user: {
+                            id: userAllowedProfile === null || userAllowedProfile === void 0 ? void 0 : userAllowedProfile.id,
+                        },
+                    },
+                });
+            }
+            else {
+                file = yield FileRepo.findOne({
+                    where: {
+                        id: parseInt(id),
+                        user: {
+                            id: userProfile === null || userProfile === void 0 ? void 0 : userProfile.id,
+                        },
+                    },
+                });
+            }
             if (!file)
                 return res.status(200).json({
                     message: "no files found",
@@ -149,8 +202,10 @@ exports.fileController = {
                 Key: file.key + "." + file.ext,
                 Expires: 60,
             };
-            //   const url = await s3.getSignedUrlPromise("getObject", params);
-            return res.status(200).json({ success: true, data: { ext: file.ext } });
+            const url = yield config_1.s3.getSignedUrlPromise("getObject", params);
+            return res
+                .status(200)
+                .json({ success: true, data: { url, ext: file.ext } });
         }
         catch (error) {
             console.log(error);
@@ -213,7 +268,7 @@ exports.fileController = {
                 Bucket: process.env.AWS_STORAGE_BUCKET_NAME || "store-and-share-vault",
                 Key: file.key + "." + file.ext,
             };
-            //   await s3.deleteObject(params).promise();
+            yield config_1.s3.deleteObject(params).promise();
             yield FileRepo.delete({ id: parseInt(id) });
             const leftStorage = parseFloat(userProfile.storageLeft) + parseFloat(file.size);
             userProfile.storageLeft = leftStorage.toString();

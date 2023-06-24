@@ -23,19 +23,19 @@ __decorate([
     __metadata("design:type", UserProfile_1.UserProfile)
 ], BankAccountPassword.prototype, "userProfile", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "bank_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "website", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "user_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "password", void 0);
 __decorate([
@@ -43,11 +43,11 @@ __decorate([
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "account_number", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "routing", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], BankAccountPassword.prototype, "account_nick_name", void 0);
 __decorate([

@@ -156,7 +156,7 @@ const ShareWith = ({ details }) => {
 
   const addBuddiesToFilePermission = async () => {
     const res = await addBuddiesToFilePermissionApi(t, {
-      file_id: 3,
+      file_id: details?.id,
       buddy_ids: [selectedBuddies[0].buddy.id],
       read: true,
       instantReleaseDate: new Date(),

@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const bankAccount_1 = require("../../../controllers/apis/v1/bankAccount");
 const verifyUsers_1 = require("../../../../middlewares/verifyUsers");
+const recipe_1 = require("../../../controllers/apis/v1/recipe");
 const router = (0, express_1.Router)();
 router.use(verifyUsers_1.authenticateUser);
-router.post("/", bankAccount_1.bankAccountController.postBankAccount);
-router.get("/", bankAccount_1.bankAccountController.getBankAccount);
+router.post("/", recipe_1.recipeFormController.postRecipeForm);
+router.get("/", recipe_1.recipeFormController.getRecipeForm);
+router.delete("/:id", recipe_1.recipeFormController.deleteRecipeForm);
+router.get("/:id", recipe_1.recipeFormController.getRecipeFormDetailsById);
+router.put("/:id", recipe_1.recipeFormController.updateRecipeFormDetailsById);
 // router.get('/user', authController.getUser);
 exports.default = router;
