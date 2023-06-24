@@ -333,9 +333,11 @@ const BankAccountPassword = () => {
                         key={element.id}
                       >
                         <div
-                        // onClick={() =>
-                        //     navigate(`${element.navigate}`)
-                        // }
+                          onClick={() =>
+                            navigate(
+                              `/home/password-type-form?form=6&id=${element.id}`
+                            )
+                          }
                         >
                           <FolderContainer
                             width="100%"
@@ -413,7 +415,7 @@ const BankAccountPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=6&id=${element.id}`
+                                  `/home/password-type-form?form=6&id=${element.id}`
                                 );
                               },
                             },

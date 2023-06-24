@@ -293,7 +293,7 @@ const LoanAccountPassword = () => {
                         <div
                           onClick={() =>
                             navigate(
-                              `/password-type-form?form=1&id=${element.id}`
+                              `/home/password-type-form?form=1&id=${element.id}`
                             )
                           }
                         >
@@ -372,7 +372,7 @@ const LoanAccountPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=1&id=${element.id}`
+                                  `/home/password-type-form?form=1&id=${element.id}`
                                 );
                               },
                             },

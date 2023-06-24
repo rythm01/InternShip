@@ -331,7 +331,7 @@ const CreditCardPassword = () => {
                         <div
                           onClick={() =>
                             navigate(
-                              `/password-type-form?form=3&id=${element.id}`
+                              `/home/password-type-form?form=3&id=${element.id}`
                             )
                           }
                         >
@@ -410,7 +410,7 @@ const CreditCardPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=3&id=${element.id}`
+                                  `/home/password-type-form?form=3&id=${element.id}`
                                 );
                               },
                             },

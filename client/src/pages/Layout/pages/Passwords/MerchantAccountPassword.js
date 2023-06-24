@@ -296,7 +296,7 @@ const MerchantAccountPassword = () => {
                         <div
                           onClick={() =>
                             navigate(
-                              `/password-type-form?form=7&id=${element.id}`
+                              `/home/password-type-form?form=7&id=${element.id}`
                             )
                           }
                         >
@@ -375,7 +375,7 @@ const MerchantAccountPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=7&id=${element.id}`
+                                  `/home/password-type-form?form=7&id=${element.id}`
                                 );
                               },
                             },

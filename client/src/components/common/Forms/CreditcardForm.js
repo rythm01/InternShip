@@ -142,8 +142,9 @@ const CreditcardForm = ({ isEdit, id }) => {
           user_name: getCreditCard?.user_name || "",
           password: getCreditCard?.password || "",
           credit_card_number: getCreditCard?.credit_card_number || "",
-          payment_date:
-            moment(getCreditCard?.payment_date).format("YYYY-MM-DD") || "",
+          payment_date: getCreditCard?.payment_date
+            ? moment(getCreditCard?.payment_date).format("YYYY-MM-DD")
+            : "",
           account_nick_name: getCreditCard?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}

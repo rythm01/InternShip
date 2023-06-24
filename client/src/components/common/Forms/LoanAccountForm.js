@@ -144,8 +144,9 @@ const LoanAccountForm = ({ isEdit, id }) => {
           user_name: getLoanAccount?.user_name || "",
           password: getLoanAccount?.password || "",
           loan_amount: getLoanAccount?.loan_amount || "",
-          payment_date:
-            moment(getLoanAccount?.payment_date).format("YYYY-MM-DD") || "",
+          payment_date: getLoanAccount?.payment_date
+            ? moment(getLoanAccount?.payment_date).format("YYYY-MM-DD")
+            : "",
           account_nick_name: getLoanAccount?.account_nick_name || "",
         }}
         onSubmit={handleSubmit}

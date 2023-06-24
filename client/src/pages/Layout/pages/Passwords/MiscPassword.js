@@ -296,7 +296,7 @@ const MiscPassword = () => {
                         <div
                           onClick={() =>
                             navigate(
-                              `/password-type-form?form=5&id=${element.id}`
+                              `/home/password-type-form?form=5&id=${element.id}`
                             )
                           }
                         >
@@ -375,7 +375,7 @@ const MiscPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=5&id=${element.id}`
+                                  `/home/password-type-form?form=5&id=${element.id}`
                                 );
                               },
                             },

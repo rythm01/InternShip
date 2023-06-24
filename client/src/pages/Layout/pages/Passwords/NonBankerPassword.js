@@ -297,7 +297,7 @@ const NonBankerPassword = () => {
                         <div
                           onClick={() =>
                             navigate(
-                              `/password-type-form?form=2&id=${element.id}`
+                              `/home/password-type-form?form=2&id=${element.id}`
                             )
                           }
                         >
@@ -375,7 +375,7 @@ const NonBankerPassword = () => {
                               text: "Open",
                               onClick: () => {
                                 navigate(
-                                  `/password-type-form?form=2&id=${element.id}`
+                                  `/home/password-type-form?form=2&id=${element.id}`
                                 );
                               },
                             },
