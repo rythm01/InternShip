@@ -179,7 +179,7 @@ export default function Recipe({ id, isEdit }) {
       } else {
         await postRecipeForm(t, values);
       }
-      navigate("/passwords/recipes");
+      navigate("/home/passwords/recipes");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

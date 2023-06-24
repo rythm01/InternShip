@@ -125,7 +125,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
       } else {
         await postPasswordStorage(t, values);
       }
-      navigate("/passwords/nonbankerpassword");
+      navigate("/home/passwords/nonbankerpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

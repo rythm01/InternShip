@@ -127,7 +127,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
       } else {
         await postMerchantAccount(t, values);
       }
-      navigate("/passwords/merchantaccount");
+      navigate("/home/passwords/merchantaccount");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

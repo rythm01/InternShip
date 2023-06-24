@@ -126,7 +126,7 @@ export default function MiscForm({ id, isEdit }) {
       } else {
         await postMiscPassword(t, values);
       }
-      navigate("/passwords/miscpassword");
+      navigate("/home/passwords/miscpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

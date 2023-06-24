@@ -126,7 +126,7 @@ const BankForm = ({ isEdit, id }) => {
       } else {
         await postBankAccountForm(t, values);
       }
-      navigate("/passwords/bankaccountpassword");
+      navigate("/home/passwords/bankaccountpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

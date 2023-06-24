@@ -126,7 +126,7 @@ const CreditcardForm = ({ isEdit, id }) => {
       } else {
         await postCreditCard(t, values);
       }
-      navigate("/passwords/creditcardpassword");
+      navigate("/home/passwords/creditcardpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);

@@ -127,7 +127,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
       } else {
         await postLoanAccount(t, values);
       }
-      navigate("/passwords/loanaccountpassword");
+      navigate("/home/passwords/loanaccountpassword");
       setSubmitting(false);
     } catch (error) {
       console.log(error);
