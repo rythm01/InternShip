@@ -10,6 +10,8 @@ import Products from "./pages/Products/Index";
 import ContactUs from "./pages/ContactUs/ContactUs";
 import Shared from "./pages/Shared";
 import PDF from "./pages/pdf";
+import Permission from "./pages/Permissions/Permission";
+import AddPermission from "./pages/Permissions/AddPermission";
 import Invitation from "./pages/invitation";
 const CreateProfile = React.lazy(() => import("./pages/CreateProfile"));
 const Home = React.lazy(() => import("./pages/Layout/pages/Home"));
@@ -66,6 +68,10 @@ const routes = [
     element: <Signup />,
   },
   {
+    path: "addpermission",
+    element: <AddPermission />
+  },
+  {
     path: "/home",
     element: <Layout />,
     routes: [
@@ -88,6 +94,10 @@ const routes = [
         path: "passwords/loanaccountpassword",
         element: <LoanAccountPassword />,
         isProtected: true,
+      },
+      {
+        path: "passwords/permission",
+        element: <Permission />
       },
       {
         path: "passwords/nonbankerpassword",
@@ -184,10 +194,6 @@ const routes = [
         element: <PasswordTypeForms />,
         isProtected: true,
       },
-      // {
-      //   path: "/transactions/subscriptions",
-      //   element: <Subscriptions />
-      // },
       {
         path: "create-profile",
         element: <CreateProfile />,
