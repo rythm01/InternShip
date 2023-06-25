@@ -11,7 +11,7 @@ function Permission() {
     const navigate = useNavigate();
 
     function handleClick() {
-        navigate('/permission', { state: { isNewBuddy: true } });
+        navigate('/addpermission', { state: { isNewBuddy: true } });
     }
 
     const location = useLocation();
@@ -121,7 +121,6 @@ const Container = styled.div`
         border-radius: 8px;
         .subbutton{
             display:flex;
-            // justify-content:center;
             align-items:center;
             background-color:black;
             button {
@@ -138,7 +137,7 @@ const Container = styled.div`
                 border-radius: 10px;
                 box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
                 margin-bottom: 10px;
-                margin-left:100px;
+                margin-left:70px;
                 font-weight:600;
                 cursor: pointer;
                 position:absolute;
@@ -171,6 +170,7 @@ const Container = styled.div`
             &.main::-webkit-scrollbar-thumb { background-color:black};
             &.main::-webkit-scrollbar-thumb { border-radius:20px};
             .buddy{
+                margin:12px;
                 li{
                     list-style:none;
                 }
@@ -182,6 +182,7 @@ const Container = styled.div`
                 }
                 li.email,li.share{
                     font-size:14px;
+                    margin-bottom:3px;
                 }
             }
         }
