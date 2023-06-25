@@ -332,13 +332,7 @@ const BankAccountPassword = () => {
                         style={{ position: "relative", marginTop: "20px" }}
                         key={element.id}
                       >
-                        <div
-                          onClick={() =>
-                            navigate(
-                              `/home/password-type-form?form=6&id=${element.id}`
-                            )
-                          }
-                        >
+                        <div>
                           <FolderContainer
                             width="100%"
                             height="173px"

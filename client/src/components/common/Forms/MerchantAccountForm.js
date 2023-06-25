@@ -101,6 +101,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
 
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [isData, setIsData] = useState(true);
 
   useEffect(() => {
@@ -121,6 +122,8 @@ const MerchantAccountForm = ({ id, isEdit }) => {
   }, [getMerchantAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
         await updateMerchantAccount(t, id, values);
@@ -160,6 +163,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="merchant_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Name"
                   />
 
@@ -167,6 +171,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="website"
+                    disabled={!isProfileEdit}
                     placeholder="Enter url/website"
                   />
 
@@ -174,6 +179,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="user_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter username"
                   />
 
@@ -182,6 +188,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                     <Field
                       type={showPassword ? "text" : "password"}
                       name="password"
+                      disabled={!isProfileEdit}
                       placeholder="Enter password"
                     />
                     <div className="eye-icon">
@@ -205,6 +212,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="tel"
                     name="account_number"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Account"
                   />
 
@@ -212,6 +220,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="account_nick_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter account nickname"
                   />
 
@@ -224,7 +233,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                 </fieldset>
                 <div className="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

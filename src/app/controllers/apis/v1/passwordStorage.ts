@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import PasswordStorage from "../../../models/PasswordStorageForm";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const PasswordStorageRepo = AppDataSource.getRepository(PasswordStorage);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const passwordStorageController = {
@@ -75,7 +78,20 @@ export const passwordStorageController = {
         })
         .getMany();
 
-      if (!isPasswordStorage) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.PASSWORD_STORAGE_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "passwordStorageId"],
+      });
+      const allowedData = [];
+      for (const passwordStorage of isHaveingPermission) {
+        allowedData.push(passwordStorage.passwordStorageId);
+      }
+
+      if (!isPasswordStorage && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No password storage forms attached",
         });
@@ -84,6 +100,7 @@ export const passwordStorageController = {
       return res.status(200).send({
         message: "Success",
         data: isPasswordStorage,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -160,7 +177,17 @@ export const passwordStorageController = {
         .andWhere("passwordStorage.id = :id", { id: id })
         .getOne();
 
-      if (!isPasswordStorage) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          passwordStorageId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.PASSWORD_STORAGE_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "passwordStorageId"],
+      });
+
+      if (!isPasswordStorage && !isHaveingPermission) {
         return res.status(400).json({
           message: "No data found",
         });
@@ -168,6 +195,7 @@ export const passwordStorageController = {
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.passwordStorageId,
         data: isPasswordStorage,
       });
     } catch (error) {

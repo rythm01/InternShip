@@ -96,6 +96,7 @@ const BankForm = ({ isEdit, id }) => {
   const navigate = useNavigate();
   const [getAccountData, setAccountData] = useState();
   const [isData, setIsData] = useState(true);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -122,6 +123,8 @@ const BankForm = ({ isEdit, id }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateBankAccountForm(t, id, values);
       } else {
         await postBankAccountForm(t, values);
@@ -160,6 +163,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="bank_name"
                     placeholder="Enter Name"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>Website/URL</label>
@@ -167,6 +171,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="website"
                     placeholder="Enter url/website"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>User Name:</label>
@@ -174,6 +179,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="user_name"
                     placeholder="Enter username"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>Password:</label>
@@ -182,6 +188,7 @@ const BankForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
+                      disabled={isEdit && !isProfileEdit}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -204,6 +211,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="tel"
                     name="account_number"
                     placeholder="Enter Account"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>Routing:</label>
@@ -211,6 +219,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="routing"
                     placeholder="Enter Routing"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>Account Nick Name:</label>
@@ -218,6 +227,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="account_nick_name"
                     placeholder="Enter account nickname"
+                    disabled={isEdit && !isProfileEdit}
                   />
 
                   <label>Password Recovery:</label>
@@ -229,7 +239,7 @@ const BankForm = ({ isEdit, id }) => {
                 </fieldset>
                 <div class="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Edit" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

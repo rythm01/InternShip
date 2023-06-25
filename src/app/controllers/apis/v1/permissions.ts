@@ -50,22 +50,12 @@ export const permissionsController = {
   createPermission: async (req: Request, res: Response) => {
     try {
       const { file_id, buddy_ids, ...data } = req.body;
-      console.log(buddy_ids);
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
       )
         .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
-
-      const fileData = await FileRepo.find({
-        where: {
-          user: {
-            id: userProfile?.id,
-          },
-          id: file_id,
-        },
-      });
 
       const buddyData = await BuddyRepo.find({
         where: { user: { id: req.user as any } },
@@ -83,18 +73,36 @@ export const permissionsController = {
         relations: ["user", "buddy"],
       });
 
-      if (!fileData || !buddyData) {
+      if (!buddyData) {
         return res
           .status(200)
           .json({ success: false, message: "Data not found" });
       }
-
+      const newPermission = new Permission();
       const allPermission = [];
+
+      if (file_id) {
+        const fileData = await FileRepo.findOne({
+          where: {
+            user: {
+              id: userProfile?.id,
+            },
+            id: file_id,
+          },
+        });
+        newPermission.file = fileData?.id as any;
+      }
+
       for (const buddy of buddyData) {
-        const newPermission = new Permission();
-        newPermission.file = fileData[0].id as any;
         newPermission.userAuth = req.user as any;
         newPermission.buddy = buddy.buddy.id as any;
+        newPermission.bankAccountId = data?.bankAccountId;
+        newPermission.creditCardId = data?.creditCardId;
+        newPermission.loanAccountId = data?.loanAccountId;
+        newPermission.merchantAccountId = data?.merchantAccountId;
+        newPermission.miscAccountId = data?.miscAccountId;
+        newPermission.recipeAccountId = data?.recipeAccountId;
+        newPermission.form_type = data?.form_type;
         newPermission.canRead = data?.read || false;
         newPermission.canWrite = data?.write || false;
         newPermission.canShare = data?.share || false;

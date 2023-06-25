@@ -295,7 +295,6 @@ export default function Passwords() {
                         {
                           text: "Rename",
                           onClick: () => {
-                            console.log(element);
                             setNewFolderName(element.title);
                             setSelectedFolder(element);
                             setRenameModalOpen(true);
@@ -304,7 +303,6 @@ export default function Passwords() {
                         {
                           text: "Delete",
                           onClick: () => {
-                            console.log(element.id);
                             handleDeleteFolder(element.id);
                           },
                         },

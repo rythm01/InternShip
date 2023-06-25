@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import RecipeForm from "../../../models/RecipeForm";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 // import RecipeForm from "../../../models/RecipeFormForm";
 
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const RecipeFormRepo = AppDataSource.getRepository(RecipeForm);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
@@ -95,7 +98,19 @@ export const recipeFormController = {
         })
         .getMany();
 
-      if (!isRecipeForm) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type: PERMISSION_FORM_TYPE_ENUMS.RECIPE_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "recipeAccountId"],
+      });
+      const allowedData = [];
+      for (const recipeAccount of isHaveingPermission) {
+        allowedData.push(recipeAccount.recipeAccountId);
+      }
+
+      if (!isRecipeForm && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No data attached",
         });
@@ -104,6 +119,7 @@ export const recipeFormController = {
       return res.status(200).send({
         message: "Success",
         data: isRecipeForm,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -172,7 +188,16 @@ export const recipeFormController = {
         .andWhere("recipeForm.id = :id", { id: id })
         .getOne();
 
-      if (!isRecipeForm) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          recipeAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type: PERMISSION_FORM_TYPE_ENUMS.RECIPE_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "recipeAccountId"],
+      });
+
+      if (!isRecipeForm && !isHaveingPermission) {
         return res.status(400).json({
           message: "No data found",
         });
@@ -180,6 +205,7 @@ export const recipeFormController = {
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.recipeAccountId,
         data: isRecipeForm,
       });
     } catch (error) {
