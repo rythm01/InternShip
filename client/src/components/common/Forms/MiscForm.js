@@ -95,6 +95,7 @@ export default function MiscForm({ id, isEdit }) {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isProfileEdit, setIsProfileEdit] = useState(false);
+  const [getAllowedData, setAllowedData] = useState();
   const [getMiscAccount, setMiscAccount] = useState();
   const [isData, setIsData] = useState(true);
 
@@ -102,6 +103,7 @@ export default function MiscForm({ id, isEdit }) {
     if (id && isEdit) {
       getMiscPasswordDetails(t, id)
         .then((res) => {
+          setAllowedData(res.data?.allowedData);
           setMiscAccount(res?.data?.data);
           setIsData(true);
         })
@@ -121,10 +123,10 @@ export default function MiscForm({ id, isEdit }) {
   }, [getMiscAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    setIsProfileEdit(!isProfileEdit);
-    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateMiscPassword(t, id, values);
       } else {
         await postMiscPassword(t, values);
@@ -141,12 +143,20 @@ export default function MiscForm({ id, isEdit }) {
       <Formik
         enableReinitialize
         initialValues={{
-          account_name: getMiscAccount?.account_name || "",
-          website: getMiscAccount?.website || "",
-          user_name: getMiscAccount?.user_name || "",
-          password: getMiscAccount?.password || "",
-          account_number: getMiscAccount?.account_number || "",
-          account_nick_name: getMiscAccount?.account_nick_name || "",
+          account_name:
+            getMiscAccount?.account_name || getAllowedData?.account_name || "",
+          website: getMiscAccount?.website || getAllowedData?.website || "",
+          user_name:
+            getMiscAccount?.user_name || getAllowedData?.user_name || "",
+          password: getMiscAccount?.password || getAllowedData?.password || "",
+          account_number:
+            getMiscAccount?.account_number ||
+            getAllowedData?.account_number ||
+            "",
+          account_nick_name:
+            getMiscAccount?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -160,7 +170,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="account_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Accountname"
                   />
 
@@ -168,7 +178,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="website"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter url/website"
                   />
 
@@ -176,7 +186,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="user_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter username"
                   />
 
@@ -185,7 +195,7 @@ export default function MiscForm({ id, isEdit }) {
                     <Field
                       type={showPassword ? "text" : "password"}
                       name="password"
-                      disabled={!isProfileEdit}
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                       placeholder="Enter password"
                     />
                     <div className="eye-icon">
@@ -209,7 +219,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="tel"
                     name="account_number"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Account"
                   />
 
@@ -217,7 +227,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="account_nick_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter account nickname"
                   />
 
@@ -229,7 +239,10 @@ export default function MiscForm({ id, isEdit }) {
                   </p>
                 </fieldset>
                 <div className="subbutton">
-                  <span onClick={handleSubmit}>
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
                     {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
