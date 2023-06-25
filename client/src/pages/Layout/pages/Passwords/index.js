@@ -42,7 +42,9 @@ import styled from "styled-components";
 import useWindowSize from "../../../../utils/hook/useWindowSize";
 import { AuthContext } from "../../../../context/AuthContext";
 import PasswordsData from "./PasswordStaticData";
+import CloseIcon from '@mui/icons-material/Close';
 import { Toaster, toast } from "react-hot-toast";
+import Permission from "../../../Permissions/Permission";
 
 const Row = styled.div`
   display: flex;
@@ -221,10 +223,10 @@ export default function Passwords() {
                   width > 1200
                     ? "repeat(4,1fr)"
                     : width > 950
-                    ? "repeat(3,1fr)"
-                    : width > 600
-                    ? "repeat(2,1fr)"
-                    : "repeat(2,1fr)",
+                      ? "repeat(3,1fr)"
+                      : width > 600
+                        ? "repeat(2,1fr)"
+                        : "repeat(2,1fr)",
                 gridGap: "1rem",
               }}
             >
@@ -298,6 +300,8 @@ export default function Passwords() {
                             setNewFolderName(element.title);
                             setSelectedFolder(element);
                             setRenameModalOpen(true);
+                            document.body.style.overflow = true ? "hidden" : "auto";
+                            // console.log(element);
                           },
                         },
                         {
@@ -308,6 +312,9 @@ export default function Passwords() {
                         },
                         {
                           text: "Permission",
+                          onClick:()=>{
+                            navigate('permission');
+                          }
                         },
                       ]}
                       position="absolute"
@@ -321,16 +328,92 @@ export default function Passwords() {
       </Box>
 
       {renameModalOpen && (
-        <div className="modal">
-          <input
-            type="text"
-            value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
-          />
-          <button onClick={renameFolder}>Rename</button>
-          <button onClick={() => setRenameModalOpen(false)}>Cancel</button>
-        </div>
+        <Container>
+          <div className="container">
+            <div className="modalOfRename">
+              <h2 className="heading" style={{ "textAlign": "center", "marginTop": "10px" }}>Rename Folder</h2>
+              <div onClick={() => setRenameModalOpen(false)} className="closeButton">
+                <CloseIcon />
+              </div>
+              <div className="renameForm">
+                <h4 className="title">Title</h4>
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                />
+                <button onClick={renameFolder}>Rename</button>
+              </div>
+            </div>
+          </div>
+        </Container>
       )}
     </>
   );
 }
+
+
+const Container = styled.div`
+  .container{
+    width:70vw;
+    height:62vh;
+    font-family: 'Poppins', sans-serif;
+    position:relative;
+    bottom:400px;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    .modalOfRename{
+      width:500px;
+      height:230px;
+      background:white;
+      border-radius:20px;
+      position:relative;
+      box-shadow: 1px 1px 5px black;
+      .closeButton{
+        box-shadow: 1px 1px 5px black;
+        width:30px;
+        height:30px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:50px;
+        position:absolute;
+        top:10px;
+        right:10px;
+      }
+      .renameForm{
+        display:flex;
+        flex-direction:column;
+        margin:30px;
+        input{
+          margin-top:10px;
+          height:40px;
+          border-radius:10px;
+          color:grey;
+        }
+        button {
+          padding: 12px 39px;
+          color: #FFF;
+          background-color: #00A652;
+          font-size: 18px;
+          font-style: normal;
+          text-align: center;
+          border-radius: 5px;
+          width: 250px;
+          margin:auto;
+          margin-top:20px;
+          border: 1px solid #00A652;
+          border-width: 1px 1px 3px;
+          border-radius: 10px;
+          box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+          margin-bottom: 10px;
+          font-weight:600;
+          cursor: pointer;
+          bottom:25px;
+        }      
+      }
+    }
+  }
+`
