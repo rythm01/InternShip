@@ -151,6 +151,7 @@ export default function Recipe({ id, isEdit }) {
   );
   const [ingredient, setIngredient] = useState("Select Type");
   const { t } = useContext(AuthContext);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
   const [isData, setIsData] = useState(true);
@@ -173,6 +174,8 @@ export default function Recipe({ id, isEdit }) {
   }, [getMerchantAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
         await updateRecipeForm(t, id, values);
@@ -239,6 +242,7 @@ export default function Recipe({ id, isEdit }) {
               <Field
                 type="text"
                 name="recipe_name"
+                disabled={!isProfileEdit}
                 placeholder="Enter Recipe Name"
               />
 
@@ -248,6 +252,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient1"
+                    disabled={!isProfileEdit}
                     name="ingredient1"
                     placeholder="Enter Ingredient 1"
                   />
@@ -257,6 +262,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_one_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_one_amount"
                     class="ingamount"
                     placeholder=""
@@ -295,6 +301,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_two"
+                    disabled={!isProfileEdit}
                     name="ingredient_two"
                     placeholder="Enter Ingredient 2"
                   />
@@ -304,6 +311,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_two_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_two_amount"
                     class="ingamount"
                     placeholder=""
@@ -341,6 +349,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_three"
+                    disabled={!isProfileEdit}
                     name="ingredient_three"
                     placeholder="Enter Ingredient 3"
                   />
@@ -350,6 +359,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_three_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_three_amount"
                     class="ingamount"
                     placeholder=""
@@ -387,8 +397,10 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_four"
+                    disabled={!isProfileEdit}
                     name="ingredient_four"
                     placeholder="Enter Ingredient 4"
+                    cursor="disabled"
                   />
                 </div>
                 <label htmlFor="ingredient_four_amount">Amount</label>
@@ -396,6 +408,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_four_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_four_amount"
                     class="ingamount"
                     placeholder=""
@@ -433,6 +446,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_five"
+                    disabled={!isProfileEdit}
                     name="ingredient_five"
                     placeholder="Enter Ingredient 5"
                   />
@@ -442,6 +456,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_five_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_five_amount"
                     class="ingamount"
                     placeholder=""
@@ -479,6 +494,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_six"
+                    disabled={!isProfileEdit}
                     name="ingredient_six"
                     placeholder="Enter Ingredient 6"
                   />
@@ -488,6 +504,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_six_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_six_amount"
                     class="ingamount"
                     placeholder=""
@@ -525,6 +542,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_seven"
+                    disabled={!isProfileEdit}
                     name="ingredient_seven"
                     placeholder="Enter Ingredient 7"
                   />
@@ -534,6 +552,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_seven_amount"
+                    disabled={!isProfileEdit}
                     name="ingredient_seven_amount"
                     class="ingamount"
                     placeholder=""
@@ -569,13 +588,16 @@ export default function Recipe({ id, isEdit }) {
               <Field
                 as="textarea"
                 id="cooking_description"
+                disabled={!isProfileEdit}
                 name="cooking_description"
                 cols="70"
                 rows="5"
               ></Field>
             </fieldset>
             <div class="subbutton">
-              <span onClick={handleSubmit}>Submit</span>
+              <span onClick={handleSubmit}>
+                {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+              </span>
             </div>
           </Form>
         )}

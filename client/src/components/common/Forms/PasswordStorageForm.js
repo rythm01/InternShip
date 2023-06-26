@@ -95,6 +95,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
   const [isData, setIsData] = useState(true);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -119,6 +120,8 @@ const PasswordStorageForm = ({ id, isEdit }) => {
   }, [getMerchantAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
         await updatePasswordStorage(t, id, values);
@@ -155,6 +158,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="website"
+                    disabled={!isProfileEdit}
                     placeholder="Enter url/website"
                   />
 
@@ -162,6 +166,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="user_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter username"
                   />
 
@@ -170,6 +175,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
                     <Field
                       type={showPassword ? "text" : "password"}
                       name="password"
+                      disabled={!isProfileEdit}
                       placeholder="Enter password"
                     />
                     <div className="eye-icon">
@@ -193,6 +199,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="account_nick_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter account nickname"
                   />
 
@@ -205,7 +212,7 @@ const PasswordStorageForm = ({ id, isEdit }) => {
                 </fieldset>
                 <div className="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

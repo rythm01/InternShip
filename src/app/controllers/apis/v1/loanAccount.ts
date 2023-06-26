@@ -4,9 +4,12 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import LoanAccountPassword from "../../../models/LoanAccountPassword";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const LoanAccountPasswordRepo =
   AppDataSource.getRepository(LoanAccountPassword);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const loanAccountController = {
@@ -82,6 +85,7 @@ export const loanAccountController = {
           message: "No loan account forms to display",
         });
       }
+
       const isLoanAccount = await LoanAccountPasswordRepo.createQueryBuilder(
         "loanAccount"
       )
@@ -90,7 +94,20 @@ export const loanAccountController = {
         })
         .getMany();
 
-      if (!isLoanAccount) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.LOAN_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "loanAccountId"],
+      });
+      const allowedData = [];
+      for (const loanAccount of isHaveingPermission) {
+        allowedData.push(loanAccount.loanAccountId);
+      }
+
+      if (!isLoanAccount && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No loan account forms attached",
         });
@@ -99,6 +116,7 @@ export const loanAccountController = {
       return res.status(200).send({
         message: "Success",
         data: isLoanAccount,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -171,7 +189,17 @@ export const loanAccountController = {
         .andWhere("loanAccount.id = :id", { id: id })
         .getOne();
 
-      if (!isLoanAccount) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          loanAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.LOAN_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "loanAccountId"],
+      });
+
+      if (!isLoanAccount && !isHaveingPermission) {
         return res.status(400).json({
           message: "No data found",
         });
@@ -179,6 +207,7 @@ export const loanAccountController = {
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.loanAccountId,
         data: isLoanAccount,
       });
     } catch (error) {

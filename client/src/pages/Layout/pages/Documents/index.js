@@ -264,9 +264,9 @@ export default function Documents() {
                     + New Folder
                   </Button>
 
-                  {/* <Row>
+                  <Row>
                     <ShareWith />
-                  </Row> */}
+                  </Row>
                 </div>
               </Row>
 

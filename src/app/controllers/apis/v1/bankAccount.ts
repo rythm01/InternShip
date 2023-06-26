@@ -5,9 +5,12 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 
 export const bankAccountController = {
   postBankAccount: async (req: Request, res: Response, next: any) => {
@@ -81,6 +84,20 @@ export const bankAccountController = {
           .status(200)
           .json({ success: false, message: "No Bank Account to display" });
       }
+
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "bankAccountId"],
+      });
+      const allowedData = [];
+      for (const bankPassword of isHaveingPermission) {
+        allowedData.push(bankPassword.bankAccountId);
+      }
+
       const isBankAccount = await BankAccountRepo.createQueryBuilder(
         "bankAccount"
       )
@@ -89,15 +106,10 @@ export const bankAccountController = {
         })
         .getMany();
 
-      if (!isBankAccount) {
-        return res.status(400).json({
-          message: "No bank account attached",
-        });
-      }
-
       return res.status(200).send({
         message: "Success",
         data: isBankAccount,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -161,6 +173,16 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          bankAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "bankAccountId"],
+      });
+
       const isBankAccount = await BankAccountRepo.createQueryBuilder(
         "bankAccount"
       )
@@ -170,7 +192,7 @@ export const bankAccountController = {
         .andWhere("bankAccount.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isBankAccount && !isHaveingPermission) {
         return res.status(400).json({
           message: "No bank account attached",
         });
@@ -179,6 +201,7 @@ export const bankAccountController = {
       return res.status(200).send({
         message: "Success",
         data: isBankAccount,
+        allowedData: isHaveingPermission?.bankAccountId,
       });
     } catch (error) {
       next(error);

@@ -307,7 +307,6 @@ export default function Passwords() {
                         {
                           text: "Delete",
                           onClick: () => {
-                            console.log(element.id);
                             handleDeleteFolder(element.id);
                           },
                         },

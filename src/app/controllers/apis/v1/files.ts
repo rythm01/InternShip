@@ -40,7 +40,7 @@ export const fileController = {
         for (const file of isHaveingPermission) {
           const files = await FileRepo.findOne({
             where: {
-              id: file.file.id,
+              id: file.file?.id,
             },
           });
           allowedFile.push(files);
@@ -182,7 +182,7 @@ export const fileController = {
         },
         relations: ["userAuth"],
       });
-      console.log(isHaveingPermission);
+
       if (isHaveingPermission.length > 0) {
         const userAllowedProfile = await UserProfileRepo.createQueryBuilder(
           "userProfile"

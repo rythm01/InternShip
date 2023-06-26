@@ -96,6 +96,7 @@ const CreditcardForm = ({ isEdit, id }) => {
   const navigate = useNavigate();
   const [getCreditCard, setCreditCard] = useState();
   const [isData, setIsData] = useState(true);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -120,6 +121,8 @@ const CreditcardForm = ({ isEdit, id }) => {
   }, [getCreditCard]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (isEdit) {
         await updateCreditCard(t, id, values);
@@ -162,6 +165,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="name"
                     name="credit_card_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Name"
                   />
 
@@ -170,6 +174,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="url"
                     name="website"
+                    disabled={!isProfileEdit}
                     placeholder="Enter url/website"
                   />
 
@@ -178,6 +183,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="username"
                     name="user_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter username"
                   />
 
@@ -187,6 +193,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
+                      disabled={!isProfileEdit}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -210,6 +217,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="creditcard"
                     name="credit_card_number"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Creditcard"
                   />
 
@@ -218,6 +226,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="date"
                     id="date"
                     name="payment_date"
+                    disabled={!isProfileEdit}
                     placeholder="enter paymentdate"
                   />
 
@@ -226,6 +235,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="nickname"
                     name="account_nick_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter account nickname"
                   />
 
@@ -238,7 +248,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                 </fieldset>
                 <div className="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

@@ -94,6 +94,7 @@ const Container = styled.form`
 export default function MiscForm({ id, isEdit }) {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [getMiscAccount, setMiscAccount] = useState();
   const [isData, setIsData] = useState(true);
 
@@ -120,6 +121,8 @@ export default function MiscForm({ id, isEdit }) {
   }, [getMiscAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
         await updateMiscPassword(t, id, values);
@@ -157,6 +160,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="account_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Accountname"
                   />
 
@@ -164,6 +168,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="website"
+                    disabled={!isProfileEdit}
                     placeholder="Enter url/website"
                   />
 
@@ -171,6 +176,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="user_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter username"
                   />
 
@@ -179,6 +185,7 @@ export default function MiscForm({ id, isEdit }) {
                     <Field
                       type={showPassword ? "text" : "password"}
                       name="password"
+                      disabled={!isProfileEdit}
                       placeholder="Enter password"
                     />
                     <div className="eye-icon">
@@ -202,6 +209,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="tel"
                     name="account_number"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Account"
                   />
 
@@ -209,6 +217,7 @@ export default function MiscForm({ id, isEdit }) {
                   <Field
                     type="text"
                     name="account_nick_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter account nickname"
                   />
 
@@ -221,7 +230,7 @@ export default function MiscForm({ id, isEdit }) {
                 </fieldset>
                 <div className="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

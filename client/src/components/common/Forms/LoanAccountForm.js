@@ -96,6 +96,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getLoanAccount, setLoanAccount] = useState();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [isData, setIsData] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -121,6 +122,8 @@ const LoanAccountForm = ({ isEdit, id }) => {
   }, [getLoanAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
         await updateLoanAccount(t, id, values);
@@ -164,6 +167,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="name"
                     name="creditor_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter Name"
                   />
 
@@ -172,6 +176,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="url"
                     name="website"
+                    disabled={!isProfileEdit}
                     placeholder="Enter url/website"
                   />
 
@@ -180,6 +185,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="username"
                     name="user_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter username"
                   />
 
@@ -189,6 +195,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
+                      disabled={!isProfileEdit}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -212,6 +219,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="loan"
                     name="loan_amount"
+                    disabled={!isProfileEdit}
                     placeholder="Enter loan"
                   />
 
@@ -220,6 +228,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="date"
                     id="date"
                     name="payment_date"
+                    disabled={!isProfileEdit}
                     placeholder="Enter payment date"
                   />
 
@@ -228,6 +237,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="nickname"
                     name="account_nick_name"
+                    disabled={!isProfileEdit}
                     placeholder="Enter account nickname"
                   />
 
@@ -240,7 +250,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                 </fieldset>
                 <div className="subbutton">
                   <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>
