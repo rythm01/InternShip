@@ -33,8 +33,7 @@ import useWindowSize from "./../../utils/hook/useWindowSize";
 import { AuthContext } from "../../context/AuthContext";
 import { getProfile } from "../../networks/profile";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
-import { Toaster,toast } from "react-hot-toast";
-
+import { Toaster, toast } from "react-hot-toast";
 
 const Image = styled.img`
   @media (max-width: 900px) {
@@ -92,9 +91,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const { setToken, t, setProfile } = useContext(AuthContext)
-
-
+  const { setToken, t, setProfile } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -106,56 +103,59 @@ export default function Login() {
     setLoading(true);
     const res = await login({ email, password });
     if (!res.data.success) {
-      setLoading(false)
+      setLoading(false);
 
-      return setError(res.data.message)
+      return setError(res.data.message);
     }
     if (res.data.success && res.data.is2fa) {
-      setLoading(false)
+      setLoading(false);
 
       return navigate("/2fa", {
         state: {
-          data: res.data
-        }
-      })
+          data: res.data,
+        },
+      });
     }
 
-    setToken(res.data.token)
+    setToken(res.data.token);
 
-    const response = await getProfile(res.data.token)
-    if (!response.data.success) return navigate('/home/create-profile')
+    const response = await getProfile(res.data.token);
+    if (!response.data.success) return navigate("/home/create-profile");
     if (response.data.success) {
-      setProfile(response.data.data)
-      setLoading(false)
-      return navigate("/home")
+      setProfile(response.data.data);
+      setLoading(false);
+      return navigate("/home");
     }
   };
 
-
   useEffect(() => {
+    console.log(process.env.REACT_APP_FACEBOOK_CLIENT_ID, "facebook id ");
     if (t) {
-      navigate("/home")
+      navigate("/home");
     }
-  }, [t])
+  }, [t]);
 
   const handleForgotPassword = async () => {
     navigate("/send-email");
   };
 
-  const HandleAppleLogin = async () => {
-  }
+  const HandleAppleLogin = async (response) => {
+    console.log(response);
+  };
 
-  const HandleFacebookLogin = async () => {
-  }
+  const HandleFacebookLogin = async (response) => {
+    console.log(response);
+  };
 
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+  });
 
   const { width } = useWindowSize();
 
-
   if (loading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
-
 
   return (
     <>
@@ -202,15 +202,9 @@ export default function Login() {
               onChange={() => setRemember((v) => !v)}
             />
 
-            {error && (
-              <div color="#FF5F5F">
-                {error}
-              </div>
-            )}
+            {error && <div color="#FF5F5F">{error}</div>}
             {validateEmail && (
-              <div color="#FF5F5F">
-                Please Enter a valid Email
-              </div>
+              <div color="#FF5F5F">Please Enter a valid Email</div>
             )}
 
             <ButtonBar>
@@ -220,11 +214,10 @@ export default function Login() {
             </ButtonBar>
           </form>
 
-
           <Divider>Or log in with</Divider>
           <ButtonBar>
             <Button
-              // onClick={() => loginWithGoogle()}
+              onClick={() => loginWithGoogle()}
               style={{
                 backgroundColor: "white",
                 color: "black",
@@ -241,7 +234,10 @@ export default function Login() {
             </Button>
 
             <FacebookLogin
-              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+              // appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
+              appId={"1083826272167616"}
+              autoLoad={false}
+              fields="name,email,picture"
               callback={HandleFacebookLogin}
               render={(renderProps) => (
                 <Button
@@ -261,7 +257,7 @@ export default function Login() {
               authOptions={{
                 clientId: "com.crowdbotics.storeandsharevault.service",
                 scope: "email name",
-                redirectURI: `${window.location.origin}/login`,
+                redirectURI: `${window.location.origin}/`,
                 state: "state",
                 nonce: "nonce",
                 usePopup: true,
