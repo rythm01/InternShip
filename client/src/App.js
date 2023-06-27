@@ -13,7 +13,9 @@ function App() {
       <AuthProvider>
         <Suspense fallback={<div></div>}>
           <GoogleOAuthProvider
-            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+            clientId={
+              "277059566822-bhavsugv21mrv1no82ke0kf2m971thec.apps.googleusercontent.com"
+            }
           >
             <Box marginBottom={width <= 600 && "60px"}>
               <Routes>
@@ -42,9 +44,6 @@ function App() {
                     )
                   })
                 } */}
-
-
-
               </Routes>
             </Box>
           </GoogleOAuthProvider>
