@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import CreditCardPassword from "../../../models/CreditCardPassword";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const CreditCardRepo = AppDataSource.getRepository(CreditCardPassword);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const creditCardController = {
@@ -86,7 +89,20 @@ export const creditCardController = {
         })
         .getMany();
 
-      if (!isCreditCard) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.CREDIT_CARD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "creditCardId"],
+      });
+      const allowedData = [];
+      for (const creditCard of isHaveingPermission) {
+        allowedData.push(creditCard.creditCardId);
+      }
+
+      if (!isCreditCard && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No credit cards attached",
         });
@@ -95,6 +111,7 @@ export const creditCardController = {
       return res.status(200).send({
         message: "Success",
         data: isCreditCard,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -163,14 +180,25 @@ export const creditCardController = {
         .andWhere("creditCard.id = :id", { id: id })
         .getOne();
 
-      if (!isCreditCard) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          creditCardId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.CREDIT_CARD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "creditCardId"],
+      });
+
+      if (!isCreditCard && !isHaveingPermission) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No Credit Cards attached",
         });
       }
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.creditCardId,
         data: isCreditCard,
       });
     } catch (error) {

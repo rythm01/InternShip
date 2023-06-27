@@ -151,6 +151,8 @@ export default function Recipe({ id, isEdit }) {
   );
   const [ingredient, setIngredient] = useState("Select Type");
   const { t } = useContext(AuthContext);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
+  const [getAllowedData, setAllowedData] = useState();
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
   const [isData, setIsData] = useState(true);
@@ -159,6 +161,7 @@ export default function Recipe({ id, isEdit }) {
     if (id && isEdit) {
       getRecipeFormDetails(t, id)
         .then((res) => {
+          setAllowedData(res.data?.allowedData);
           setMerchantAccount(res?.data?.data);
           setIsData(true);
         })
@@ -175,6 +178,8 @@ export default function Recipe({ id, isEdit }) {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateRecipeForm(t, id, values);
       } else {
         await postRecipeForm(t, values);
@@ -190,43 +195,98 @@ export default function Recipe({ id, isEdit }) {
     <Container>
       <Formik
         initialValues={{
-          recipe_name: getMerchantAccount?.recipe_name || "",
-          ingredient_one: getMerchantAccount?.ingredient1 || "",
+          recipe_name:
+            getMerchantAccount?.recipe_name ||
+            getAllowedData?.recipe_name ||
+            "",
+          ingredient_one:
+            getMerchantAccount?.ingredient_one ||
+            getAllowedData?.ingredient_one ||
+            "",
           ingredient_one_amount:
-            getMerchantAccount?.ingredient_one_amount || "",
+            getMerchantAccount?.ingredient_one_amount ||
+            getAllowedData?.ingredient_one_amount ||
+            "",
           ingredient_one_amount_type:
-            getMerchantAccount?.ingredient_one_amount_type || "",
-          ingredient_two: getMerchantAccount?.ingredient_two || "",
+            getMerchantAccount?.ingredient_one_amount_type ||
+            getAllowedData?.ingredient_one_amount_type ||
+            "",
+          ingredient_two:
+            getMerchantAccount?.ingredient_two ||
+            getAllowedData?.ingredient_two ||
+            "",
           ingredient_two_amount:
-            getMerchantAccount?.ingredient_two_amount || "",
+            getMerchantAccount?.ingredient_two_amount ||
+            getAllowedData?.ingredient_two_amount ||
+            "",
           ingredient_two_amount_type:
-            getMerchantAccount?.ingredient_two_amount_type || "",
-          ingredient_three: getMerchantAccount?.ingredient_three || "",
+            getMerchantAccount?.ingredient_two_amount_type ||
+            getAllowedData?.ingredient_two_amount_type ||
+            "",
+          ingredient_three:
+            getMerchantAccount?.ingredient_three ||
+            getAllowedData?.ingredient_three ||
+            "",
           ingredient_three_amount:
-            getMerchantAccount?.ingredient_three_amount || "",
+            getMerchantAccount?.ingredient_three_amount ||
+            getAllowedData?.ingredient_three_amount ||
+            "",
           ingredient_three_amount_type:
-            getMerchantAccount?.ingredient_three_amount_type || "",
-          ingredient_four: getMerchantAccount?.ingredient_four || "",
+            getMerchantAccount?.ingredient_three_amount_type ||
+            getAllowedData?.ingredient_three_amount_type ||
+            "",
+          ingredient_four:
+            getMerchantAccount?.ingredient_four ||
+            getAllowedData?.ingredient_four ||
+            "",
           ingredient_four_amount:
-            getMerchantAccount?.ingredient_four_amount || "",
+            getMerchantAccount?.ingredient_four_amount ||
+            getAllowedData?.ingredient_four_amount ||
+            "",
           ingredient_four_amount_type:
-            getMerchantAccount?.ingredient_four_amount_type || "",
-          ingredient_five: getMerchantAccount?.ingredient_five || "",
+            getMerchantAccount?.ingredient_four_amount_type ||
+            getAllowedData?.ingredient_four_amount_type ||
+            "",
+          ingredient_five:
+            getMerchantAccount?.ingredient_five ||
+            getAllowedData?.ingredient_five ||
+            "",
           ingredient_five_amount:
-            getMerchantAccount?.ingredient_five_amount || "",
+            getMerchantAccount?.ingredient_five_amount ||
+            getAllowedData?.ingredient_five_amount ||
+            "",
           ingredient_five_amount_type:
-            getMerchantAccount?.ingredient_five_amount_type || "",
-          ingredient_six: getMerchantAccount?.ingredient_six || "",
+            getMerchantAccount?.ingredient_five_amount_type ||
+            getAllowedData?.ingredient_five_amount_type ||
+            "",
+          ingredient_six:
+            getMerchantAccount?.ingredient_six ||
+            getAllowedData?.ingredient_six ||
+            "",
           ingredient_six_amount:
-            getMerchantAccount?.ingredient_six_amount || "",
+            getMerchantAccount?.ingredient_six_amount ||
+            getAllowedData?.ingredient_six_amount ||
+            "",
           ingredient_six_amount_type:
-            getMerchantAccount?.ingredient_six_amount_type || "",
-          ingredient_seven: getMerchantAccount?.ingredient_seven || "",
+            getMerchantAccount?.ingredient_six_amount_type ||
+            getAllowedData?.ingredient_six_amount_type ||
+            "",
+          ingredient_seven:
+            getMerchantAccount?.ingredient_seven ||
+            getAllowedData?.ingredient_seven ||
+            "",
           ingredient_seven_amount:
-            getMerchantAccount?.ingredient_seven_amount || "",
+            getMerchantAccount?.ingredient_seven_amount ||
+            getAllowedData?.ingredient_seven_amount ||
+            "",
           ingredient_seven_amount_type:
-            getMerchantAccount?.ingredient_seven_amount_type || "",
-          cooking_description: getMerchantAccount?.cooking_description || "",
+            getMerchantAccount?.ingredient_seven_amount_type ||
+            getAllowedData?.ingredient_seven_amount_type ||
+            "",
+          cooking_description:
+            getMerchantAccount?.cooking_description ||
+            getAllowedData?.cooking_description ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -239,6 +299,7 @@ export default function Recipe({ id, isEdit }) {
               <Field
                 type="text"
                 name="recipe_name"
+                disabled={(isEdit && !isProfileEdit) || getAllowedData}
                 placeholder="Enter Recipe Name"
               />
 
@@ -248,7 +309,8 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient1"
-                    name="ingredient1"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_one"
                     placeholder="Enter Ingredient 1"
                   />
                 </div>
@@ -257,6 +319,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_one_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_one_amount"
                     class="ingamount"
                     placeholder=""
@@ -295,6 +358,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_two"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_two"
                     placeholder="Enter Ingredient 2"
                   />
@@ -304,6 +368,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_two_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_two_amount"
                     class="ingamount"
                     placeholder=""
@@ -341,6 +406,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_three"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_three"
                     placeholder="Enter Ingredient 3"
                   />
@@ -350,6 +416,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_three_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_three_amount"
                     class="ingamount"
                     placeholder=""
@@ -387,8 +454,10 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_four"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_four"
                     placeholder="Enter Ingredient 4"
+                    cursor="disabled"
                   />
                 </div>
                 <label htmlFor="ingredient_four_amount">Amount</label>
@@ -396,6 +465,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_four_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_four_amount"
                     class="ingamount"
                     placeholder=""
@@ -433,6 +503,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_five"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_five"
                     placeholder="Enter Ingredient 5"
                   />
@@ -442,6 +513,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_five_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_five_amount"
                     class="ingamount"
                     placeholder=""
@@ -479,6 +551,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_six"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_six"
                     placeholder="Enter Ingredient 6"
                   />
@@ -488,6 +561,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_six_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_six_amount"
                     class="ingamount"
                     placeholder=""
@@ -525,6 +599,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_seven"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_seven"
                     placeholder="Enter Ingredient 7"
                   />
@@ -534,6 +609,7 @@ export default function Recipe({ id, isEdit }) {
                   <Field
                     type="text"
                     id="ingredient_seven_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     name="ingredient_seven_amount"
                     class="ingamount"
                     placeholder=""
@@ -569,13 +645,19 @@ export default function Recipe({ id, isEdit }) {
               <Field
                 as="textarea"
                 id="cooking_description"
+                disabled={(isEdit && !isProfileEdit) || getAllowedData}
                 name="cooking_description"
                 cols="70"
                 rows="5"
               ></Field>
             </fieldset>
             <div class="subbutton">
-              <span onClick={handleSubmit}>Submit</span>
+              <span
+                disabled={getAllowedData}
+                onClick={() => !getAllowedData && handleSubmit()}
+              >
+                {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+              </span>
             </div>
           </Form>
         )}

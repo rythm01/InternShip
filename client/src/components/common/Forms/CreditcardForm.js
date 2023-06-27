@@ -95,7 +95,9 @@ const CreditcardForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getCreditCard, setCreditCard] = useState();
+  const [getAllowedData, setAllowedData] = useState();
   const [isData, setIsData] = useState(true);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -107,6 +109,7 @@ const CreditcardForm = ({ isEdit, id }) => {
       getCreditCardDetail(t, id)
         .then((res) => {
           setCreditCard(res?.data?.data);
+          setAllowedData(res.data?.allowedData);
           setIsData(true);
         })
         .catch((e) => console.log(e));
@@ -114,7 +117,7 @@ const CreditcardForm = ({ isEdit, id }) => {
   }, []);
 
   useEffect(() => {
-    if (id && isEdit && !getCreditCard) {
+    if (id && isEdit && !getCreditCard && !getAllowedData) {
       setIsData(false);
     }
   }, [getCreditCard]);
@@ -122,6 +125,8 @@ const CreditcardForm = ({ isEdit, id }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       if (isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateCreditCard(t, id, values);
       } else {
         await postCreditCard(t, values);
@@ -137,15 +142,27 @@ const CreditcardForm = ({ isEdit, id }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          credit_card_name: getCreditCard?.credit_card_name || "",
-          website: getCreditCard?.website || "",
-          user_name: getCreditCard?.user_name || "",
-          password: getCreditCard?.password || "",
-          credit_card_number: getCreditCard?.credit_card_number || "",
+          credit_card_name:
+            getCreditCard?.credit_card_name ||
+            getAllowedData?.credit_card_name ||
+            "",
+          website: getCreditCard?.website || getAllowedData?.website || "",
+          user_name:
+            getCreditCard?.user_name || getAllowedData?.user_name || "",
+          password: getCreditCard?.password || getAllowedData?.password || "",
+          credit_card_number:
+            getCreditCard?.credit_card_number ||
+            getAllowedData?.credit_card_number ||
+            "",
           payment_date: getCreditCard?.payment_date
-            ? moment(getCreditCard?.payment_date).format("YYYY-MM-DD")
+            ? getAllowedData?.payment_date
+              ? moment(getAllowedData?.payment_date).format("YYYY-MM-DD")
+              : moment(getCreditCard?.payment_date).format("YYYY-MM-DD")
             : "",
-          account_nick_name: getCreditCard?.account_nick_name || "",
+          account_nick_name:
+            getCreditCard?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -162,6 +179,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="name"
                     name="credit_card_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Name"
                   />
 
@@ -170,6 +188,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="url"
                     name="website"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter url/website"
                   />
 
@@ -178,6 +197,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="username"
                     name="user_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter username"
                   />
 
@@ -187,6 +207,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -210,6 +231,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="creditcard"
                     name="credit_card_number"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Creditcard"
                   />
 
@@ -218,6 +240,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="date"
                     id="date"
                     name="payment_date"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="enter paymentdate"
                   />
 
@@ -226,6 +249,7 @@ const CreditcardForm = ({ isEdit, id }) => {
                     type="text"
                     id="nickname"
                     name="account_nick_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter account nickname"
                   />
 
@@ -237,8 +261,11 @@ const CreditcardForm = ({ isEdit, id }) => {
                   </p>
                 </fieldset>
                 <div className="subbutton">
-                  <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>

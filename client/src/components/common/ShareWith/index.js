@@ -10,6 +10,7 @@ import { AuthContext } from "../../../context/AuthContext";
 
 import { addBuddiesToFilePermissionApi } from "../../../networks/filePermission";
 import { Toaster, toast } from "react-hot-toast";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../utils/helper";
 
 const Text = styled.span`
   font-family: "TT Commons";
@@ -143,7 +144,7 @@ const ShareWith = ({ details }) => {
   // const filteredBuddies = useMemo(() => {
   //   if (!Boolean(selectedBuddies.length)) return buddies
   //   return buddies.filter((bud) => selectedBuddies.every((selected) => bud.value !== selected.value))
-  // }, [buddies, selectedBuddies])
+  // }, [buddies, selectedBudfirstdies])
 
   const selectBuddy = (selectedOptions) => {
     var newBuddy = selectedBuddies.filter(
@@ -156,7 +157,8 @@ const ShareWith = ({ details }) => {
 
   const addBuddiesToFilePermission = async () => {
     const res = await addBuddiesToFilePermissionApi(t, {
-      file_id: details?.id,
+      form_type: PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM,
+      bankAccountId: 13,
       buddy_ids: [selectedBuddies[0].buddy.id],
       read: true,
       instantReleaseDate: new Date(),

@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import MiscPasswordStorage from "../../../models/MiscPasswordForm";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const MiscPasswordRepo = AppDataSource.getRepository(MiscPasswordStorage);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const miscPasswordController = {
@@ -86,7 +89,20 @@ export const miscPasswordController = {
         })
         .getMany();
 
-      if (!isMiscPassword) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.MISC_PASSWORD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "miscAccountId"],
+      });
+      const allowedData = [];
+      for (const miscAccount of isHaveingPermission) {
+        allowedData.push(miscAccount.miscAccountId);
+      }
+
+      if (!isMiscPassword && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No misc Password forms attached",
         });
@@ -95,6 +111,7 @@ export const miscPasswordController = {
       return res.status(200).send({
         message: "Success",
         data: isMiscPassword,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -171,7 +188,17 @@ export const miscPasswordController = {
         .andWhere("miscPassword.id = :id", { id: id })
         .getOne();
 
-      if (!isMiscPassword) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          miscAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.MISC_PASSWORD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "miscAccountId"],
+      });
+
+      if (!isMiscPassword && !isHaveingPermission) {
         return res.status(400).json({
           message: "No data found",
         });
@@ -179,6 +206,7 @@ export const miscPasswordController = {
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.miscAccountId,
         data: isMiscPassword,
       });
     } catch (error) {

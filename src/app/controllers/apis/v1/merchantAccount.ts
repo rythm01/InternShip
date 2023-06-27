@@ -4,10 +4,13 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
 import { UserProfile } from "../../../models/UserProfile";
 import MerchantAccountPassword from "../../../models/MerchantAccountPassword";
+import { Permission } from "../../../models/permissions";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
 const MerchantAccountPasswordRepo = AppDataSource.getRepository(
   MerchantAccountPassword
 );
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const merchantAccountController = {
@@ -80,6 +83,7 @@ export const merchantAccountController = {
           message: "No merchant account forms to display",
         });
       }
+
       const isMerchantAccount =
         await MerchantAccountPasswordRepo.createQueryBuilder("merchantAccount")
           .where("merchantAccount.userProfile = :userProfile", {
@@ -87,7 +91,20 @@ export const merchantAccountController = {
           })
           .getMany();
 
-      if (!isMerchantAccount) {
+      const isHaveingPermission = await PermissionRepo.find({
+        where: {
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.MERCHANT_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "merchantAccountId"],
+      });
+      const allowedData = [];
+      for (const merchantAccount of isHaveingPermission) {
+        allowedData.push(merchantAccount.merchantAccountId);
+      }
+
+      if (!isMerchantAccount && isHaveingPermission.length < 0) {
         return res.status(400).json({
           message: "No merchant account forms attached",
         });
@@ -96,6 +113,7 @@ export const merchantAccountController = {
       return res.status(200).send({
         message: "Success",
         data: isMerchantAccount,
+        allowedData,
       });
     } catch (error) {
       next(error);
@@ -170,7 +188,17 @@ export const merchantAccountController = {
           .andWhere("merchantAccount.id = :id", { id: id })
           .getOne();
 
-      if (!isMerchantAccount) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          merchantAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.MERCHANT_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "merchantAccountId"],
+      });
+
+      if (!isMerchantAccount && !isHaveingPermission) {
         return res.status(400).json({
           message: "No data found",
         });
@@ -178,6 +206,7 @@ export const merchantAccountController = {
 
       return res.status(200).send({
         message: "Success",
+        allowedData: isHaveingPermission?.merchantAccountId,
         data: isMerchantAccount,
       });
     } catch (error) {

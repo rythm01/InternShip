@@ -101,12 +101,15 @@ const MerchantAccountForm = ({ id, isEdit }) => {
 
   const navigate = useNavigate();
   const [getMerchantAccount, setMerchantAccount] = useState();
+  const [getAllowedData, setAllowedData] = useState();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [isData, setIsData] = useState(true);
 
   useEffect(() => {
     if (id && isEdit) {
       getMerchantAccountDetails(t, id)
         .then((res) => {
+          setAllowedData(res.data?.allowedData);
           setMerchantAccount(res?.data?.data);
           setIsData(true);
         })
@@ -123,6 +126,8 @@ const MerchantAccountForm = ({ id, isEdit }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateMerchantAccount(t, id, values);
       } else {
         await postMerchantAccount(t, values);
@@ -139,12 +144,23 @@ const MerchantAccountForm = ({ id, isEdit }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          merchant_name: getMerchantAccount?.merchant_name || "",
-          website: getMerchantAccount?.website || "",
-          user_name: getMerchantAccount?.user_name || "",
-          password: getMerchantAccount?.password || "",
-          account_number: getMerchantAccount?.account_number || "",
-          account_nick_name: getMerchantAccount?.account_nick_name || "",
+          merchant_name:
+            getMerchantAccount?.merchant_name ||
+            getAllowedData?.merchant_name ||
+            "",
+          website: getMerchantAccount?.website || getAllowedData?.website || "",
+          user_name:
+            getMerchantAccount?.user_name || getAllowedData?.user_name || "",
+          password:
+            getMerchantAccount?.password || getAllowedData?.password || "",
+          account_number:
+            getMerchantAccount?.account_number ||
+            getAllowedData?.account_number ||
+            "",
+          account_nick_name:
+            getMerchantAccount?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -160,6 +176,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="merchant_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Name"
                   />
 
@@ -167,6 +184,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="website"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter url/website"
                   />
 
@@ -174,6 +192,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="user_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter username"
                   />
 
@@ -182,6 +201,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                     <Field
                       type={showPassword ? "text" : "password"}
                       name="password"
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                       placeholder="Enter password"
                     />
                     <div className="eye-icon">
@@ -205,6 +225,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="tel"
                     name="account_number"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Account"
                   />
 
@@ -212,6 +233,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   <Field
                     type="text"
                     name="account_nick_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter account nickname"
                   />
 
@@ -223,8 +245,11 @@ const MerchantAccountForm = ({ id, isEdit }) => {
                   </p>
                 </fieldset>
                 <div className="subbutton">
-                  <span onClick={handleSubmit}>
-                    {isEdit ? "Update" : "Submit"}
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>
               </>
