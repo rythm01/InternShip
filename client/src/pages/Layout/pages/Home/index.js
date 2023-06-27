@@ -57,6 +57,7 @@ import {
 } from "../../../../networks/files";
 import { getNotificationApi } from "../../../../networks/notifications";
 import toast, { Toaster } from "react-hot-toast";
+import { getPermission } from "../../../../networks/filePermission";
 
 const style2 = {
   position: "absolute",
