@@ -9,12 +9,14 @@ import { UserAuth } from "../../../models/UserAuth";
 import Buddy from "../../../models/Buddies";
 import { In } from "typeorm";
 import { UserProfile } from "../../../models/UserProfile";
+import Folder from "../../../models/Folder";
 
 const FileRepo = AppDataSource.getRepository(File);
 const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserAuthRepo = AppDataSource.getRepository(UserAuth);
 const BuddyRepo = AppDataSource.getRepository(Buddy);
 const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const FolderRepo = AppDataSource.getRepository(Folder);
 
 export const permissionsController = {
   deletePermissions: async (req: Request, res: Response) => {
@@ -49,7 +51,7 @@ export const permissionsController = {
 
   createPermission: async (req: Request, res: Response) => {
     try {
-      const { file_id, buddy_ids, ...data } = req.body;
+      const { file_id, folder_id, buddy_ids, ...data } = req.body;
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
       )
@@ -93,6 +95,18 @@ export const permissionsController = {
         newPermission.file = fileData?.id as any;
       }
 
+      if (folder_id) {
+        const folderData = await FolderRepo.findOne({
+          where: {
+            user: {
+              id: userProfile?.id,
+            },
+            id: folder_id,
+          },
+        });
+        newPermission.folder = folderData?.id as any;
+      }
+
       for (const buddy of buddyData) {
         newPermission.userAuth = req.user as any;
         newPermission.buddy = buddy.buddy.id as any;
@@ -124,6 +138,37 @@ export const permissionsController = {
       return res
         .status(200)
         .json({ success: false, message: "Something Went wrong!" });
+    }
+  },
+
+  getPermission: async (req: Request, res: Response) => {
+    try {
+      const getAllPermission = await PermissionRepo.find({
+        where: {
+          userAuth: { id: req.user as any },
+        },
+        relations: [
+          "file",
+          "folder",
+          "bankAccountId",
+          "creditCardId",
+          "loanAccountId",
+          "merchantAccountId",
+          "passwordStorageId",
+          "miscAccountId",
+          "recipeAccountId",
+          "buddy",
+        ],
+      });
+
+      return res.status(200).json({
+        message: "Success",
+        data: getAllPermission,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Something went wrong",
+      });
     }
   },
 };

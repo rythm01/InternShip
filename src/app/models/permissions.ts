@@ -19,6 +19,7 @@ import RecipeForm from "./RecipeForm";
 import File from "./File";
 import Buddy from "./Buddies";
 import { UserAuth } from "./UserAuth";
+import Folder from "./Folder";
 
 @Entity()
 export class Permission {
@@ -32,6 +33,10 @@ export class Permission {
   @ManyToOne(() => File, (file) => file.id, { nullable: true })
   @JoinColumn({ name: "fileId" })
   file: File;
+
+  @ManyToOne(() => Folder, (folder) => folder.id, { nullable: true })
+  @JoinColumn({ name: "folderId" })
+  folder: Folder;
 
   @ManyToOne(() => BankAccountPassword, (bank) => bank.id, { nullable: true })
   @JoinColumn({ name: "bankId" })

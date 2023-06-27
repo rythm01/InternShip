@@ -8,11 +8,13 @@ import { UserProfile } from "../../../models/UserProfile";
 import Folder from "../../../models/Folder";
 import { UserAuth } from "../../../models/UserAuth";
 import Plan from "../../../models/plans";
+import { Verification } from "../../../models/verification";
 
 const ProfileRepo = AppDataSource.getRepository(UserProfile);
 const UserAuthRepo = AppDataSource.getRepository(UserAuth);
 const FolderRepo = AppDataSource.getRepository(Folder);
 const PlanRepo = AppDataSource.getRepository(Plan);
+const VerificationRepo = AppDataSource.getRepository(Verification);
 
 export const profileController = {
   find: async (req: Request, res: Response) => {
@@ -80,7 +82,7 @@ export const profileController = {
   create: async (req: Request, res: Response) => {
     try {
       const file = req.file!;
-      const { fname, lname, verificationPeriod, location } = req.body;
+      const { fname, lname, verificationPeriod, location, email } = req.body;
 
       const userAuth = await UserAuthRepo.findOne({
         where: { id: req.user as any },
@@ -120,15 +122,17 @@ export const profileController = {
 
       //upload file to aws s3
       const data = await s3.upload(params).promise();
-      if (!data)
+      if (!data) {
         return res
           .status(200)
           .json({ success: false, message: "something went wrong!" });
+      }
 
       const profile = new UserProfile();
       profile.userAuth = userAuth!;
       profile.firstName = fname;
       profile.lastName = lname;
+      profile.email = email;
       profile.plan = plan!;
       profile.location = location;
       profile.verficationPeriod = verificationPeriod;
@@ -139,6 +143,12 @@ export const profileController = {
         plan?.storage.toString() || (1024 * 1024).toString();
 
       var response = await ProfileRepo.save(profile);
+
+      const verification = new Verification();
+      verification.email = email;
+      verification.verification_status = true;
+      verification.verficationPeriod = verificationPeriod;
+      await VerificationRepo.save(verification);
 
       const folder = new Folder();
       folder.name = "root";
