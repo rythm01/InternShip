@@ -12,13 +12,16 @@ import { UserAuth } from "./UserAuth";
 import { UserProfile } from "./UserProfile";
 
 @Entity()
-class PasswordStorage {
+class MiscPasswordStorage {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
   @JoinColumn({ name: "userProfileId" })
   userProfile: UserProfile;
+
+  @Column({ nullable: true })
+  account_name: string;
 
   @Column({ nullable: true })
   website: string;
@@ -30,6 +33,9 @@ class PasswordStorage {
   password: string;
 
   @Column({ nullable: true })
+  account_number: string;
+
+  @Column({ nullable: true })
   account_nick_name: string;
 
   @CreateDateColumn()
@@ -39,4 +45,4 @@ class PasswordStorage {
   updatedAt: Date;
 }
 
-export default PasswordStorage;
+export default MiscPasswordStorage;

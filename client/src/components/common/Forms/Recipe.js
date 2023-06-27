@@ -1,12 +1,18 @@
-import React, { useRef , useContext, useState} from 'react';
+import React, { useRef, useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import Select from "react-select";
 import { components } from "react-select";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  getRecipeFormDetails,
+  postRecipeForm,
+  updateRecipeForm,
+} from "../../../networks/passwordTypeForms";
 // import postRecipeForm from "../../../networks/passwordTypeForms";
 
-export default function Recipe() {
+export default function Recipe({ id, isEdit }) {
   // const [selectedOption, setSelectedOption] = useState(null);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -19,79 +25,78 @@ export default function Recipe() {
     { id: 6, name: "pound(s)" },
   ];
 
-
   const Container = styled.form`
-max-width: 500px;
-margin: 10px auto;
-padding: 10px 20px;
-background: #fff;
-border-radius: 8px;
-
-h1 {
-  margin: 0 0 30px 0;
-  text-align: center;
-}
-
-fieldset {
-  margin-bottom: 30px;
-  border: none;
-
-  label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  input[type="text"],
-  input[type="password"],
-  input[type="tel"],
-  input[type="textarea"],
-  input[type="date"] {
+    max-width: 640px;
+    margin: 10px auto;
+    padding: 10px 20px;
     background: #fff;
-    border: 1px solid rgba(41, 45, 50, 0.2);
-    border-radius: 10px;
-    font-size: 16px;
-    height: auto;
-    margin: 0;
-    margin-right: 20px;
-    outline: 0;
-    padding: 15px;
-    width: 100%;
-    background-color: #fff;
-    color: #000;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
-    margin-bottom: 30px;
-  }
+    border-radius: 8px;
 
-  p {
-    font-weight: 300;
-  }
-}
+    h1 {
+      margin: 0 0 30px 0;
+      text-align: center;
+    }
 
-.subbutton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    fieldset {
+      margin-bottom: 30px;
+      border: none;
 
-  span {
-    padding: 19px 39px 18px 39px;
-    color: #fff;
-    background-color: #00a652;
-    font-size: 18px;
-    font-style: normal;
-    text-align: center;
-    border-radius: 5px;
-    width: 50%;
-    border: 1px solid #00a652;
-    border-width: 1px 1px 3px;
-    border-radius: 10px;
-    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
-    margin-bottom: 10px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-}
-`;
+      label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="tel"],
+      input[type="textarea"],
+      input[type="date"] {
+        background: #fff;
+        border: 1px solid rgba(41, 45, 50, 0.2);
+        border-radius: 10px;
+        font-size: 16px;
+        height: auto;
+        margin: 0;
+        margin-right: 20px;
+        outline: 0;
+        padding: 15px;
+        width: 100%;
+        background-color: #fff;
+        color: #000;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
+        margin-bottom: 30px;
+      }
+
+      p {
+        font-weight: 300;
+      }
+    }
+
+    .subbutton {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      span {
+        padding: 19px 39px 18px 39px;
+        color: #fff;
+        background-color: #00a652;
+        font-size: 18px;
+        font-style: normal;
+        text-align: center;
+        border-radius: 5px;
+        width: 50%;
+        border: 1px solid #00a652;
+        border-width: 1px 1px 3px;
+        border-radius: 10px;
+        box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
+        margin-bottom: 10px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+  `;
 
   const customStyles = {
     control: (provided, state) => ({
@@ -144,69 +149,149 @@ fieldset {
       <components.Option {...props}>{props.data.name}</components.Option>
     </div>
   );
-  const formRef = useRef(null);
-  const [ingredient,setIngredient] = useState("Select Type");
+  const [ingredient, setIngredient] = useState("Select Type");
   const { t } = useContext(AuthContext);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
+  const [getAllowedData, setAllowedData] = useState();
+  const navigate = useNavigate();
+  const [getMerchantAccount, setMerchantAccount] = useState();
+  const [isData, setIsData] = useState(true);
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // event.preventDefault(); // Prevent the default form submission behavior
-    // const formData = new FormData(formRef.current);
-    // console.log('Form submitted...!', formData);
-    // //first display all form data & then
-    // formRef.current.reset(); // Clear all Field fields
+  useEffect(() => {
+    if (id && isEdit) {
+      getRecipeFormDetails(t, id)
+        .then((res) => {
+          setAllowedData(res.data?.allowedData);
+          setMerchantAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
-    // postRecipeForm(t, values);
-    setSubmitting(false);
-    console.log(values);
+  useEffect(() => {
+    if (id && isEdit && !getMerchantAccount) {
+      setIsData(false);
+    }
+  }, [getMerchantAccount]);
 
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
+        await updateRecipeForm(t, id, values);
+      } else {
+        await postRecipeForm(t, values);
+      }
+      navigate("/home/passwords/recipes");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  // const handleOptionSelect = (option) => {
-  //     setSelectedOption(option);
-  //     // navigate(`/password-type-form?form=${option.id}`);
-  //     setDropdownOpen(false);
-  //   };
 
   return (
     <Container>
       <Formik
         initialValues={{
-          recipe_name: "",
-          ingredient1: "",
-          amount1: "",
-          type1:"",
-          ingredient2: "",
-          amount2: "",
-          type2:"",
-          ingredient3: "",
-          amount3: "",
-          type3:"",
-          ingredient4: "",
-          amount4: "",
-          type4:"",
-          ingredient5: "",
-          amount5: "",
-          type5:"",
-          ingredient6: "",
-          amount6: "",
-          type6:"",
-          ingredient7: "",
-          amount7: "",
-          type7:"",
-          cd: "",
+          recipe_name:
+            getMerchantAccount?.recipe_name ||
+            getAllowedData?.recipe_name ||
+            "",
+          ingredient_one:
+            getMerchantAccount?.ingredient_one ||
+            getAllowedData?.ingredient_one ||
+            "",
+          ingredient_one_amount:
+            getMerchantAccount?.ingredient_one_amount ||
+            getAllowedData?.ingredient_one_amount ||
+            "",
+          ingredient_one_amount_type:
+            getMerchantAccount?.ingredient_one_amount_type ||
+            getAllowedData?.ingredient_one_amount_type ||
+            "",
+          ingredient_two:
+            getMerchantAccount?.ingredient_two ||
+            getAllowedData?.ingredient_two ||
+            "",
+          ingredient_two_amount:
+            getMerchantAccount?.ingredient_two_amount ||
+            getAllowedData?.ingredient_two_amount ||
+            "",
+          ingredient_two_amount_type:
+            getMerchantAccount?.ingredient_two_amount_type ||
+            getAllowedData?.ingredient_two_amount_type ||
+            "",
+          ingredient_three:
+            getMerchantAccount?.ingredient_three ||
+            getAllowedData?.ingredient_three ||
+            "",
+          ingredient_three_amount:
+            getMerchantAccount?.ingredient_three_amount ||
+            getAllowedData?.ingredient_three_amount ||
+            "",
+          ingredient_three_amount_type:
+            getMerchantAccount?.ingredient_three_amount_type ||
+            getAllowedData?.ingredient_three_amount_type ||
+            "",
+          ingredient_four:
+            getMerchantAccount?.ingredient_four ||
+            getAllowedData?.ingredient_four ||
+            "",
+          ingredient_four_amount:
+            getMerchantAccount?.ingredient_four_amount ||
+            getAllowedData?.ingredient_four_amount ||
+            "",
+          ingredient_four_amount_type:
+            getMerchantAccount?.ingredient_four_amount_type ||
+            getAllowedData?.ingredient_four_amount_type ||
+            "",
+          ingredient_five:
+            getMerchantAccount?.ingredient_five ||
+            getAllowedData?.ingredient_five ||
+            "",
+          ingredient_five_amount:
+            getMerchantAccount?.ingredient_five_amount ||
+            getAllowedData?.ingredient_five_amount ||
+            "",
+          ingredient_five_amount_type:
+            getMerchantAccount?.ingredient_five_amount_type ||
+            getAllowedData?.ingredient_five_amount_type ||
+            "",
+          ingredient_six:
+            getMerchantAccount?.ingredient_six ||
+            getAllowedData?.ingredient_six ||
+            "",
+          ingredient_six_amount:
+            getMerchantAccount?.ingredient_six_amount ||
+            getAllowedData?.ingredient_six_amount ||
+            "",
+          ingredient_six_amount_type:
+            getMerchantAccount?.ingredient_six_amount_type ||
+            getAllowedData?.ingredient_six_amount_type ||
+            "",
+          ingredient_seven:
+            getMerchantAccount?.ingredient_seven ||
+            getAllowedData?.ingredient_seven ||
+            "",
+          ingredient_seven_amount:
+            getMerchantAccount?.ingredient_seven_amount ||
+            getAllowedData?.ingredient_seven_amount ||
+            "",
+          ingredient_seven_amount_type:
+            getMerchantAccount?.ingredient_seven_amount_type ||
+            getAllowedData?.ingredient_seven_amount_type ||
+            "",
+          cooking_description:
+            getMerchantAccount?.cooking_description ||
+            getAllowedData?.cooking_description ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <Form ref={formRef}>
+        {({ values, handleSubmit, setFieldValue }) => (
+          <Form>
             <h1>Recipe</h1>
 
             <fieldset>
@@ -214,6 +299,7 @@ fieldset {
               <Field
                 type="text"
                 name="recipe_name"
+                disabled={(isEdit && !isProfileEdit) || getAllowedData}
                 placeholder="Enter Recipe Name"
               />
 
@@ -223,30 +309,41 @@ fieldset {
                   <Field
                     type="text"
                     id="ingredient1"
-                    name="ingredient1"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_one"
                     placeholder="Enter Ingredient 1"
                   />
                 </div>
-                <label htmlFor="amount1">Amount</label>
+                <label htmlFor="ingredient_one_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount1"
-                    name="amount1"
+                    id="ingredient_one_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_one_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type1 ? values.type1 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_one_amount_type
+                        ? values.ingredient_one_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type1}
+                    value={values.ingredient_one_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type1", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_one_amount_type",
+                        selectedValue
+                      );
                     }}
-                    name="type1"
+                    name="ingredient_one_amount_type"
                     hideSelectedOptions={false}
                     components={{
                       Option,
@@ -257,32 +354,43 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label htmlFor="ingredient2">Ingredient 2</label>
+                  <label htmlFor="ingredient_two">Ingredient 2</label>
                   <Field
                     type="text"
-                    id="ingredient2"
-                    name="ingredient2"
+                    id="ingredient_two"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_two"
                     placeholder="Enter Ingredient 2"
                   />
                 </div>
-                <label htmlFor="amount2">Amount</label>
+                <label htmlFor="ingredient_two_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount2"
-                    name="amount2"
+                    id="ingredient_two_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_two_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type2 ? values.type2 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_two_amount_type
+                        ? values.ingredient_two_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type2}
+                    value={values.ingredient_two_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type2", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_two_amount_type",
+                        selectedValue
+                      );
                     }}
                     hideSelectedOptions={false}
                     components={{
@@ -297,29 +405,40 @@ fieldset {
                   <label htmlFor="url">Ingredient 3</label>
                   <Field
                     type="text"
-                    id="ingredient3"
-                    name="ingredient3"
+                    id="ingredient_three"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_three"
                     placeholder="Enter Ingredient 3"
                   />
                 </div>
-                <label htmlFor="amount3">Amount</label>
+                <label htmlFor="ingredient_three_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount3"
-                    name="amount3"
+                    id="ingredient_three_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_three_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type3 ? values.type3 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_three_amount_type
+                        ? values.ingredient_three_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type3}
+                    value={values.ingredient_three_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type3", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_three_amount_type",
+                        selectedValue
+                      );
                     }}
                     hideSelectedOptions={false}
                     components={{
@@ -331,32 +450,44 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label htmlFor="ingredient4">Ingredient 4</label>
+                  <label htmlFor="ingredient_four">Ingredient 4</label>
                   <Field
                     type="text"
-                    id="ingredient4"
-                    name="ingredient4"
+                    id="ingredient_four"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_four"
                     placeholder="Enter Ingredient 4"
+                    cursor="disabled"
                   />
                 </div>
-                <label htmlFor="amount4">Amount</label>
+                <label htmlFor="ingredient_four_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount4"
-                    name="amount4"
+                    id="ingredient_four_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_four_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type4 ? values.type4 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_four_amount_type
+                        ? values.ingredient_four_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type4}
+                    value={values.ingredient_four_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type4", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_four_amount_type",
+                        selectedValue
+                      );
                     }}
                     hideSelectedOptions={false}
                     components={{
@@ -368,32 +499,43 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label htmlFor="ingredient5">Ingredient 5</label>
+                  <label htmlFor="ingredient_five">Ingredient 5</label>
                   <Field
                     type="text"
-                    id="ingredient5"
-                    name="ingredient5"
+                    id="ingredient_five"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_five"
                     placeholder="Enter Ingredient 5"
                   />
                 </div>
-                <label htmlFor="amount5">Amount</label>
+                <label htmlFor="ingredient_five_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount5"
-                    name="amount5"
+                    id="ingredient_five_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_five_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type5 ? values.type5 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_five_amount_type
+                        ? values.ingredient_five_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type5}
+                    value={values.ingredient_five_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type5", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_five_amount_type",
+                        selectedValue
+                      );
                     }}
                     hideSelectedOptions={false}
                     components={{
@@ -405,32 +547,43 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label htmlFor="ingredient6">Ingredient 6</label>
+                  <label htmlFor="ingredient_six">Ingredient 6</label>
                   <Field
                     type="text"
-                    id="ingredient6"
-                    name="ingredient6"
+                    id="ingredient_six"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_six"
                     placeholder="Enter Ingredient 6"
                   />
                 </div>
-                <label htmlFor="amount6">Amount</label>
+                <label htmlFor="ingredient_six_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount6"
-                    name="amount6"
+                    id="ingredient_six_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_six_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
                     styles={customStyles}
-                    placeholder={values.type6 ? values.type6 : "Select-Type"}
+                    placeholder={
+                      values.ingredient_six_amount_type
+                        ? values.ingredient_six_amount_type
+                        : "Select-Type"
+                    }
                     options={PasswordSelectNames}
                     closeMenuOnSelect={false}
-                    value={values.type6}
+                    value={values.ingredient_six_amount_type}
                     onChange={(selectedOption) => {
-                      const selectedValue = selectedOption ? selectedOption.name : "";
-                      handleChange({ target: { name: "type6", value: selectedValue } });
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_six_amount_type",
+                        selectedValue
+                      );
                     }}
                     hideSelectedOptions={false}
                     components={{
@@ -442,47 +595,69 @@ fieldset {
 
               <div class="ingredient">
                 <div>
-                  <label htmlFor="ingredient7">Ingredient 7</label>
+                  <label htmlFor="ingredient_seven">Ingredient 7</label>
                   <Field
                     type="text"
-                    id="ingredient7"
-                    name="ingredient7"
+                    id="ingredient_seven"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_seven"
                     placeholder="Enter Ingredient 7"
                   />
                 </div>
-                <label htmlFor="amount7">Amount</label>
+                <label htmlFor="ingredient_seven_amount">Amount</label>
                 <div class="flex">
                   <Field
                     type="text"
-                    id="amount7"
-                    name="amount7"
+                    id="ingredient_seven_amount"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    name="ingredient_seven_amount"
                     class="ingamount"
                     placeholder=""
                   />
                   <Select
-                  styles={customStyles}
-                  placeholder={values.type7 ? values.type7 : "Select-Type"}
-                  options={PasswordSelectNames}
-                  closeMenuOnSelect={false}
-                  value={values.type7}
-
-                  onChange={(selectedOption) => {
-                    const selectedValue = selectedOption ? selectedOption.name : "";
-                    handleChange({ target: { name: "type7", value: selectedValue } });
-                  }}
-                  hideSelectedOptions={false}
-                  components={{
-                    Option,
-                  }}
-                />
+                    styles={customStyles}
+                    placeholder={
+                      values.ingredient_seven_amount_type
+                        ? values.ingredient_seven_amount_type
+                        : "Select-Type"
+                    }
+                    options={PasswordSelectNames}
+                    closeMenuOnSelect={false}
+                    value={values.ingredient_seven_amount_type}
+                    onChange={(selectedOption) => {
+                      const selectedValue = selectedOption
+                        ? selectedOption.name
+                        : "";
+                      setFieldValue(
+                        "ingredient_seven_amount_type",
+                        selectedValue
+                      );
+                    }}
+                    hideSelectedOptions={false}
+                    components={{
+                      Option,
+                    }}
+                  />
                 </div>
               </div>
 
-              <label htmlFor="cd">Cooking Direction:</label>
-              <Field as="textarea" id="cd" name="cd" cols="70" rows="5"></Field>
+              <label htmlFor="cooking_description">Cooking Direction:</label>
+              <Field
+                as="textarea"
+                id="cooking_description"
+                disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                name="cooking_description"
+                cols="70"
+                rows="5"
+              ></Field>
             </fieldset>
             <div class="subbutton">
-              <span onClick={handleSubmit}>Submit</span>
+              <span
+                disabled={getAllowedData}
+                onClick={() => !getAllowedData && handleSubmit()}
+              >
+                {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+              </span>
             </div>
           </Form>
         )}

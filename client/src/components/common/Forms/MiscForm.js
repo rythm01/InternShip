@@ -1,9 +1,15 @@
-import React, { useRef,useContext,useState } from 'react';
-import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
+import React, { useRef, useContext, useState, useEffect } from "react";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
 // import postMiscForm from "../../../networks/passwordTypeForms";
-import styled from 'styled-components';
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import {
+  getMiscPasswordDetails,
+  postMiscPassword,
+  updateMiscPassword,
+} from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
   max-width: 500px;
@@ -49,11 +55,11 @@ const Container = styled.form`
     .eye {
       position: relative;
     }
-    
-    .eye .eye-icon{
-      position : absolute;
-      top : 2vh;
-      right : 1vw;
+
+    .eye .eye-icon {
+      position: absolute;
+      top: 2vh;
+      right: 1vw;
     }
     p {
       font-weight: 300;
@@ -85,115 +91,168 @@ const Container = styled.form`
   }
 `;
 
-export default function MiscForm() {
-  const formRef = useRef(null);
+export default function MiscForm({ id, isEdit }) {
   const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
+  const [getAllowedData, setAllowedData] = useState();
+  const [getMiscAccount, setMiscAccount] = useState();
+  const [isData, setIsData] = useState(true);
+
+  useEffect(() => {
+    if (id && isEdit) {
+      getMiscPasswordDetails(t, id)
+        .then((res) => {
+          setAllowedData(res.data?.allowedData);
+          setMiscAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // event.preventDefault(); // Prevent the default form submission behavior
-    // const formData = new FormData(formRef.current);
-    // console.log('Form submitted...!', formData);
-    // //first display all form data & then
-    // formRef.current.reset(); // Clear all Field fields
+  useEffect(() => {
+    if (id && isEdit && !getMiscAccount) {
+      setIsData(false);
+    }
+  }, [getMiscAccount]);
 
-    // postMiscForm(t, values);
-    setSubmitting(false);
-    console.log(values);
-
-  };
-
-  const handleKeyPress = (event) => {
-    console.log("Handle KEy Press..")
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
-
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-      event.preventDefault();
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
+        await updateMiscPassword(t, id, values);
+      } else {
+        await postMiscPassword(t, values);
+      }
+      navigate("/home/passwords/miscpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
     <Container>
       <Formik
+        enableReinitialize
         initialValues={{
-          account_name: "",
-          website: "",
-          user_name: "",
-          password: "",
-          account: "",
-          account_nick_name: "",
+          account_name:
+            getMiscAccount?.account_name || getAllowedData?.account_name || "",
+          website: getMiscAccount?.website || getAllowedData?.website || "",
+          user_name:
+            getMiscAccount?.user_name || getAllowedData?.user_name || "",
+          password: getMiscAccount?.password || getAllowedData?.password || "",
+          account_number:
+            getMiscAccount?.account_number ||
+            getAllowedData?.account_number ||
+            "",
+          account_nick_name:
+            getMiscAccount?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <Form ref={formRef}>
-
-
+        {({ handleSubmit }) => (
+          <Form>
             <h1>Misc Account Password Storage Form</h1>
+            {isData ? (
+              <>
+                <fieldset>
+                  <label htmlFor="name">Account Name:</label>
+                  <Field
+                    type="text"
+                    name="account_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Accountname"
+                  />
 
-            <fieldset>
-              <label htmlFor="name">Account Name:</label>
-              <Field type="text" name="account_name" placeholder="Enter Accountname"  />
+                  <label htmlFor="url">Website/URL:</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter url/website"
+                  />
 
-              <label htmlFor="url">Website/URL:</label>
-              <Field type="text" name="website" placeholder="Enter url/website"  />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter username"
+                  />
 
-              <label htmlFor="username">User Name:</label>
-              <Field type="text" name="user_name" placeholder="Enter username"  />
-
-              <label htmlFor="password">Password:</label>
-              <div className='eye'>
-                <Field
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter password"
-                />
-                <div className='eye-icon'>
-                  {showPassword ? (
-                    <IoEyeOffOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
+                  <label htmlFor="password">Password:</label>
+                  <div className="eye">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                      placeholder="Enter password"
                     />
-                  ) : (
-                    <IoEyeOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
+                    <div className="eye-icon">
+                      {showPassword ? (
+                        <IoEyeOffOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ) : (
+                        <IoEyeOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <label htmlFor="account_number">Account:</label>
+                  <Field
+                    type="tel"
+                    name="account_number"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Account"
+                  />
+
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter account nickname"
+                  />
+
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    we do not recommend stroing questions and answer to recover
+                    your password. Please reset your password instead htmlFor
+                    added security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+                  </span>
                 </div>
-              </div>
-              <label htmlFor="account">Account:</label>
-              <Field type="tel" name="account" placeholder="Enter Account" onKeyPress={handleKeyPress}  />
-
-              <label htmlFor="nickname">Account Nick Name:</label>
-              <Field type="text" name="account_nick_name" placeholder="Enter account nickname"  />
-
-              <label htmlFor="password">Password Recovery:</label>
-              <p>we do not recommend stroing questions and answer to recover your password. Please reset your password instead htmlFor added security.</p>
-
-            </fieldset>
-            <div className="subbutton">
-              <span onClick={handleSubmit}>Sign up</span>
-            </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
           </Form>
         )}
       </Formik>
     </Container>
-  )
+  );
 }

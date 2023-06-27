@@ -1,36 +1,36 @@
 import { Response } from "express";
 import { Request } from "../../../../utils/@types";
-import BankAccountPassword from "../../../models/BankAccountPassword";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
-import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
+import LoanAccountPassword from "../../../models/LoanAccountPassword";
 import { Permission } from "../../../models/permissions";
 import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
-const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
-const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const LoanAccountPasswordRepo =
+  AppDataSource.getRepository(LoanAccountPassword);
 const PermissionRepo = AppDataSource.getRepository(Permission);
+const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
-export const bankAccountController = {
-  postBankAccount: async (req: Request, res: Response, next: any) => {
+export const loanAccountController = {
+  postLoanAccount: async (req: Request, res: Response, next: any) => {
     try {
       const {
-        bank_name,
+        creditor_name,
         website,
         user_name,
         password,
-        account_number,
-        routing,
+        loan_amount,
+        payment_date,
         account_nick_name,
       } = req.body;
       const requiredFields = [
-        "bank_name",
+        "creditor_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
+        "loan_amount",
+        "payment_date",
         "account_nick_name",
       ];
 
@@ -50,27 +50,27 @@ export const bankAccountController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
-      const newBankAccount = new BankAccountPassword();
-      newBankAccount.userProfile = userProfile?.id as any;
-      newBankAccount.bank_name = bank_name;
-      newBankAccount.website = website;
-      newBankAccount.user_name = user_name;
-      newBankAccount.password = password;
-      newBankAccount.account_number = account_number;
-      newBankAccount.routing = routing;
-      newBankAccount.account_nick_name = account_nick_name;
+      const newLoanAccount = new LoanAccountPassword();
+      newLoanAccount.userProfile = userProfile?.id as any;
+      newLoanAccount.creditor_name = creditor_name;
+      newLoanAccount.website = website;
+      newLoanAccount.user_name = user_name;
+      newLoanAccount.password = password;
+      newLoanAccount.loan_amount = loan_amount;
+      newLoanAccount.payment_date = payment_date;
+      newLoanAccount.account_nick_name = account_nick_name;
 
-      await BankAccountRepo.save(newBankAccount);
+      await LoanAccountPasswordRepo.save(newLoanAccount);
 
       return res.status(200).json({
-        message: "Account saved Successfully",
+        message: "Loan Account saved Successfully",
       });
     } catch (error) {
       next(error);
     }
   },
 
-  getBankAccount: async (req: Request, res: Response, next: any) => {
+  getLoanAccount: async (req: Request, res: Response, next: any) => {
     try {
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
@@ -80,35 +80,42 @@ export const bankAccountController = {
         .getOne();
 
       if (!userProfile) {
-        return res
-          .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+        return res.status(200).json({
+          success: false,
+          message: "No loan account forms to display",
+        });
       }
+
+      const isLoanAccount = await LoanAccountPasswordRepo.createQueryBuilder(
+        "loanAccount"
+      )
+        .where("loanAccount.userProfile = :userProfile", {
+          userProfile: userProfile?.id,
+        })
+        .getMany();
 
       const isHaveingPermission = await PermissionRepo.find({
         where: {
           buddy: { id: req.user as any },
           form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+            PERMISSION_FORM_TYPE_ENUMS.LOAN_ACCOUNT_FORM_TYPE_ENUM as string,
         },
-        relations: ["userAuth", "bankAccountId"],
+        relations: ["userAuth", "loanAccountId"],
       });
       const allowedData = [];
-      for (const bankPassword of isHaveingPermission) {
-        allowedData.push(bankPassword.bankAccountId);
+      for (const loanAccount of isHaveingPermission) {
+        allowedData.push(loanAccount.loanAccountId);
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
-          userProfile: userProfile?.id,
-        })
-        .getMany();
+      if (!isLoanAccount && isHaveingPermission.length < 0) {
+        return res.status(400).json({
+          message: "No loan account forms attached",
+        });
+      }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
+        data: isLoanAccount,
         allowedData,
       });
     } catch (error) {
@@ -116,7 +123,7 @@ export const bankAccountController = {
     }
   },
 
-  deleteBankAccount: async (req: Request, res: Response, next: any) => {
+  deleteLoanAccount: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -131,23 +138,23 @@ export const bankAccountController = {
           .status(200)
           .json({ success: false, message: "No Bank Account to display" });
       }
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isLoanAccount = await LoanAccountPasswordRepo.createQueryBuilder(
+        "loanAccount"
       )
-        .innerJoin("bankAccount.userProfile", "userProfile")
-        .where("bankAccount.id = :id", { id: id })
+        .innerJoin("loanAccount.userProfile", "userProfile")
+        .where("loanAccount.id = :id", { id: id })
         .andWhere("userProfile.id = :userProfileId", {
           userProfileId: userProfile.id,
         })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isLoanAccount) {
         return res.status(400).json({
           message: "No records found",
         });
       }
 
-      await BankAccountRepo.delete({ id: parseInt(id) });
+      await LoanAccountPasswordRepo.delete({ id: parseInt(id) });
 
       return res.status(200).send({
         message: "Delete Successfull",
@@ -173,35 +180,35 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isHaveingPermission = await PermissionRepo.findOne({
-        where: {
-          bankAccountId: { id: id as any },
-          buddy: { id: req.user as any },
-          form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
-        },
-        relations: ["userAuth", "bankAccountId"],
-      });
-
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isLoanAccount = await LoanAccountPasswordRepo.createQueryBuilder(
+        "loanAccount"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("loanAccount.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("loanAccount.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount && !isHaveingPermission) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          loanAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.LOAN_ACCOUNT_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "loanAccountId"],
+      });
+
+      if (!isLoanAccount && !isHaveingPermission) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
-        allowedData: isHaveingPermission?.bankAccountId,
+        allowedData: isHaveingPermission?.loanAccountId,
+        data: isLoanAccount,
       });
     } catch (error) {
       next(error);
@@ -217,12 +224,12 @@ export const bankAccountController = {
       const { id } = req.params;
       const data = req.body;
       const requiredFields = [
-        "bank_name",
+        "creditor_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
+        "loan_amount",
+        "payment_date",
         "account_nick_name",
       ];
 
@@ -244,31 +251,32 @@ export const bankAccountController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No data found" });
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isLoanAccount = await LoanAccountPasswordRepo.createQueryBuilder(
+        "loanAccount"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("loanAccount.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("loanAccount.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isLoanAccount) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
-      isBankAccount.bank_name = data?.bank_name;
-      isBankAccount.website = data?.website;
-      isBankAccount.user_name = data?.user_name;
-      isBankAccount.password = data?.password;
-      isBankAccount.account_number = data?.account_number;
-      isBankAccount.account_nick_name = data?.account_nick_name;
+      isLoanAccount.creditor_name = data?.creditor_name;
+      isLoanAccount.website = data?.website;
+      isLoanAccount.user_name = data?.user_name;
+      isLoanAccount.password = data?.password;
+      isLoanAccount.loan_amount = data?.loan_amount;
+      isLoanAccount.payment_date = data?.payment_date;
+      isLoanAccount.account_nick_name = data?.account_nick_name;
 
-      await BankAccountRepo.save(isBankAccount);
+      await LoanAccountPasswordRepo.save(isLoanAccount);
 
       return res.status(200).send({
         message: " Updated successfully",

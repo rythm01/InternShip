@@ -3,8 +3,6 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import back from "../../../assets/images/arrow-left.png";
 
-
-
 const BackContainer = styled.div`
   width: 64px;
   height: 55px;
@@ -41,7 +39,7 @@ export default function BackTransactions() {
   const navigate = useNavigate();
 
   return (
-    <BackContainer onClick={() => navigate("/documents")}>
+    <BackContainer onClick={() => navigate("/home/documents")}>
       {/* <img height={25} src="https://icons.veryicon.com/png/o/miscellaneous/skent-icon/home-225.png" /> */}
       <img height={25} src={back} />
     </BackContainer>

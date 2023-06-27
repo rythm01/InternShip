@@ -1,8 +1,14 @@
-import React, { useRef,useContext,useState } from 'react';
-import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
-import styled from 'styled-components';
+import React, { useRef, useContext, useState, useEffect } from "react";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import styled from "styled-components";
 import { Formik, Form, Field } from "formik";
 import { AuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  getMerchantAccountDetails,
+  postMerchantAccount,
+  updateMerchantAccount,
+} from "../../../networks/passwordTypeForms";
 // import postMerchantAccountForm from "../../../networks/passwordTypeForms";
 
 const Container = styled.form`
@@ -49,11 +55,11 @@ const Container = styled.form`
     .eye {
       position: relative;
     }
-    
-    .eye .eye-icon{
-      position : absolute;
-      top : 2vh;
-      right : 1vw;
+
+    .eye .eye-icon {
+      position: absolute;
+      top: 2vh;
+      right: 1vw;
     }
     p {
       font-weight: 300;
@@ -85,120 +91,176 @@ const Container = styled.form`
   }
 `;
 
-const MerchantAccountForm = () => {
-  const formRef = useRef(null);
+const MerchantAccountForm = ({ id, isEdit }) => {
   const { t } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // event.preventDefault(); // Prevent the default form submission behavior
-    // const formData = new FormData(formRef.current);
-    // console.log('Form submitted...!', formData);
-    // //first display all form data & then
-    // formRef.current.reset(); // Clear all Field fields
+  const navigate = useNavigate();
+  const [getMerchantAccount, setMerchantAccount] = useState();
+  const [getAllowedData, setAllowedData] = useState();
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
+  const [isData, setIsData] = useState(true);
 
-    // postCreditCardForm(t, values);
-    setSubmitting(false);
-    console.log(values);
-  };
-  const handleKeyPress = (event) => {
-    console.log("Handle Key Press..");
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
+  useEffect(() => {
+    if (id && isEdit) {
+      getMerchantAccountDetails(t, id)
+        .then((res) => {
+          setAllowedData(res.data?.allowedData);
+          setMerchantAccount(res?.data?.data);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-      event.preventDefault();
+  useEffect(() => {
+    if (id && isEdit && !getMerchantAccount) {
+      setIsData(false);
+    }
+  }, [getMerchantAccount]);
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
+        await updateMerchantAccount(t, id, values);
+      } else {
+        await postMerchantAccount(t, values);
+      }
+      navigate("/home/passwords/merchantaccount");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
     <Container>
       <Formik
+        enableReinitialize
         initialValues={{
-          merchant_name: "",
-          website: "",
-          user_name: "",
-          password: "",
-          account: "",
-          account_nick_name: "",
+          merchant_name:
+            getMerchantAccount?.merchant_name ||
+            getAllowedData?.merchant_name ||
+            "",
+          website: getMerchantAccount?.website || getAllowedData?.website || "",
+          user_name:
+            getMerchantAccount?.user_name || getAllowedData?.user_name || "",
+          password:
+            getMerchantAccount?.password || getAllowedData?.password || "",
+          account_number:
+            getMerchantAccount?.account_number ||
+            getAllowedData?.account_number ||
+            "",
+          account_nick_name:
+            getMerchantAccount?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <Form ref={formRef}>
+        {({ handleSubmit }) => (
+          <Form>
             <h1>Merchant Account Password Storage Form</h1>
 
-            <fieldset>
-              <label htmlFor="name">Merchant Name:</label>
-              <Field type="text" name="merchant_name" placeholder="Enter Name"  />
+            {isData ? (
+              <>
+                {" "}
+                <fieldset>
+                  <label htmlFor="name">Merchant Name:</label>
+                  <Field
+                    type="text"
+                    name="merchant_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Name"
+                  />
 
-              <label htmlFor="url">Website/URL</label>
-              <Field type="text" name="website" placeholder="Enter url/website"  />
+                  <label htmlFor="url">Website/URL</label>
+                  <Field
+                    type="text"
+                    name="website"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter url/website"
+                  />
 
-              <label htmlFor="username">User Name:</label>
-              <Field type="text" name="user_name" placeholder="Enter username"  />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    name="user_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter username"
+                  />
 
-              <label htmlFor="password">Password:</label>
-              <div className='eye'>
-                <Field
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter password"
-                />
-                <div className='eye-icon'>
-                  {showPassword ? (
-                    <IoEyeOffOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
+                  <label htmlFor="password">Password:</label>
+                  <div className="eye">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                      placeholder="Enter password"
                     />
-                  ) : (
-                    <IoEyeOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
+                    <div className="eye-icon">
+                      {showPassword ? (
+                        <IoEyeOffOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ) : (
+                        <IoEyeOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <label htmlFor="account">Account:</label>
+                  <Field
+                    type="tel"
+                    name="account_number"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Account"
+                  />
+
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    name="account_nick_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter account nickname"
+                  />
+
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    We do not recommend storing questions and answers to recover
+                    your password. Please reset your password instead for added
+                    security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+                  </span>
                 </div>
-              </div>
-
-              <label htmlFor="account">Account:</label>
-              <Field
-                type="tel"
-                name="account"
-                placeholder="Enter Account"
-                onKeyPress={handleKeyPress}
-                
-              />
-
-              <label htmlFor="nickname">Account Nick Name:</label>
-              <Field type="text" name="account_nick_name" placeholder="Enter account nickname"  />
-
-              <label htmlFor="password">Password Recovery:</label>
-              <p>We do not recommend storing questions and answers to recover your password. Please reset your password instead for added security.</p>
-            </fieldset>
-
-            <div className="subbutton">
-              <span onClick={handleSubmit}>Sign up</span>
-            </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
           </Form>
         )}
       </Formik>
     </Container>
-  )
-}
+  );
+};
 
 export default MerchantAccountForm;

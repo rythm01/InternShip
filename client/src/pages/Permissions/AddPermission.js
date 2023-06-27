@@ -3,7 +3,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styled from 'styled-components';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import data from './data.js';
+import data from './data';
 import { Divider } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -156,7 +156,7 @@ function AddPermission() {
                             <div className='subbutton'>
                                 <button type='submit'>
                                     <Link
-                                        to={`/?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
+                                        to={`http://localhost:3000/home/passwords/permission?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
                                         style={{ textDecoration: 'none', color: 'black' }}
                                     >
                                         Confirm
@@ -167,7 +167,7 @@ function AddPermission() {
                             <div className='subbutton1'>
                                 <button type='submit'>
                                     <Link
-                                        to={`/?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
+                                        to={`http://localhost:3000/home/passwords/permission?data=${encodeURIComponent(JSON.stringify(updatedData))}`}
                                         style={{ textDecoration: 'none', color: 'black' }}
                                     >
                                         Confirm

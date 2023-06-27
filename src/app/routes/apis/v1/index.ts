@@ -14,5 +14,17 @@ app.use("/buddies", require("./buddies").default);
 app.use("/permissions", require("./permissions").default);
 app.use("/storage-addons", require("./storageAddon").default);
 app.use("/password-type/bank-password", require("./bankAccount").default);
+app.use("/password-type/loan-account", require("./loanAccout").default);
+app.use(
+  "/password-type/password-non-bank",
+  require("./passwordNonBank").default
+);
+app.use("/password-type/credit-card", require("./creditCard").default);
+app.use(
+  "/password-type/merchant-account",
+  require("./merchantAccount").default
+);
+app.use("/password-type/recipe-account", require("./recipe").default);
+app.use("/password-type/misc-password", require("./miscPassWord").default);
 
 export default app;

@@ -42,7 +42,11 @@ import styled from "styled-components";
 import useWindowSize from "../../../../utils/hook/useWindowSize";
 import { AuthContext } from "../../../../context/AuthContext";
 import { getFile, getfiles } from "../../../../networks/files";
-import { createFolder, deleteFolderApi, getFolders } from "../../../../networks/folders";
+import {
+  createFolder,
+  deleteFolderApi,
+  getFolders,
+} from "../../../../networks/folders";
 import { getBuddiesApi } from "../../../../networks/buddies";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -63,35 +67,30 @@ export default function Documents() {
   const [open, setOpen] = useState(false);
   const [isRenameModalOpen, toggleRenameModal] = useState(false);
   const [folderToRename, setFolderToRename] = useState({});
-  const [allFolders, setAllFolders] = useState([])
+  const [allFolders, setAllFolders] = useState([]);
 
   const [field, setField] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [iFrameOpen, setIFrameOpen] = useState(false);
+  const [iFrameFileID, setIFrameFileID] = useState(null);
 
-  const [iFrameOpen, setIFrameOpen] = useState(false)
-  const [iFrameFileID, setIFrameFileID] = useState(null)
-
-
-  const { t,logout } = useContext(AuthContext)
-
+  const { t, logout } = useContext(AuthContext);
 
   useEffect(() => {
-    getAllFolders()
-  }, [t])
+    getAllFolders();
+  }, [t]);
 
   const getAllFolders = async () => {
-    setIsLoading(true)
-    const allFolders = await getFolders(t)
-    const allFoldersWithoutRoot = allFolders.data.data.filter((folder) => folder.name !== "root")
-    setAllFolders(allFoldersWithoutRoot)
-    setIsLoading(false)
-  }
-
-
-
-
+    setIsLoading(true);
+    const allFolders = await getFolders(t);
+    const allFoldersWithoutRoot = allFolders.data.data.filter(
+      (folder) => folder.name !== "root"
+    );
+    setAllFolders(allFoldersWithoutRoot);
+    setIsLoading(false);
+  };
 
   const style = {
     position: "absolute",
@@ -115,39 +114,32 @@ export default function Documents() {
   const HandleCreateFolder = async () => {
     // console.log(field)
 
-    const res = await createFolder(t, { name: field })
+    const res = await createFolder(t, { name: field });
     if (!res.data.success) {
-      return toast.error(res.data.message)
+      return toast.error(res.data.message);
     }
-    setField("")
-    setOpen(false)
-    getAllFolders()
-
+    setField("");
+    setOpen(false);
+    getAllFolders();
   };
 
   const deleteFolder = async (id) => {
-    const res = await deleteFolderApi(t, id)
+    const res = await deleteFolderApi(t, id);
     if (!res.data.success) {
-      return toast.error(res.data.message)
+      return toast.error(res.data.message);
     }
-    getAllFolders()
-  }
-
-
-
+    getAllFolders();
+  };
 
   const { width } = useWindowSize();
-
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-
-
   return (
     <>
-     <Toaster />
+      <Toaster />
       <Row
         width="100%"
         height="73px"
@@ -272,15 +264,19 @@ export default function Documents() {
                     + New Folder
                   </Button>
 
-                  {/* <Row>
-              <ShareWith />
-            </Row> */}
+                  <Row>
+                    <ShareWith />
+                  </Row>
                 </div>
               </Row>
 
-              <h2 style={{
-                margin: "0.5em 0em",
-              }}>Folders</h2>
+              <h2
+                style={{
+                  margin: "0.5em 0em",
+                }}
+              >
+                Folders
+              </h2>
               <Box
                 style={{
                   display: "grid",
@@ -288,20 +284,21 @@ export default function Documents() {
                     width > 1200
                       ? "repeat(4,1fr)"
                       : width > 950
-                        ? "repeat(3,1fr)"
-                        : width > 600
-                          ? "repeat(2,1fr)"
-                          : "repeat(2,1fr)",
+                      ? "repeat(3,1fr)"
+                      : width > 600
+                      ? "repeat(2,1fr)"
+                      : "repeat(2,1fr)",
                   gridGap: "1rem",
                 }}
               >
                 {allFolders?.map((item, index) => {
                   return (
-                    <div style={{ position: "relative", marginTop: "20px" }} key={item.id}>
+                    <div
+                      style={{ position: "relative", marginTop: "20px" }}
+                      key={item.id}
+                    >
                       <div
-                        onClick={() =>
-                          navigate(`/documents/folder/${item.id}`)
-                        }
+                        onClick={() => navigate(`/documents/folder/${item.id}`)}
                       >
                         <FolderContainer
                           key={index}
@@ -380,10 +377,7 @@ export default function Documents() {
                     </div>
                   );
                 })}
-
               </Box>
-
-
             </Box>
           </div>
         </Box>
@@ -450,7 +444,7 @@ export default function Documents() {
       <FolderRenameModal
         open={isRenameModalOpen}
         close={() => {
-          setIsLoading(false)
+          setIsLoading(false);
           getAllFolders();
           toggleRenameModal(false);
           setFolderToRename({});

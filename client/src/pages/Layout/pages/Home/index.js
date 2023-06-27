@@ -56,7 +56,8 @@ import {
   deleteFileData,
 } from "../../../../networks/files";
 import { getNotificationApi } from "../../../../networks/notifications";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
+import { getPermission } from "../../../../networks/filePermission";
 
 const style2 = {
   position: "absolute",
@@ -239,14 +240,6 @@ export default function Home() {
 
   const { profile, t, setRefresh, refresh } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
-      return navigate("/home/create-profile");
-    getFolderData();
-    getfileData();
-    getNotification();
-  }, [profile]);
-
   const HandleCreateFolder = async () => {
     // console.log(field)
     if (!field) return toast.error("Please enter folder name");
@@ -263,7 +256,6 @@ export default function Home() {
   };
 
   const handleOptionSelect = (option) => {
-    // setSelectedOption(option);
     navigate(`/home/password-type-form?form=${option.id}`);
     setDropdownOpen(false);
   };
@@ -286,22 +278,22 @@ export default function Home() {
     const res = await getfiles(t);
     setLoading(false);
     if (!res.data.success) return toast.error(res.data.message);
-    const filesData = res.data.data;
-    setFilesData(filesData);
-    const pdf = filesData?.filter(
+    const fileData = [...res.data?.data, ...res?.data?.allowedFile];
+    setFilesData(fileData);
+    const pdf = fileData?.filter(
       (file) => file.ext === "pdf" || file.ext === "PDF"
     );
-    const png = filesData?.filter(
+    const png = fileData?.filter(
       (file) => file.ext === "png" || file.ext === "PNG"
     );
-    const jpeg = filesData?.filter(
+    const jpeg = fileData?.filter(
       (file) =>
         file.ext === "jpeg" ||
         file.ext === "jpg" ||
         file.ext === "JPEG" ||
         file.ext === "JPG"
     );
-    const otherFiles = filesData?.filter(
+    const otherFiles = fileData?.filter(
       (file) =>
         file.ext !== "pdf" &&
         file.ext !== "png" &&
@@ -378,6 +370,14 @@ export default function Home() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (!JSON.parse(localStorage.getItem("profile"))?.verficationPeriod)
+      return navigate("/home/create-profile");
+    getFolderData();
+    getfileData();
+    getNotification();
+  }, [profile]);
+
   const deleteFolder = async (folder) => {
     const res = await deleteFolderApi(t, folder);
     if (!res.data.success) {
@@ -409,9 +409,10 @@ export default function Home() {
     setRefresh(!refresh);
     setLoading(false);
   };
+
   return (
     <>
-     <Toaster />
+      <Toaster />
       <Row
         width="100%"
         height="100%"

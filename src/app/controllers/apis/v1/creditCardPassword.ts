@@ -1,36 +1,35 @@
 import { Response } from "express";
 import { Request } from "../../../../utils/@types";
-import BankAccountPassword from "../../../models/BankAccountPassword";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
-import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
+import CreditCardPassword from "../../../models/CreditCardPassword";
 import { Permission } from "../../../models/permissions";
 import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
-const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
-const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const CreditCardRepo = AppDataSource.getRepository(CreditCardPassword);
 const PermissionRepo = AppDataSource.getRepository(Permission);
+const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
-export const bankAccountController = {
-  postBankAccount: async (req: Request, res: Response, next: any) => {
+export const creditCardController = {
+  postCreditCard: async (req: Request, res: Response, next: any) => {
     try {
       const {
-        bank_name,
+        credit_card_name,
         website,
         user_name,
         password,
-        account_number,
-        routing,
+        credit_card_number,
+        payment_date,
         account_nick_name,
       } = req.body;
       const requiredFields = [
-        "bank_name",
+        "credit_card_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
+        "credit_card_number",
+        "payment_date",
         "account_nick_name",
       ];
 
@@ -50,27 +49,27 @@ export const bankAccountController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
-      const newBankAccount = new BankAccountPassword();
-      newBankAccount.userProfile = userProfile?.id as any;
-      newBankAccount.bank_name = bank_name;
-      newBankAccount.website = website;
-      newBankAccount.user_name = user_name;
-      newBankAccount.password = password;
-      newBankAccount.account_number = account_number;
-      newBankAccount.routing = routing;
-      newBankAccount.account_nick_name = account_nick_name;
+      const newCreditCard = new CreditCardPassword();
+      newCreditCard.userProfile = userProfile?.id as any;
+      newCreditCard.credit_card_name = credit_card_name;
+      newCreditCard.website = website;
+      newCreditCard.user_name = user_name;
+      newCreditCard.password = password;
+      newCreditCard.credit_card_number = credit_card_number;
+      newCreditCard.payment_date = payment_date;
+      newCreditCard.account_nick_name = account_nick_name;
 
-      await BankAccountRepo.save(newBankAccount);
+      await CreditCardRepo.save(newCreditCard);
 
       return res.status(200).json({
-        message: "Account saved Successfully",
+        message: "Credit Card saved Successfully",
       });
     } catch (error) {
       next(error);
     }
   },
 
-  getBankAccount: async (req: Request, res: Response, next: any) => {
+  getCreditCard: async (req: Request, res: Response, next: any) => {
     try {
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
@@ -82,33 +81,36 @@ export const bankAccountController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No credit cards to display" });
       }
+      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
+        .where("creditCard.userProfile = :userProfile", {
+          userProfile: userProfile?.id,
+        })
+        .getMany();
 
       const isHaveingPermission = await PermissionRepo.find({
         where: {
           buddy: { id: req.user as any },
           form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+            PERMISSION_FORM_TYPE_ENUMS.CREDIT_CARD_FORM_TYPE_ENUM as string,
         },
-        relations: ["userAuth", "bankAccountId"],
+        relations: ["userAuth", "creditCardId"],
       });
       const allowedData = [];
-      for (const bankPassword of isHaveingPermission) {
-        allowedData.push(bankPassword.bankAccountId);
+      for (const creditCard of isHaveingPermission) {
+        allowedData.push(creditCard.creditCardId);
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
-          userProfile: userProfile?.id,
-        })
-        .getMany();
+      if (!isCreditCard && isHaveingPermission.length < 0) {
+        return res.status(400).json({
+          message: "No credit cards attached",
+        });
+      }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
+        data: isCreditCard,
         allowedData,
       });
     } catch (error) {
@@ -116,7 +118,7 @@ export const bankAccountController = {
     }
   },
 
-  deleteBankAccount: async (req: Request, res: Response, next: any) => {
+  deleteCreditCard: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -131,23 +133,21 @@ export const bankAccountController = {
           .status(200)
           .json({ success: false, message: "No Bank Account to display" });
       }
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .innerJoin("bankAccount.userProfile", "userProfile")
-        .where("bankAccount.id = :id", { id: id })
+      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
+        .innerJoin("creditCard.userProfile", "userProfile")
+        .where("creditCard.id = :id", { id: id })
         .andWhere("userProfile.id = :userProfileId", {
           userProfileId: userProfile.id,
         })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isCreditCard) {
         return res.status(400).json({
           message: "No records found",
         });
       }
 
-      await BankAccountRepo.delete({ id: parseInt(id) });
+      await CreditCardRepo.delete({ id: parseInt(id) });
 
       return res.status(200).send({
         message: "Delete Successfull",
@@ -157,7 +157,7 @@ export const bankAccountController = {
     }
   },
 
-  getBankAccountDetailsById: async (req: Request, res: Response, next: any) => {
+  getCreditCardDetailsById: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -173,56 +173,50 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isHaveingPermission = await PermissionRepo.findOne({
-        where: {
-          bankAccountId: { id: id as any },
-          buddy: { id: req.user as any },
-          form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
-        },
-        relations: ["userAuth", "bankAccountId"],
-      });
-
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
+      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
+        .where("creditCard.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("creditCard.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount && !isHaveingPermission) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          creditCardId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.CREDIT_CARD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "creditCardId"],
+      });
+
+      if (!isCreditCard && !isHaveingPermission) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No Credit Cards attached",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
-        allowedData: isHaveingPermission?.bankAccountId,
+        allowedData: isHaveingPermission?.creditCardId,
+        data: isCreditCard,
       });
     } catch (error) {
       next(error);
     }
   },
 
-  updateBankAccountDetailsById: async (
-    req: Request,
-    res: Response,
-    next: any
-  ) => {
+  updateCreditCardById: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const data = req.body;
       const requiredFields = [
-        "bank_name",
+        "credit_card_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
+        "credit_card_number",
+        "payment_date",
         "account_nick_name",
       ];
 
@@ -247,28 +241,27 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
+      const isCreditCard = await CreditCardRepo.createQueryBuilder("creditCard")
+        .where("creditCard.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("creditCard.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isCreditCard) {
         return res.status(400).json({
           message: "No bank account attached",
         });
       }
-      isBankAccount.bank_name = data?.bank_name;
-      isBankAccount.website = data?.website;
-      isBankAccount.user_name = data?.user_name;
-      isBankAccount.password = data?.password;
-      isBankAccount.account_number = data?.account_number;
-      isBankAccount.account_nick_name = data?.account_nick_name;
+      isCreditCard.credit_card_name = data?.credit_card_name;
+      isCreditCard.website = data?.website;
+      isCreditCard.user_name = data?.user_name;
+      isCreditCard.password = data?.password;
+      isCreditCard.credit_card_number = data?.credit_card_number;
+      isCreditCard.payment_date = `${new Date(data.payment_date)}`;
+      isCreditCard.account_nick_name = data?.account_nick_name;
 
-      await BankAccountRepo.save(isBankAccount);
+      await CreditCardRepo.save(isCreditCard);
 
       return res.status(200).send({
         message: " Updated successfully",

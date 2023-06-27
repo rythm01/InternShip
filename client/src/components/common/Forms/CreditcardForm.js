@@ -1,9 +1,16 @@
-import React, { useRef, useContext, useState } from 'react';
-import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
-import { Formik, Form, Field } from "formik";
+import React, { useContext, useEffect, useState } from "react";
+import { Field, Formik, Form } from "formik";
+import { useNavigate } from "react-router-dom";
+
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import styled from "styled-components";
 import { AuthContext } from "../../../context/AuthContext";
-// import postCreditCardForm from "../../../networks/passwordTypeForms";
-import styled from 'styled-components';
+import {
+  getCreditCardDetail,
+  postCreditCard,
+  updateCreditCard,
+} from "../../../networks/passwordTypeForms";
+import moment from "moment";
 
 const Container = styled.form`
   max-width: 500px;
@@ -49,11 +56,11 @@ const Container = styled.form`
     .eye {
       position: relative;
     }
-    
-    .eye .eye-icon{
-      position : absolute;
-      top : 2vh;
-      right : 1vw;
+
+    .eye .eye-icon {
+      position: absolute;
+      top: 2vh;
+      right: 1vw;
     }
     p {
       font-weight: 300;
@@ -84,120 +91,192 @@ const Container = styled.form`
     }
   }
 `;
-const CreditcardForm = () => {
-  const formRef = useRef(null);
+const CreditcardForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [getCreditCard, setCreditCard] = useState();
+  const [getAllowedData, setAllowedData] = useState();
+  const [isData, setIsData] = useState(true);
+  const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // event.preventDefault(); // Prevent the default form submission behavior
+  useEffect(() => {
+    if (id && isEdit) {
+      getCreditCardDetail(t, id)
+        .then((res) => {
+          setCreditCard(res?.data?.data);
+          setAllowedData(res.data?.allowedData);
+          setIsData(true);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
-    // const formData = new FormData(formRef.current);
-    // console.log('Form submitted...!', formData);
-    // //first display all form data & then
-    // formRef.current.reset(); // Clear all Field fields
+  useEffect(() => {
+    if (id && isEdit && !getCreditCard && !getAllowedData) {
+      setIsData(false);
+    }
+  }, [getCreditCard]);
 
-    // postCreditCardForm(t, values);
-    setSubmitting(false);
-    console.log(values);
-  };
-
-  const handleKeyPress = (event) => {
-    console.log("Handle KEy Press..")
-    const keyCode = event.which || event.keyCode;
-    const keyValue = String.fromCharCode(keyCode);
-
-    // Allow only numbers (0-9)
-    if (!/^[0-9]+$/.test(keyValue)) {
-
-      event.preventDefault();
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
+        await updateCreditCard(t, id, values);
+      } else {
+        await postCreditCard(t, values);
+      }
+      navigate("/home/passwords/creditcardpassword");
+      setSubmitting(false);
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
     <Container>
       <Formik
+        enableReinitialize
         initialValues={{
-          credit_card_name: "",
-          website: "",
-          user_name: "",
-          password: "",
-          credit_card: "",
-          payment_date: "",
-          account_nick_name: "",
+          credit_card_name:
+            getCreditCard?.credit_card_name ||
+            getAllowedData?.credit_card_name ||
+            "",
+          website: getCreditCard?.website || getAllowedData?.website || "",
+          user_name:
+            getCreditCard?.user_name || getAllowedData?.user_name || "",
+          password: getCreditCard?.password || getAllowedData?.password || "",
+          credit_card_number:
+            getCreditCard?.credit_card_number ||
+            getAllowedData?.credit_card_number ||
+            "",
+          payment_date: getCreditCard?.payment_date
+            ? getAllowedData?.payment_date
+              ? moment(getAllowedData?.payment_date).format("YYYY-MM-DD")
+              : moment(getCreditCard?.payment_date).format("YYYY-MM-DD")
+            : "",
+          account_nick_name:
+            getCreditCard?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <Form ref={formRef}>
+        {({ handleSubmit }) => (
+          <Form>
             <h1>Credit Card Account Password Storage Form</h1>
 
-            <fieldset>
-              <label htmlFor="name">Credit Card Name:</label>
-              <Field type="text" id="name" name="credit_card_name" placeholder="Enter Name" />
+            {isData ? (
+              <>
+                {" "}
+                <fieldset>
+                  <label htmlFor="name">Credit Card Name:</label>
+                  <Field
+                    type="text"
+                    id="name"
+                    name="credit_card_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Name"
+                  />
 
-              <label htmlFor="url">Website/URL</label>
-              <Field type="text" id="url" name="website" placeholder="Enter url/website" />
+                  <label htmlFor="url">Website/URL</label>
+                  <Field
+                    type="text"
+                    id="url"
+                    name="website"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter url/website"
+                  />
 
-              <label htmlFor="username">User Name:</label>
-              <Field type="text" id="username" name="user_name" placeholder="Enter username" />
+                  <label htmlFor="username">User Name:</label>
+                  <Field
+                    type="text"
+                    id="username"
+                    name="user_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter username"
+                  />
 
-              <label htmlFor="password">Password:</label>
-              <div className='eye'>
-                <Field
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter password"
-                />
-                <div className='eye-icon'>
-                  {showPassword ? (
-                    <IoEyeOffOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
+                  <label htmlFor="password">Password:</label>
+                  <div className="eye">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Enter password"
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     />
-                  ) : (
-                    <IoEyeOutline
-                      size={24}
-                      onClick={togglePasswordVisibility}
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
+                    <div className="eye-icon">
+                      {showPassword ? (
+                        <IoEyeOffOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ) : (
+                        <IoEyeOutline
+                          size={24}
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <label htmlFor="Creditcard">Credit Card:</label>
+                  <Field
+                    type="text"
+                    id="creditcard"
+                    name="credit_card_number"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter Creditcard"
+                  />
+
+                  <label htmlFor="date">Payment Date:</label>
+                  <Field
+                    type="date"
+                    id="date"
+                    name="payment_date"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="enter paymentdate"
+                  />
+
+                  <label htmlFor="nickname">Account Nick Name:</label>
+                  <Field
+                    type="text"
+                    id="nickname"
+                    name="account_nick_name"
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
+                    placeholder="Enter account nickname"
+                  />
+
+                  <label htmlFor="password">Password Recovery:</label>
+                  <p>
+                    we do not recommend stroing questions and answer to recoer
+                    your password. Please reset your password instead htmlFor
+                    added security.
+                  </p>
+                </fieldset>
+                <div className="subbutton">
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
+                    {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
+                  </span>
                 </div>
-              </div>
-
-              <label htmlFor="Creditcard">Credit Card:</label>
-              <Field type="text" id="creditcard" name="credit_card" placeholder="Enter Creditcard" onKeyPress={handleKeyPress} />
-
-              <label htmlFor="date">Payment Date:</label>
-              <Field type="date" id="date" name="payment_date" placeholder="enter paymentdate" />
-
-              <label htmlFor="nickname">Account Nick Name:</label>
-              <Field type="text" id="nickname" name="account_nick_name" placeholder="Enter account nickname" />
-
-              <label htmlFor="password">Password Recovery:</label>
-              <p>we do not recommend stroing questions and answer to recoer your password. Please reset your password instead htmlFor added security.</p>
-
-            </fieldset>
-            <div className="subbutton">
-              <span onClick={handleSubmit}>Submit</span>
-            </div>
+              </>
+            ) : (
+              "No Data Found"
+            )}
           </Form>
         )}
       </Formik>
     </Container>
-  )
-}
+  );
+};
 
-export default CreditcardForm
+export default CreditcardForm;

@@ -1,62 +1,129 @@
-import { Response } from 'express';
-import { Request } from '../../../../utils/@types'
+import { Response } from "express";
+import { Request } from "../../../../utils/@types";
 
-import generateUid from '../../../../utils/crypto';
-import { AppDataSource, s3 } from '../../../../config'
-import File from '../../../models/File';
-import { FilePermission } from '../../../models/permissions';
-import { UserAuth } from '../../../models/UserAuth';
+import generateUid from "../../../../utils/crypto";
+import { AppDataSource, s3 } from "../../../../config";
+import File from "../../../models/File";
+import { Permission } from "../../../models/permissions";
+import { UserAuth } from "../../../models/UserAuth";
+import Buddy from "../../../models/Buddies";
+import { In } from "typeorm";
+import { UserProfile } from "../../../models/UserProfile";
 
 const FileRepo = AppDataSource.getRepository(File);
-const PermissionRepo = AppDataSource.getRepository(FilePermission);
+const PermissionRepo = AppDataSource.getRepository(Permission);
 const UserAuthRepo = AppDataSource.getRepository(UserAuth);
-
-
-
+const BuddyRepo = AppDataSource.getRepository(Buddy);
+const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
 export const permissionsController = {
-    getPermissions: async (req: Request, res: Response) => { },
+  deletePermissions: async (req: Request, res: Response) => {
+    try {
+      const { id, buddyId } = req.params;
 
+      const permissionData = await PermissionRepo.findOne({
+        where: {
+          id: id as any,
+          userAuth: { id: req.user as any },
+          buddy: { id: buddyId as any },
+        },
+      });
 
+      if (!permissionData) {
+        return res.status(400).json({
+          message: "No permission found to this buddy",
+        });
+      }
 
-    createPermission: async (req: Request, res: Response) => {
+      await PermissionRepo.delete(id);
 
-        try {
-            const { file, user, type } = req.body;
+      return res.status(200).send({
+        message: "Delete successfully",
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: "Something went wrong",
+      });
+    }
+  },
 
-            const fileData = await FileRepo.findOne({ where: { id: file } });
+  createPermission: async (req: Request, res: Response) => {
+    try {
+      const { file_id, buddy_ids, ...data } = req.body;
+      const userProfile = await UserProfileRepo.createQueryBuilder(
+        "userProfile"
+      )
+        .innerJoinAndSelect("userProfile.userAuth", "UserAuth")
+        .where("userProfile.userAuth = :id", { id: req.user })
+        .getOne();
 
-            if (!fileData) {
-                return res.status(200).json({ success: false, message: "File not found" });
-            }
+      const buddyData = await BuddyRepo.find({
+        where: { user: { id: req.user as any } },
+        select: {
+          id: true,
+          buddy: {
+            id: true,
+            email: true,
+          },
+          user: {
+            id: true,
+            email: true,
+          },
+        },
+        relations: ["user", "buddy"],
+      });
 
+      if (!buddyData) {
+        return res
+          .status(200)
+          .json({ success: false, message: "Data not found" });
+      }
+      const newPermission = new Permission();
+      const allPermission = [];
 
-            const userData = await UserAuthRepo.findOne({ where: { id: user?.id } });
+      if (file_id) {
+        const fileData = await FileRepo.findOne({
+          where: {
+            user: {
+              id: userProfile?.id,
+            },
+            id: file_id,
+          },
+        });
+        newPermission.file = fileData?.id as any;
+      }
 
-
-            const newPermission = new FilePermission();
-            newPermission.file = fileData;
-            newPermission.user = userData!;
-            newPermission.can_read = true;
-            newPermission.can_write = true;
-            newPermission.can_share = true;
-            newPermission.immediate_sharing = true;
-            newPermission.time_release_sharing = type === "time" ? true : false;
-
-
-            await PermissionRepo.save(newPermission);
-
-            return res.status(200).json({ success: true, message: "Permission created" });
-
-
-
-        } catch (err) {
-            console.log(err);
-            return res.status(200).json({ success: false, message: "Something Went wrong!" });
+      for (const buddy of buddyData) {
+        newPermission.userAuth = req.user as any;
+        newPermission.buddy = buddy.buddy.id as any;
+        newPermission.bankAccountId = data?.bankAccountId;
+        newPermission.creditCardId = data?.creditCardId;
+        newPermission.loanAccountId = data?.loanAccountId;
+        newPermission.merchantAccountId = data?.merchantAccountId;
+        newPermission.miscAccountId = data?.miscAccountId;
+        newPermission.recipeAccountId = data?.recipeAccountId;
+        newPermission.form_type = data?.form_type;
+        newPermission.canRead = data?.read || false;
+        newPermission.canWrite = data?.write || false;
+        newPermission.canShare = data?.share || false;
+        if (data.timeReleaseDate) {
+          newPermission.timeReleaseDate = data?.timeReleaseDate;
+        } else if (data.instantReleaseDate) {
+          newPermission.instantReleaseDate = data?.instantReleaseDate;
         }
+        allPermission.push(newPermission);
+      }
 
+      await PermissionRepo.save(allPermission);
 
-
-    },
-
-}
+      return res.status(200).json({
+        success: true,
+        message: "Permission created",
+      });
+    } catch (err) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Something Went wrong!" });
+    }
+  },
+};

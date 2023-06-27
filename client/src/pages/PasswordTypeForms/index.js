@@ -1,24 +1,27 @@
 import React from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import BankForm from "../../components/common/Forms/BankForm";
 import CreditcardForm from "../../components/common/Forms/CreditcardForm";
 import LoanAccountForm from "../../components/common/Forms/LoanAccountForm";
 import MerchantAccountForm from "../../components/common/Forms/MerchantAccountForm";
 import MiscForm from "../../components/common/Forms/MiscForm";
-import PasswordStorageForm from "../../components/common/Forms/PasswordStorageForm";
 import Recipe from "../../components/common/Forms/Recipe";
+import PasswordStorageForm from "../../components/common/Forms/PasswordStorageForm";
 
 const PasswordTypeForms = () => {
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id");
+  const formType = searchParams.get("form");
   return (
     <div>
-      {location.search === "?form=6" && <BankForm />}
-      {location.search === "?form=3" && <CreditcardForm />}
-      {location.search === "?form=1" && <LoanAccountForm />}
-      {location.search === "?form=7" && <MerchantAccountForm />}
-      {location.search === "?form=5" && <MiscForm />}
-      {location.search === "?form=2" && <PasswordStorageForm />}
-      {location.search === "?form=4" && <Recipe />}
+      {formType === "6" && <BankForm id={id} isEdit={id && true} />}
+      {formType === "3" && <CreditcardForm id={id} isEdit={id && true} />}
+      {formType === "1" && <LoanAccountForm id={id} isEdit={id && true} />}
+      {formType === "7" && <MerchantAccountForm id={id} isEdit={id && true} />}
+      {formType === "5" && <MiscForm id={id} isEdit={id && true} />}
+      {formType === "2" && <PasswordStorageForm id={id} isEdit={id && true} />}
+      {formType === "4" && <Recipe id={id} isEdit={id && true} />}
     </div>
   );
 };

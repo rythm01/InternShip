@@ -6,36 +6,38 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  JoinColumn,
 } from "typeorm";
-import { UserAuth } from "./UserAuth";
+import { UserProfile } from "./UserProfile";
 
 @Entity()
 class CreditCardPassword {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => UserAuth)
-  user: UserAuth;
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.id)
+  @JoinColumn({ name: "userProfileId" })
+  userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   credit_card_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   website: string;
 
-  @Column()
+  @Column({ nullable: true })
   user_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
-  credit_card_number: number;
+  @Column({ nullable: true })
+  credit_card_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   payment_date: string;
 
-  @Column()
+  @Column({ nullable: true })
   account_nick_name: string;
 
   @CreateDateColumn()

@@ -1,36 +1,24 @@
 import { Response } from "express";
 import { Request } from "../../../../utils/@types";
-import BankAccountPassword from "../../../models/BankAccountPassword";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
-import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
+import PasswordStorage from "../../../models/PasswordStorageForm";
 import { Permission } from "../../../models/permissions";
 import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
-const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
-const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const PasswordStorageRepo = AppDataSource.getRepository(PasswordStorage);
 const PermissionRepo = AppDataSource.getRepository(Permission);
+const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
-export const bankAccountController = {
-  postBankAccount: async (req: Request, res: Response, next: any) => {
+export const passwordStorageController = {
+  postPasswordStorage: async (req: Request, res: Response, next: any) => {
     try {
-      const {
-        bank_name,
-        website,
-        user_name,
-        password,
-        account_number,
-        routing,
-        account_nick_name,
-      } = req.body;
+      const { website, user_name, password, account_nick_name } = req.body;
       const requiredFields = [
-        "bank_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
         "account_nick_name",
       ];
 
@@ -50,27 +38,24 @@ export const bankAccountController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
-      const newBankAccount = new BankAccountPassword();
-      newBankAccount.userProfile = userProfile?.id as any;
-      newBankAccount.bank_name = bank_name;
-      newBankAccount.website = website;
-      newBankAccount.user_name = user_name;
-      newBankAccount.password = password;
-      newBankAccount.account_number = account_number;
-      newBankAccount.routing = routing;
-      newBankAccount.account_nick_name = account_nick_name;
+      const newLoanAccount = new PasswordStorage();
+      newLoanAccount.userProfile = userProfile?.id as any;
+      newLoanAccount.website = website;
+      newLoanAccount.user_name = user_name;
+      newLoanAccount.password = password;
+      newLoanAccount.account_nick_name = account_nick_name;
 
-      await BankAccountRepo.save(newBankAccount);
+      await PasswordStorageRepo.save(newLoanAccount);
 
       return res.status(200).json({
-        message: "Account saved Successfully",
+        message: "Password Storage saved Successfully",
       });
     } catch (error) {
       next(error);
     }
   },
 
-  getBankAccount: async (req: Request, res: Response, next: any) => {
+  getPasswordStorage: async (req: Request, res: Response, next: any) => {
     try {
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
@@ -80,35 +65,41 @@ export const bankAccountController = {
         .getOne();
 
       if (!userProfile) {
-        return res
-          .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+        return res.status(200).json({
+          success: false,
+          message: "No password storage forms to display",
+        });
       }
+      const isPasswordStorage = await PasswordStorageRepo.createQueryBuilder(
+        "passwordStorage"
+      )
+        .where("passwordStorage.userProfile = :userProfile", {
+          userProfile: userProfile?.id,
+        })
+        .getMany();
 
       const isHaveingPermission = await PermissionRepo.find({
         where: {
           buddy: { id: req.user as any },
           form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+            PERMISSION_FORM_TYPE_ENUMS.PASSWORD_STORAGE_FORM_TYPE_ENUM as string,
         },
-        relations: ["userAuth", "bankAccountId"],
+        relations: ["userAuth", "passwordStorageId"],
       });
       const allowedData = [];
-      for (const bankPassword of isHaveingPermission) {
-        allowedData.push(bankPassword.bankAccountId);
+      for (const passwordStorage of isHaveingPermission) {
+        allowedData.push(passwordStorage.passwordStorageId);
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
-          userProfile: userProfile?.id,
-        })
-        .getMany();
+      if (!isPasswordStorage && isHaveingPermission.length < 0) {
+        return res.status(400).json({
+          message: "No password storage forms attached",
+        });
+      }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
+        data: isPasswordStorage,
         allowedData,
       });
     } catch (error) {
@@ -116,7 +107,7 @@ export const bankAccountController = {
     }
   },
 
-  deleteBankAccount: async (req: Request, res: Response, next: any) => {
+  deletePasswordStorage: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -131,23 +122,23 @@ export const bankAccountController = {
           .status(200)
           .json({ success: false, message: "No Bank Account to display" });
       }
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isPasswordStorage = await PasswordStorageRepo.createQueryBuilder(
+        "passwordStorage"
       )
-        .innerJoin("bankAccount.userProfile", "userProfile")
-        .where("bankAccount.id = :id", { id: id })
+        .innerJoin("passwordStorage.userProfile", "userProfile")
+        .where("passwordStorage.id = :id", { id: id })
         .andWhere("userProfile.id = :userProfileId", {
           userProfileId: userProfile.id,
         })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isPasswordStorage) {
         return res.status(400).json({
           message: "No records found",
         });
       }
 
-      await BankAccountRepo.delete({ id: parseInt(id) });
+      await PasswordStorageRepo.delete({ id: parseInt(id) });
 
       return res.status(200).send({
         message: "Delete Successfull",
@@ -157,7 +148,11 @@ export const bankAccountController = {
     }
   },
 
-  getBankAccountDetailsById: async (req: Request, res: Response, next: any) => {
+  getPasswordStorageDetailsById: async (
+    req: Request,
+    res: Response,
+    next: any
+  ) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -173,42 +168,42 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isHaveingPermission = await PermissionRepo.findOne({
-        where: {
-          bankAccountId: { id: id as any },
-          buddy: { id: req.user as any },
-          form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
-        },
-        relations: ["userAuth", "bankAccountId"],
-      });
-
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isPasswordStorage = await PasswordStorageRepo.createQueryBuilder(
+        "passwordStorage"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("passwordStorage.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("passwordStorage.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount && !isHaveingPermission) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          passwordStorageId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.PASSWORD_STORAGE_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "passwordStorageId"],
+      });
+
+      if (!isPasswordStorage && !isHaveingPermission) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
-        allowedData: isHaveingPermission?.bankAccountId,
+        allowedData: isHaveingPermission?.passwordStorageId,
+        data: isPasswordStorage,
       });
     } catch (error) {
       next(error);
     }
   },
 
-  updateBankAccountDetailsById: async (
+  updatePasswordStorageDetailsById: async (
     req: Request,
     res: Response,
     next: any
@@ -217,12 +212,9 @@ export const bankAccountController = {
       const { id } = req.params;
       const data = req.body;
       const requiredFields = [
-        "bank_name",
         "website",
         "user_name",
         "password",
-        "account_number",
-        "routing",
         "account_nick_name",
       ];
 
@@ -244,31 +236,29 @@ export const bankAccountController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No data found" });
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isPasswordStorage = await PasswordStorageRepo.createQueryBuilder(
+        "passwordStorage"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("passwordStorage.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("passwordStorage.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isPasswordStorage) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
-      isBankAccount.bank_name = data?.bank_name;
-      isBankAccount.website = data?.website;
-      isBankAccount.user_name = data?.user_name;
-      isBankAccount.password = data?.password;
-      isBankAccount.account_number = data?.account_number;
-      isBankAccount.account_nick_name = data?.account_nick_name;
+      isPasswordStorage.website = data?.website;
+      isPasswordStorage.user_name = data?.user_name;
+      isPasswordStorage.password = data?.password;
+      isPasswordStorage.account_nick_name = data?.account_nick_name;
 
-      await BankAccountRepo.save(isBankAccount);
+      await PasswordStorageRepo.save(isPasswordStorage);
 
       return res.status(200).send({
         message: " Updated successfully",

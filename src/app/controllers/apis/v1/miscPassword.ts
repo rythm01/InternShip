@@ -1,36 +1,33 @@
 import { Response } from "express";
 import { Request } from "../../../../utils/@types";
-import BankAccountPassword from "../../../models/BankAccountPassword";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../../../../config";
-import { UserAuth } from "../../../models/UserAuth";
 import { UserProfile } from "../../../models/UserProfile";
+import MiscPasswordStorage from "../../../models/MiscPasswordForm";
 import { Permission } from "../../../models/permissions";
 import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
 
-const BankAccountRepo = AppDataSource.getRepository(BankAccountPassword);
-const UserProfileRepo = AppDataSource.getRepository(UserProfile);
+const MiscPasswordRepo = AppDataSource.getRepository(MiscPasswordStorage);
 const PermissionRepo = AppDataSource.getRepository(Permission);
+const UserProfileRepo = AppDataSource.getRepository(UserProfile);
 
-export const bankAccountController = {
-  postBankAccount: async (req: Request, res: Response, next: any) => {
+export const miscPasswordController = {
+  postMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const {
-        bank_name,
+        account_name,
         website,
         user_name,
         password,
         account_number,
-        routing,
         account_nick_name,
       } = req.body;
       const requiredFields = [
-        "bank_name",
+        "account_name",
         "website",
         "user_name",
         "password",
         "account_number",
-        "routing",
         "account_nick_name",
       ];
 
@@ -50,27 +47,26 @@ export const bankAccountController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
-      const newBankAccount = new BankAccountPassword();
-      newBankAccount.userProfile = userProfile?.id as any;
-      newBankAccount.bank_name = bank_name;
-      newBankAccount.website = website;
-      newBankAccount.user_name = user_name;
-      newBankAccount.password = password;
-      newBankAccount.account_number = account_number;
-      newBankAccount.routing = routing;
-      newBankAccount.account_nick_name = account_nick_name;
+      const newMiscPassword = new MiscPasswordStorage();
+      newMiscPassword.userProfile = userProfile?.id as any;
+      newMiscPassword.account_name = account_name;
+      newMiscPassword.website = website;
+      newMiscPassword.user_name = user_name;
+      newMiscPassword.password = password;
+      newMiscPassword.account_number = account_number;
+      newMiscPassword.account_nick_name = account_nick_name;
 
-      await BankAccountRepo.save(newBankAccount);
+      await MiscPasswordRepo.save(newMiscPassword);
 
       return res.status(200).json({
-        message: "Account saved Successfully",
+        message: "Saved Successfully",
       });
     } catch (error) {
       next(error);
     }
   },
 
-  getBankAccount: async (req: Request, res: Response, next: any) => {
+  getMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const userProfile = await UserProfileRepo.createQueryBuilder(
         "userProfile"
@@ -80,35 +76,41 @@ export const bankAccountController = {
         .getOne();
 
       if (!userProfile) {
-        return res
-          .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+        return res.status(200).json({
+          success: false,
+          message: "No misc Password forms to display",
+        });
       }
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
+      )
+        .where("miscPassword.userProfile = :userProfile", {
+          userProfile: userProfile?.id,
+        })
+        .getMany();
 
       const isHaveingPermission = await PermissionRepo.find({
         where: {
           buddy: { id: req.user as any },
           form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
+            PERMISSION_FORM_TYPE_ENUMS.MISC_PASSWORD_FORM_TYPE_ENUM as string,
         },
-        relations: ["userAuth", "bankAccountId"],
+        relations: ["userAuth", "miscAccountId"],
       });
       const allowedData = [];
-      for (const bankPassword of isHaveingPermission) {
-        allowedData.push(bankPassword.bankAccountId);
+      for (const miscAccount of isHaveingPermission) {
+        allowedData.push(miscAccount.miscAccountId);
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
-      )
-        .where("bankAccount.userProfile = :userProfile", {
-          userProfile: userProfile?.id,
-        })
-        .getMany();
+      if (!isMiscPassword && isHaveingPermission.length < 0) {
+        return res.status(400).json({
+          message: "No misc Password forms attached",
+        });
+      }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
+        data: isMiscPassword,
         allowedData,
       });
     } catch (error) {
@@ -116,7 +118,7 @@ export const bankAccountController = {
     }
   },
 
-  deleteBankAccount: async (req: Request, res: Response, next: any) => {
+  deleteMiscPassword: async (req: Request, res: Response, next: any) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -129,25 +131,25 @@ export const bankAccountController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No Data to display" });
       }
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
       )
-        .innerJoin("bankAccount.userProfile", "userProfile")
-        .where("bankAccount.id = :id", { id: id })
+        .innerJoin("miscPassword.userProfile", "userProfile")
+        .where("miscPassword.id = :id", { id: id })
         .andWhere("userProfile.id = :userProfileId", {
           userProfileId: userProfile.id,
         })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isMiscPassword) {
         return res.status(400).json({
           message: "No records found",
         });
       }
 
-      await BankAccountRepo.delete({ id: parseInt(id) });
+      await MiscPasswordRepo.delete({ id: parseInt(id) });
 
       return res.status(200).send({
         message: "Delete Successfull",
@@ -157,7 +159,11 @@ export const bankAccountController = {
     }
   },
 
-  getBankAccountDetailsById: async (req: Request, res: Response, next: any) => {
+  getMiscPasswordDetailsById: async (
+    req: Request,
+    res: Response,
+    next: any
+  ) => {
     try {
       const { id } = req.params;
       const userProfile = await UserProfileRepo.createQueryBuilder(
@@ -173,42 +179,42 @@ export const bankAccountController = {
           .json({ success: false, message: "No Bank Account to display" });
       }
 
-      const isHaveingPermission = await PermissionRepo.findOne({
-        where: {
-          bankAccountId: { id: id as any },
-          buddy: { id: req.user as any },
-          form_type:
-            PERMISSION_FORM_TYPE_ENUMS.BANK_ACCOUNT_FORM_TYPE_ENUM as string,
-        },
-        relations: ["userAuth", "bankAccountId"],
-      });
-
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("miscPassword.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("miscPassword.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount && !isHaveingPermission) {
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          miscAccountId: { id: id as any },
+          buddy: { id: req.user as any },
+          form_type:
+            PERMISSION_FORM_TYPE_ENUMS.MISC_PASSWORD_FORM_TYPE_ENUM as string,
+        },
+        relations: ["userAuth", "miscAccountId"],
+      });
+
+      if (!isMiscPassword && !isHaveingPermission) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
 
       return res.status(200).send({
         message: "Success",
-        data: isBankAccount,
-        allowedData: isHaveingPermission?.bankAccountId,
+        allowedData: isHaveingPermission?.miscAccountId,
+        data: isMiscPassword,
       });
     } catch (error) {
       next(error);
     }
   },
 
-  updateBankAccountDetailsById: async (
+  updateMiscPasswordDetailsById: async (
     req: Request,
     res: Response,
     next: any
@@ -217,12 +223,11 @@ export const bankAccountController = {
       const { id } = req.params;
       const data = req.body;
       const requiredFields = [
-        "bank_name",
+        "account_name",
         "website",
         "user_name",
         "password",
         "account_number",
-        "routing",
         "account_nick_name",
       ];
 
@@ -244,31 +249,31 @@ export const bankAccountController = {
       if (!userProfile) {
         return res
           .status(200)
-          .json({ success: false, message: "No Bank Account to display" });
+          .json({ success: false, message: "No data found" });
       }
 
-      const isBankAccount = await BankAccountRepo.createQueryBuilder(
-        "bankAccount"
+      const isMiscPassword = await MiscPasswordRepo.createQueryBuilder(
+        "miscPassword"
       )
-        .where("bankAccount.userProfile = :userProfile", {
+        .where("miscPassword.userProfile = :userProfile", {
           userProfile: userProfile?.id,
         })
-        .andWhere("bankAccount.id = :id", { id: id })
+        .andWhere("miscPassword.id = :id", { id: id })
         .getOne();
 
-      if (!isBankAccount) {
+      if (!isMiscPassword) {
         return res.status(400).json({
-          message: "No bank account attached",
+          message: "No data found",
         });
       }
-      isBankAccount.bank_name = data?.bank_name;
-      isBankAccount.website = data?.website;
-      isBankAccount.user_name = data?.user_name;
-      isBankAccount.password = data?.password;
-      isBankAccount.account_number = data?.account_number;
-      isBankAccount.account_nick_name = data?.account_nick_name;
+      isMiscPassword.account_name = data?.account_name;
+      isMiscPassword.website = data?.website;
+      isMiscPassword.user_name = data?.user_name;
+      isMiscPassword.password = data?.password;
+      isMiscPassword.account_number = data?.account_number;
+      isMiscPassword.account_nick_name = data?.account_nick_name;
 
-      await BankAccountRepo.save(isBankAccount);
+      await MiscPasswordRepo.save(isMiscPassword);
 
       return res.status(200).send({
         message: " Updated successfully",
