@@ -380,6 +380,12 @@ const LoanAccountPassword = () => {
                               text: "Delete",
                               onClick: () => deleteLoanAccount(element?.id),
                             },
+                            {
+                              text: "Permission",
+                              onClick: () => {
+                                navigate("permission");
+                              },
+                            },
                           ]}
                           position="absolute"
                         />

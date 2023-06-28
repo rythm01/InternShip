@@ -23,14 +23,30 @@ const VerifyCode = React.lazy(() => import("./pages/VerifyCode"));
 const Layout = React.lazy(() => import("./pages/Layout"));
 const MyBuddies = React.lazy(() => import("./pages/Layout/pages/MyBuddies"));
 const Passwords = React.lazy(() => import("./pages/Layout/pages/Passwords"));
-const LoanAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/LoanAccountPassword"));
-const NonBankerPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/NonBankerPassword"));
-const CreditCardPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/CreditCardPassword"));
-const MiscPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/MiscPassword"));
-const BankAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/BankAccountPassword"));
-const CryptoPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/CryptoPassword"));
-const MerchantAccountPassword = React.lazy(() => import("./pages/Layout/pages/Passwords/MerchantAccountPassword"));
-const Recipes = React.lazy(() => import("./pages/Layout/pages/Passwords/Recipes"));
+const LoanAccountPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/LoanAccountPassword")
+);
+const NonBankerPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/NonBankerPassword")
+);
+const CreditCardPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/CreditCardPassword")
+);
+const MiscPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/MiscPassword")
+);
+const BankAccountPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/BankAccountPassword")
+);
+const CryptoPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/CryptoPassword")
+);
+const MerchantAccountPassword = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/MerchantAccountPassword")
+);
+const Recipes = React.lazy(() =>
+  import("./pages/Layout/pages/Passwords/Recipes")
+);
 const Documents = React.lazy(() => import("./pages/Layout/pages/Documents"));
 const About = React.lazy(() => import("./pages/Layout/pages/About"));
 const Subscriptions = React.lazy(() => import("./pages/Subscriptions"));
@@ -53,11 +69,11 @@ const routes = [
   {
     path: "/",
     exact: true,
-    element: <Landing />
+    element: <Landing />,
   },
   {
     path: "/welcome",
-    element: <Welcome />
+    element: <Welcome />,
   },
   {
     path: "/login",
@@ -69,7 +85,7 @@ const routes = [
   },
   {
     path: "addpermission",
-    element: <AddPermission />
+    element: <AddPermission />,
   },
   {
     path: "/home",
@@ -96,8 +112,13 @@ const routes = [
         isProtected: true,
       },
       {
+        path: "password/loanaccountpassword/permission",
+        element: <Permission />,
+        // isProtected: true,
+      },
+      {
         path: "passwords/permission",
-        element: <Permission />
+        element: <Permission />,
       },
       {
         path: "passwords/nonbankerpassword",
@@ -236,11 +257,11 @@ const routes = [
   },
   {
     path: "/privacy-policy",
-    element: <PrivacyPolicy />
+    element: <PrivacyPolicy />,
   },
   {
     path: "/terms-&-conditions",
-    element: <TermsConditions />
+    element: <TermsConditions />,
   },
   {
     path: "/subscriptions",
@@ -261,25 +282,24 @@ const routes = [
   },
   {
     path: "/about",
-    element: <About />
+    element: <About />,
   },
   {
     path: "/faq",
-    element: <FAQ />
+    element: <FAQ />,
   },
   {
     path: "/contact-us",
-    element: <ContactUs />
+    element: <ContactUs />,
   },
   {
     path: "/how-it-works",
-    element: <HowItWorks />
+    element: <HowItWorks />,
   },
   {
     path: "/products",
-    element: <Products />
+    element: <Products />,
   },
 ];
-
 
 export default routes;
