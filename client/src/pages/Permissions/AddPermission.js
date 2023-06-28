@@ -5,13 +5,21 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 // import data from "./data";
 import { Divider } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getBuddiesApi } from "../../networks/buddies";
 import { addBuddiesToFilePermissionApi } from "../../networks/filePermission";
 
 function AddPermission() {
   const [isBuddyDropdownOpen, setIsBuddyDropdownOpen] = useState(false);
   const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  // Access the query parameters
+  const type = queryParams.get("type");
+  const id = queryParams.get("id");
+  const idToUse = queryParams.get("idToUse");
 
   const handleSelectBuddiesDropdownToggle = () => {
     setIsBuddyDropdownOpen(!isBuddyDropdownOpen);
@@ -72,26 +80,23 @@ function AddPermission() {
   };
 
   useEffect(() => {
-    console.log(selectedBuddy, selectedShareOption, "dtatattataat");
-  }, [selectedBuddy, selectedShareOption]);
-
-  useEffect(() => {
     async function getBuddies() {
       const token = localStorage.getItem("token");
       const data = await getBuddiesApi(token);
-      console.log(data.data.buddies, "asasaa");
       setUpdatedData(data.data.buddies);
     }
     getBuddies();
-    console.log(updatedData, "update dtata");
   }, []);
 
   const handleSubmit = () => {
     const token = localStorage.getItem("token");
+    console.log(selectedBuddy.id);
     addBuddiesToFilePermissionApi(token, {
-      file_id: 1,
-      budy_id: selectedBuddy.id,
+      form_type: type,
+      [idToUse]: id,
+      buddy_ids: [selectedBuddy.id],
     });
+    navigate("home/passwords");
   };
 
   return (
@@ -100,9 +105,12 @@ function AddPermission() {
       <Container>
         <div className="container">
           <div className="permissionForm">
-            <div className="backButton">
+            {/* <div
+              className="backButton"
+              onClick={() => navigate("home/passwords/permission")}
+            >
               <ArrowBackIcon color="success" style={{ cursor: "pointer" }} />
-            </div>
+            </div> */}
             <div className="permission">
               <h1 className="heading">Add Permissions</h1>
             </div>

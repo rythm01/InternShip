@@ -148,6 +148,7 @@ export const profileController = {
       verification.email = email;
       verification.verification_status = true;
       verification.verficationPeriod = verificationPeriod;
+      verification.userAuth = userAuth!;
       await VerificationRepo.save(verification);
 
       const folder = new Folder();

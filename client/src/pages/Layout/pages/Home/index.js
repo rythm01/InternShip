@@ -57,7 +57,6 @@ import {
 } from "../../../../networks/files";
 import { getNotificationApi } from "../../../../networks/notifications";
 import toast, { Toaster } from "react-hot-toast";
-import { getPermission } from "../../../../networks/filePermission";
 
 const style2 = {
   position: "absolute",
@@ -720,224 +719,6 @@ export default function Home() {
                   );
                 })}
               </Box>
-              <div className="modal-forgot">
-                <Modal
-                  open={isUplaod}
-                  onClose={() => setIsUpload(false)}
-                  keepMounted
-                  aria-labelledby="simple-modal-title"
-                  aria-describedby="simple-modal-description"
-                >
-                  <Box style={style2}>
-                    <Title
-                      fontSize="1.7rem"
-                      fontWeight="700"
-                      margin="20px auto 0 25px"
-                    >
-                      Select Information Type
-                    </Title>
-                    <CrossOutline
-                      style={{
-                        position: "absolute",
-                        right: 20,
-                        top: 10,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setIsUpload(false)}
-                    />
-                    <Box
-                      sx={{
-                        width: "92%",
-                        p: 3,
-                        m: 3,
-                        borderRadius: "20px",
-                      }}
-                    >
-                      <Row
-                        alignItems="center"
-                        border="1px solid black"
-                        borderRadius="10px"
-                      >
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          textColor="black"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              accept=".pdf,.doc,.docx,.xls,.xlsx"
-                              type="file"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Document
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          borderRadius="10px"
-                          textColor="black"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Photo
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Cont>
-                          <div className="dropdown-container">
-                            <div
-                              className="dropdown-header"
-                              onClick={toggleDropdown}
-                            >
-                              {selectedOption
-                                ? selectedOption.name
-                                : "Select Password Type"}
-                              {/* <FontAwesomeIcon
-                                icon={faChevronDown}
-                                className="dropdown-icon"
-                              /> */}
-                            </div>
-                            {dropdownOpen && (
-                              <ul className="dropdown-options">
-                                {PasswordSelectNames.map((option) => (
-                                  <li
-                                    key={option.id}
-                                    className="dropdown-option"
-                                    onClick={() => handleOptionSelect(option)}
-                                    onChange={(e) => {
-                                      navigate(
-                                        `/password-type-form?form=${e.id}`
-                                      );
-                                    }}
-                                  >
-                                    {option.name}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        </Cont>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          borderRadius="10px"
-                          textColor="black"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              accept="video/*"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Video
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          textColor="black"
-                          borderRadius="10px"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Upload From device
-                          </label>
-                        </Button>
-                      </Row>
-                    </Box>
-                  </Box>
-                </Modal>
-              </div>
 
               <NewFile>
                 <label
@@ -1118,6 +899,210 @@ export default function Home() {
                 onClick={HandleCreateFolder}
               >
                 Create
+              </Button>
+            </Row>
+          </Box>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={isUplaod}
+        onClose={() => setIsUpload(false)}
+        keepMounted
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Box style={style2} className="modal">
+          <Title fontSize="1.7rem" fontWeight="700" margin="20px auto 0 25px">
+            Select Information Type
+          </Title>
+          <CrossOutline
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 10,
+              cursor: "pointer",
+            }}
+            onClick={() => setIsUpload(false)}
+          />
+          <Box
+            sx={{
+              width: "92%",
+              p: 3,
+              m: 3,
+              borderRadius: "20px",
+            }}
+          >
+            <Row
+              alignItems="center"
+              border="1px solid black"
+              borderRadius="10px"
+            >
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                textColor="black"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    type="file"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Document
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                borderRadius="10px"
+                textColor="black"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Photo
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Cont>
+                <div className="dropdown-container">
+                  <div className="dropdown-header" onClick={toggleDropdown}>
+                    {selectedOption
+                      ? selectedOption.name
+                      : "Select Password Type"}
+                  </div>
+                  {dropdownOpen && (
+                    <ul className="dropdown-options">
+                      {PasswordSelectNames.map((option) => (
+                        <li
+                          key={option.id}
+                          className="dropdown-option"
+                          onClick={() => handleOptionSelect(option)}
+                          onChange={(e) => {
+                            navigate(`/password-type-form?form=${e.id}`);
+                          }}
+                        >
+                          {option.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </Cont>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                borderRadius="10px"
+                textColor="black"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Video
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                textColor="black"
+                borderRadius="10px"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Upload From device
+                </label>
               </Button>
             </Row>
           </Box>

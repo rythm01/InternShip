@@ -6,10 +6,10 @@ import { Verification } from "../app/models/verification";
 
 const VerificationRepo = AppDataSource.getRepository(Verification);
 
-const sendEmail = (email: string) => {
+const sendEmail = async (row: any) => {
   const mailOptions = {
     from: "smtp@gmail.com",
-    to: email,
+    to: row.email,
     subject: "Verification Email",
     html: `
       <p>Please click the button below to verify your email:</p>
@@ -20,13 +20,41 @@ const sendEmail = (email: string) => {
     // } would like to add you as a Buddy on their Store and Share Vault Account! Click the link below to register:</p><br/><a href="https://app.sandsvault.io/signup">https://app.sandsvault.io/signup</a><br/><p>Once you register, you will be able to access your buddy's account and view their files.</p><br/><p>Thanks,</p><br/><p>Store and Share Vault Team</p>`,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email: ", error);
-    } else {
-      console.log("Email sent: ", info.response);
-    }
+  console.log(row);
+
+  const verificationData = await VerificationRepo.findOne({
+    where: {
+      userAuth: { id: row.userAuth.id },
+    },
+    relations: ["userAuth"],
   });
+
+  console.log(verificationData, "email");
+
+  // transporter.sendMail(mailOptions, async (error, info) => {
+  //   if (error) {
+  //     console.error("Error sending email: ", error);
+  //   } else {
+  //     console.log("Email sent: ", info.response);
+  //     const verificationData = await VerificationRepo.createQueryBuilder(
+  //       "verification"
+  //     )
+  //       .where("verification.userAuth = :userAuth", {
+  //         userAuth: row.userAuth.id,
+  //       })
+  //       .getOne();
+
+  //     console.log(verificationData, "email");
+
+  //     const newReponse = {
+  //       ...verificationData,
+  //       email_sent_for_verification: true,
+  //       email_sent_expire_date: moment().add(1, "day"),
+  //     };
+
+  //     VerificationRepo.save(newReponse);
+  //   }
+  // });
 };
 
 const performActions = (userId: string) => {
@@ -38,23 +66,26 @@ const checkVerificationStatus = async () => {
 
   AppDataSource.query(verificationQuery)
     .then((results: any[]) => {
-      results.forEach((row: any) => {
+      results.forEach(async (row: any) => {
         if (
-          moment(row.dateJoined)
+          moment("20/06/2023", "DD/MM/YYYY")
             .add(row.verficationPeriod, "days")
             .isBefore(moment(), "day")
         ) {
-          if (row?.email_sent_for_verification) {
-            if (moment(row?.email_sent_date).isBefore(moment(), "day")) {
-              const response = VerificationRepo.findOne({
-                where: {
-                  userAuth: { id: row.userAuth.id },
-                },
-              });
+          console.log(row);
+          if (row.email_sent_for_verification) {
+            if (!moment(row.email_sent_expire_date).isBefore(moment(), "day")) {
+              const verificationData =
+                await VerificationRepo.createQueryBuilder("verification")
+                  .where("verification.userAuth = :userAuth", {
+                    userAuth: row.userAuth.id,
+                  })
+                  .getOne();
+              console.log(verificationData, "normal");
             }
           } else {
-            cron.schedule("0 0 * * *", () => {
-              sendEmail(row.email);
+            cron.schedule(interval, async () => {
+              sendEmail(row);
             });
           }
         }

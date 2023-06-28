@@ -28,6 +28,9 @@ export class Verification {
   @Column({ nullable: true })
   email_sent_date: Date;
 
+  @Column({ nullable: true })
+  email_sent_expire_date: Date;
+
   @CreateDateColumn()
   dateJoined: Date;
 
