@@ -34,6 +34,9 @@ export class UserProfile {
   stripeCustomer: string;
 
   @Column({ nullable: true })
+  email: string;
+
+  @Column({ nullable: true })
   storage: string;
 
   @Column({ nullable: true })

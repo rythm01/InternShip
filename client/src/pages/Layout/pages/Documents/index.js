@@ -264,9 +264,9 @@ export default function Documents() {
                     + New Folder
                   </Button>
 
-                  <Row>
+                  {/* <Row>
                     <ShareWith />
-                  </Row>
+                  </Row> */}
                 </div>
               </Row>
 
@@ -298,7 +298,9 @@ export default function Documents() {
                       key={item.id}
                     >
                       <div
-                        onClick={() => navigate(`/documents/folder/${item.id}`)}
+                        onClick={() =>
+                          navigate(`/home/documents/folder/${item.id}`)
+                        }
                       >
                         <FolderContainer
                           key={index}
@@ -356,7 +358,7 @@ export default function Documents() {
                           {
                             text: "Open",
                             onClick: () => {
-                              navigate(`/documents/folder/${item.id}`);
+                              navigate(`/home/documents/folder/${item.id}`);
                             },
                           },
                           {

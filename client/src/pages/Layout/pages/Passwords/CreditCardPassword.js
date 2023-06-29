@@ -56,6 +56,8 @@ import {
   getCreditCardList,
 } from "../../../../networks/passwordTypeForms";
 import moment from "moment";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
+import Permission from "../../../Permissions/Permission";
 
 const Row = styled.div`
   display: flex;
@@ -76,7 +78,11 @@ const CreditCardPassword = () => {
   const [folderToRename, setFolderToRename] = useState({});
   const [allFolders, setAllFolders] = useState([]);
   const [creditCards, setAllCreditCards] = useState([]);
+  const [allowedForms, setAllowedForm] = useState([]);
 
+  const [modalOpen, setModalOpen] = useState({
+    visible: false,
+  });
   const { width } = useWindowSize();
   const [field, setField] = useState("");
 
@@ -88,7 +94,10 @@ const CreditCardPassword = () => {
   const { t } = useContext(AuthContext);
   useEffect(() => {
     getCreditCardList(t)
-      .then((res) => setAllCreditCards(res?.data?.data))
+      .then((res) => {
+        setAllCreditCards(res?.data?.data);
+        setAllowedForm(res?.data?.allowedData);
+      })
       .catch((e) => toast.error("Something Went wrong"));
   }, [t]);
 
@@ -121,77 +130,9 @@ const CreditCardPassword = () => {
     toggleRenameModal(true);
   };
 
-  const HandleCreateFolder = async () => {
-    // console.log(field)
-
-    const res = await createFolder(t, { name: field });
-    if (!res.data.success) {
-      return toast.error(res.data.message);
-    }
-    // const CreditCardAccountPassword = () => {
-
-    //     const navigate = useNavigate();
-    //     const [open, setOpen] = useState(false);
-    //     const [isRenameModalOpen, toggleRenameModal] = useState(false);
-    //     const [folderToRename, setFolderToRename] = useState({});
-    //     const [allFolders, setAllFolders] = useState([])
-
-    //     const [field, setField] = useState("");
-
-    //     const [isLoading, setIsLoading] = useState(false)
-
-    //     const [iFrameOpen, setIFrameOpen] = useState(false)
-    //     const [iFrameFileID, setIFrameFileID] = useState(null)
-
-    //     const { t, logout } = useContext(AuthContext)
-
-    //     const style = {
-    //         position: "absolute",
-    //         transform: "translate(-50%, -50%)",
-    //         height: "369px",
-    //         width: "669px",
-    //         left: "50%",
-    //         top: "50%",
-    //         borderRadius: "20px",
-    //         backgroundColor: "white",
-    //         outline: "none",
-    //         boxShadow: 30,
-    //         p: "45px 15px 25px 15px",
-    //     };
-    //     const { width } = useWindowSize();
-
-    //     const renameFile = () => {
-    //         console.log("Rename");
-
-    //         const updatedFiles = files.map((file) => {
-    //           if (file.id === selectedFile.id) {
-    //             return {
-    //               ...file,
-    //               title: newFileName,
-    //             };
-    //           }
-    //           return file;
-    //         });
-    //         setFiles(updatedFiles);
-
-    //         setRenameModalOpen(false); // Close the modal
-    //       };
-
-    //     const handleDeleteFile = (folderId) => {
-    //         console.log("Handle Delete Folder");
-    //         // Implement the logic to delete the folder based on the folderId
-    //         // You can modify the Passwords array or update the state, depending on your implementation
-    //         // For example, if using state:
-    //         const updatedFolders = files.filter(folder => folder.id !== folderId);
-    //         setFiles(updatedFolders);
-  };
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  //   setField("");
-  //   setOpen(false);
-  //   getAllFolders();
-  // };
 
   const deleteFolder = async (id) => {
     const res = await deleteFolderApi(t, id);
@@ -238,7 +179,7 @@ const CreditCardPassword = () => {
                 Icon: SignOut,
                 text: "Logout",
                 onClick: () => {
-                  window.location.href = "https://sandsvault.io";
+                  window.location.href = "https://test.sandsvault.io";
                 },
               },
             ]}
@@ -296,139 +237,265 @@ const CreditCardPassword = () => {
       ) : (
         <Box>
           <div>
-            <Box width="100%" height="auto">
-              <Row justifyContent="flex-end">
-                <div
+            {!modalOpen.visible ? (
+              <Box width="100%" height="auto">
+                <Row justifyContent="flex-end">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginLeft: "auto",
+                    }}
+                  ></div>
+                </Row>
+                <Box
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginLeft: "auto",
+                    display: "grid",
+                    gridTemplateColumns:
+                      width > 1200
+                        ? "repeat(4,1fr)"
+                        : width > 950
+                        ? "repeat(3,1fr)"
+                        : width > 600
+                        ? "repeat(2,1fr)"
+                        : "repeat(2,1fr)",
+                    gridGap: "1rem",
                   }}
-                ></div>
-              </Row>
-
-              <Box
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    width > 1200
-                      ? "repeat(4,1fr)"
-                      : width > 950
-                      ? "repeat(3,1fr)"
-                      : width > 600
-                      ? "repeat(2,1fr)"
-                      : "repeat(2,1fr)",
-                  gridGap: "1rem",
-                }}
-              >
-                {creditCards?.map((element) => {
-                  return (
-                    <>
-                      <div
-                        style={{ position: "relative", marginTop: "20px" }}
-                        key={element.id}
-                      >
+                >
+                  {creditCards?.map((element) => {
+                    return (
+                      <>
                         <div
-                          onClick={() =>
-                            navigate(
-                              `/home/password-type-form?form=3&id=${element.id}`
-                            )
-                          }
+                          style={{ position: "relative", marginTop: "20px" }}
+                          key={element.id}
                         >
-                          <FolderContainer
-                            width="100%"
-                            height="173px"
-                            flexDirection="column"
-                            justifyContent="flex-start"
-                            alignItems="flex-start"
-                            padding="10px"
-                            borderRadius="7px"
+                          <div
+                            onClick={() =>
+                              navigate(
+                                `/home/password-type-form?form=3&id=${element.id}`
+                              )
+                            }
                           >
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
+                            <FolderContainer
+                              width="100%"
+                              height="173px"
+                              flexDirection="column"
+                              justifyContent="flex-start"
+                              alignItems="flex-start"
+                              padding="10px"
+                              borderRadius="7px"
                             >
                               <div
                                 style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "50%",
-                                  backgroundColor: "#00A6521A",
+                                  width: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <img
-                                  width="20px"
-                                  height="20px"
-                                  src={fileimage}
-                                />
+                                <div
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#00A6521A",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <img
+                                    width="20px"
+                                    height="20px"
+                                    src={fileimage}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <Title
-                              fontSize="22px"
-                              margin={
-                                width > 600
-                                  ? "20px 0px 0px 3px"
-                                  : "8px 0px 0px 3px"
-                              }
-                              lineHeight="38px"
-                              fontWeight="600"
-                              fontFamily="TT Commons"
-                            >
-                              {element?.account_nick_name}
-                            </Title>
-                            <Paragraph fontSize="14px">
-                              Edited On{" "}
-                              <strong>
-                                {" "}
-                                {moment(element?.updatedAt).format(
-                                  "DD MMM YYYY"
-                                )}{" "}
-                              </strong>
-                            </Paragraph>
-                            <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
-                              Created On{" "}
-                              <strong>
-                                {" "}
-                                {moment(element?.createdAt).format(
-                                  "DD MMM YYYY"
-                                )}{" "}
-                              </strong>
-                            </Paragraph>
-                          </FolderContainer>
-                        </div>
-                        <OptionsMenu
-                          color="rgba(0, 0, 0, 0.4)"
-                          orientation="horizontal"
-                          options={[
-                            {
-                              text: "Open",
-                              onClick: () => {
-                                navigate(
-                                  `/home/password-type-form?form=3&id=${element.id}`
-                                );
+                              <Title
+                                fontSize="22px"
+                                margin={
+                                  width > 600
+                                    ? "20px 0px 0px 3px"
+                                    : "8px 0px 0px 3px"
+                                }
+                                lineHeight="38px"
+                                fontWeight="600"
+                                fontFamily="TT Commons"
+                              >
+                                {element?.account_nick_name}
+                              </Title>
+                              <Paragraph fontSize="14px">
+                                Edited On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.updatedAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                              <Paragraph
+                                fontSize="14px"
+                                margin="0px 0px 0px 3px"
+                              >
+                                Created On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                            </FolderContainer>
+                          </div>
+                          <OptionsMenu
+                            color="rgba(0, 0, 0, 0.4)"
+                            orientation="horizontal"
+                            options={[
+                              {
+                                text: "Open",
+                                onClick: () => {
+                                  navigate(
+                                    `/home/password-type-form?form=3&id=${element.id}`
+                                  );
+                                },
                               },
-                            },
-                            {
-                              text: "Delete",
-                              onClick: () => deleteCreditCard(element?.id),
-                            },
-                          ]}
-                          position="absolute"
-                        />
-                      </div>
-                    </>
-                  );
-                })}
+                              {
+                                text: "Delete",
+                                onClick: () => deleteCreditCard(element?.id),
+                              },
+                              {
+                                text: "Permission",
+                                onClick: () =>
+                                  setModalOpen({
+                                    visible: true,
+                                    id: element.id,
+                                    type: PERMISSION_FORM_TYPE_ENUMS.CREDIT_CARD_FORM_TYPE_ENUM,
+                                    idToUse: "creditCardId",
+                                  }),
+                              },
+                            ]}
+                            position="absolute"
+                          />
+                        </div>
+                      </>
+                    );
+                  })}
+                  {allowedForms?.map((element) => {
+                    return (
+                      <>
+                        <div
+                          style={{ position: "relative", marginTop: "20px" }}
+                          key={element.id}
+                        >
+                          <div
+                            onClick={() =>
+                              navigate(
+                                `/home/password-type-form?form=3&id=${element.id}`
+                              )
+                            }
+                          >
+                            <FolderContainer
+                              width="100%"
+                              height="173px"
+                              flexDirection="column"
+                              justifyContent="flex-start"
+                              alignItems="flex-start"
+                              padding="10px"
+                              borderRadius="7px"
+                            >
+                              <div
+                                style={{
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#00A6521A",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <img
+                                    width="20px"
+                                    height="20px"
+                                    src={fileimage}
+                                  />
+                                </div>
+                              </div>
+                              <Title
+                                fontSize="22px"
+                                margin={
+                                  width > 600
+                                    ? "20px 0px 0px 3px"
+                                    : "8px 0px 0px 3px"
+                                }
+                                lineHeight="38px"
+                                fontWeight="600"
+                                fontFamily="TT Commons"
+                              >
+                                {element?.account_nick_name}
+                              </Title>
+                              <Paragraph fontSize="14px">
+                                Edited On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.updatedAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                              <Paragraph
+                                fontSize="14px"
+                                margin="0px 0px 0px 3px"
+                              >
+                                Created On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                            </FolderContainer>
+                          </div>
+                          <OptionsMenu
+                            color="rgba(0, 0, 0, 0.4)"
+                            orientation="horizontal"
+                            options={[
+                              {
+                                text: "Open",
+                                onClick: () => {
+                                  navigate(
+                                    `/home/password-type-form?form=3&id=${element.id}`
+                                  );
+                                },
+                              },
+                              {
+                                text: "Delete",
+                                onClick: () =>
+                                  toast.error(
+                                    "You dont have the correct permission"
+                                  ),
+                              },
+                            ]}
+                            position="absolute"
+                          />
+                        </div>
+                      </>
+                    );
+                  })}
 
-                {/* Folder Box */}
+                  {/* Folder Box */}
+                </Box>
               </Box>
-            </Box>
+            ) : (
+              <Permission modalOpen={modalOpen} />
+            )}
           </div>
         </Box>
       )}

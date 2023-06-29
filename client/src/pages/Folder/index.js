@@ -25,13 +25,13 @@ import { useModal } from "../../context/modal-context";
 import AlertModal from "../../components/common/AlertModal";
 import ShareWith from "../../components/common/ShareWith";
 import useWindowSize from "../../utils/hook/useWindowSize";
-// import 
+// import
 import { getFolder } from "../../networks/folders";
 import { AuthContext } from "../../context/AuthContext";
 import { createFile, deleteFileData } from "../../networks/files";
 import { getBuddiesApi } from "../../networks/buddies";
 import FileModal from "../../components/common/FileModal";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Folder() {
   const navigate = useNavigate();
@@ -46,23 +46,20 @@ export default function Folder() {
   const [isFileUploading, setIsFileUploading] = useState(false);
   const [buddies, setBuddies] = useState([]);
 
-
-  const { t, profile } = useContext(AuthContext)
-
+  const { t, profile } = useContext(AuthContext);
 
   //upload file function
   const uploadFiles = async ({ file, folderId }) => {
-
-
-    if (profile.storageLeft < (file.size / 1024)) {
+    if (profile.storageLeft < file.size / 1024) {
       return setModal(
         <AlertModal
           message={"You have reached your storage limit."}
           buttonText={"Sounds good"}
           onSubmit={() => {
-            navigate("/folder");
+            navigate("/home/documents");
           }}
-        />)
+        />
+      );
     }
 
     setIsFileUploading(true);
@@ -75,14 +72,15 @@ export default function Folder() {
     setIsFileUploading(false);
   };
 
-
   const getAllBuddies = async () => {
-    setIsLoading(true)
-    const allBuddies = await getBuddiesApi(t)
-    const allAcceptedBuddy = allBuddies.data.buddies.filter((buddy) => buddy.buddyStatus === "accepted")
-    setBuddies(allAcceptedBuddy)
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    const allBuddies = await getBuddiesApi(t);
+    const allAcceptedBuddy = allBuddies.data.buddies.filter(
+      (buddy) => buddy.buddyStatus === "accepted"
+    );
+    setBuddies(allAcceptedBuddy);
+    setIsLoading(false);
+  };
 
   //delete file function
   const deleteFile = async (fileId) => {
@@ -91,7 +89,7 @@ export default function Folder() {
     const res = await deleteFileData(t, fileId);
     if (!res.data.success) return toast.error(res.data.message);
     getFolderDetails();
-    setSelectedFileId(null)
+    setSelectedFileId(null);
     setIsLoading(false);
   };
 
@@ -109,18 +107,12 @@ export default function Folder() {
     if (!res.data.success) return toast.error(res.data.message);
     setFolder(res.data.data);
     setIsLoading(false);
-  }
-
+  };
 
   useEffect(() => {
-    getFolderDetails()
-    getAllBuddies()
-
-  }, [t])
-
-
-
-
+    getFolderDetails();
+    getAllBuddies();
+  }, [t]);
 
   const addRandomPortion = (array1, array2) => {
     for (var i = 0; i < array2?.length; i++) {
@@ -158,7 +150,7 @@ export default function Folder() {
 
   return (
     <>
-    <Toaster />
+      <Toaster />
       <Row
         width="100%"
         height="73px"
@@ -214,9 +206,7 @@ export default function Folder() {
               uploadFiles({
                 file: e.target.files[0],
                 folderId: folderDetails.id,
-              })
-                .unwrap()
-                .then((res) => console.log("upload file", res));
+              }).then((res) => console.log("upload file", res));
             }}
             ref={inputFile}
             style={{ display: "none" }}
@@ -239,10 +229,10 @@ export default function Folder() {
                 width > 1200
                   ? "repeat(4,1fr)"
                   : width > 950
-                    ? "repeat(3,1fr)"
-                    : width > 600
-                      ? "repeat(2,1fr)"
-                      : "repeat(2,1fr)",
+                  ? "repeat(3,1fr)"
+                  : width > 600
+                  ? "repeat(2,1fr)"
+                  : "repeat(2,1fr)",
               gridGap: "1rem",
             }}
           >
@@ -276,7 +266,7 @@ export default function Folder() {
                           {
                             text: "Open",
                             onClick: () => {
-                              navigate('/documents/file/' + item.id)
+                              navigate("/home/documents/file/" + item.id);
                             },
                           },
                           {
@@ -285,14 +275,15 @@ export default function Folder() {
                               deleteFile(item.id);
                             },
                           },
-
                         ]}
                       />
                     </div>
                     <Row alignItems={"center"} margin="15px">
                       {item.ext.toLowerCase().includes("pdf") ? (
                         <IoDocumentTextOutline color="#00A652" size="24px" />
-                      ) : item.ext.toLowerCase().includes("jpeg" || "jpg" || "png" || "webp") ? (
+                      ) : item.ext
+                          .toLowerCase()
+                          .includes("jpeg" || "jpg" || "png" || "webp") ? (
                         <IoImageOutline color="#FF5F5F" size="24px" />
                       ) : item.ext.toLowerCase().includes("mp3" || "wav") ? (
                         <IoMusicalNoteOutline color="#1877F2" size="24px" />
@@ -300,7 +291,7 @@ export default function Folder() {
                         <IoDocumentOutline color="#00A652" size="24px" />
                       )}
                       <Title fontSize="16px" margin="0px 10px">
-                        {item.name.split('|')[1]}
+                        {item.name.split("|")[1]}
                       </Title>
                     </Row>
                   </FolderContainer>

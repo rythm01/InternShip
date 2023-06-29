@@ -8,7 +8,10 @@ const router = Router();
 
 router.use(authenticateUser);
 router.delete("/:id/:buddyId", permissionsController.deletePermissions);
-router.route("/").post(permissionsController.createPermission);
+router
+  .route("/")
+  .post(permissionsController.createPermission)
+  .get(permissionsController.getPermission);
 
 // router.get('/user', authController.getUser);
 
