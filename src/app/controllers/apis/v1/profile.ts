@@ -144,12 +144,12 @@ export const profileController = {
 
       var response = await ProfileRepo.save(profile);
 
-      const verification = new Verification();
-      verification.email = email;
-      verification.verification_status = true;
-      verification.verficationPeriod = verificationPeriod;
-      verification.userAuth = userAuth!;
-      await VerificationRepo.save(verification);
+      // const verification = new Verification();
+      // verification.email = email;
+      // verification.verification_status = true;
+      // verification.verficationPeriod = verificationPeriod;
+      // verification.userAuth = userAuth!;
+      // await VerificationRepo.save(verification);
 
       const folder = new Folder();
       folder.name = "root";
@@ -165,7 +165,7 @@ export const profileController = {
       //     description: profile.id,
       // });
 
-      profile.stripeCustomer = "#12345";
+      // profile.stripeCustomer = "#12345";
       await ProfileRepo.save(profile);
 
       return res
