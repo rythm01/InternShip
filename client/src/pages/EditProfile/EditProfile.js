@@ -33,7 +33,6 @@ import countries from "../../countires";
 import { getProfile, updateProfile } from "../../networks/profile";
 import { Toaster, toast } from "react-hot-toast";
 
-
 const Row = styled.div`
   display: flex;
   flex-direction: row;
@@ -61,20 +60,24 @@ const Option = (props) => {
 };
 
 export default function EditProfile() {
-  const { profile, setProfile, t } = useContext(AuthContext)
+  const { profile, setProfile, t } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [userID, setuserID] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicUrl, setProfilePicUrl] = useState("");
-  const [fullName, setFullName] = useState(profile?.firstName + " " + profile?.lastName);
+  const [fullName, setFullName] = useState(
+    profile?.firstName + " " + profile?.lastName
+  );
   const [userName, setUserName] = useState(profile?.userAuth.name);
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   // const [category, setCategory] = useState("")
   const [phoneNumber, setphoneNumber] = useState("");
   // const [categoryoptions, setcategoryoptions] = useState([])
-  const [verificationPeriod, setVerificationPeriod] = useState(profile?.verficationPeriod);
+  const [verificationPeriod, setVerificationPeriod] = useState(
+    profile?.verficationPeriod
+  );
   const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [upcomingdata, setupcomingdata] = useState([]);
   const [country, setCountry] = useState(profile?.location);
@@ -84,8 +87,6 @@ export default function EditProfile() {
     { value: 14, label: "Two Week", color: "#0052CC", isFixed: true },
     { value: 28, label: "One Month", color: "#5243AA", isFixed: true },
   ];
-
-
 
   const customStyles = {
     control: (provided, state) => ({
@@ -131,7 +132,6 @@ export default function EditProfile() {
     }));
   }, []);
 
-
   const handleImage = (e) => {
     const file = e.target.files[0];
     // console.log('file...', file)
@@ -141,14 +141,12 @@ export default function EditProfile() {
     //set profile pic to server
     setProfilePic(file);
     setProfilePicUrl(URL.createObjectURL(file));
-
   };
-
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setIsProfileEdit(!isProfileEdit)
-    if (!isProfileEdit) return null
+    setIsProfileEdit(!isProfileEdit);
+    if (!isProfileEdit) return null;
     setLoading(true);
 
     const formData = new FormData();
@@ -156,19 +154,18 @@ export default function EditProfile() {
     formData.append("fullName", fullName);
     formData.append("userName", userName);
     formData.append("location", country);
+    formData.append("email", profile?.userAuth.email);
     formData.append("verficationPeriod", verificationPeriod);
 
     const res = await updateProfile(t, formData);
 
     setLoading(false);
-    if (!res.data.success) return toast.error(res.data.message)
+    if (!res.data.success) return toast.error(res.data.message);
     const update = await getProfile(t);
     setLoading(false);
-    if (!update.data.success) return toast.error(update.data.message)
+    if (!update.data.success) return toast.error(update.data.message);
 
-    setProfile(update.data.data)
-
-
+    setProfile(update.data.data);
   };
 
   const { width } = useWindowSize();
@@ -180,7 +177,7 @@ export default function EditProfile() {
 
   return (
     <>
-    <Toaster />
+      <Toaster />
       <div
         style={{
           display: "flex",
@@ -253,7 +250,6 @@ export default function EditProfile() {
             placeholder="Enter your full name"
             disabled={true}
             value={fullName}
-
             onChange={(e) => setFullName(e.target.value)}
           />
           <InputGroup
@@ -266,8 +262,9 @@ export default function EditProfile() {
             disabled={true}
             label="Email"
             placeholder="Enter your email"
-            value={profile?.userAuth.email ? profile?.userAuth.email : "Antor P."}
-
+            value={
+              profile?.userAuth.email ? profile?.userAuth.email : "Antor P."
+            }
           />
 
           {countriesOptions && (
@@ -280,9 +277,7 @@ export default function EditProfile() {
                 height="50px"
                 menuPosition="left"
                 placeholder="Select the location"
-                value={countriesOptions.find(
-                  (el) => el.value === country
-                )}
+                value={countriesOptions.find((el) => el.value === country)}
                 styles={customStyles}
                 onChange={(e) => {
                   setCountry(e.value);
@@ -326,7 +321,7 @@ export default function EditProfile() {
             />
           </div>
           <ButtonBar>
-            <Button color="#00A652" type="submit" >
+            <Button color="#00A652" type="submit">
               {isProfileEdit ? "Save" : "Edit"}
             </Button>
           </ButtonBar>

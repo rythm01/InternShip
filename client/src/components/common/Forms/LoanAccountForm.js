@@ -96,6 +96,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getLoanAccount, setLoanAccount] = useState();
+  const [getAllowedData, setAllowedData] = useState();
   const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [isData, setIsData] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -109,6 +110,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
       getLoanAccountDetails(t, id)
         .then((res) => {
           setLoanAccount(res?.data?.data);
+          setAllowedData(res.data?.allowedData);
           setIsData(true);
         })
         .catch((e) => console.log(e));
@@ -116,16 +118,16 @@ const LoanAccountForm = ({ isEdit, id }) => {
   }, []);
 
   useEffect(() => {
-    if (id && isEdit && !getLoanAccount) {
+    if (id && isEdit && !getLoanAccount && !getAllowedData) {
       setIsData(false);
     }
   }, [getLoanAccount]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    setIsProfileEdit(!isProfileEdit);
-    if (!isProfileEdit) return null;
     try {
       if (id && isEdit) {
+        setIsProfileEdit(!isProfileEdit);
+        if (!isProfileEdit) return null;
         await updateLoanAccount(t, id, values);
       } else {
         await postLoanAccount(t, values);
@@ -142,15 +144,25 @@ const LoanAccountForm = ({ isEdit, id }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          creditor_name: getLoanAccount?.creditor_name || "",
-          website: getLoanAccount?.website || "",
-          user_name: getLoanAccount?.user_name || "",
-          password: getLoanAccount?.password || "",
-          loan_amount: getLoanAccount?.loan_amount || "",
+          creditor_name:
+            getLoanAccount?.creditor_name ||
+            getAllowedData?.creditor_name ||
+            "",
+          website: getLoanAccount?.website || getAllowedData?.website || "",
+          user_name:
+            getLoanAccount?.user_name || getAllowedData?.user_name || "",
+          password: getLoanAccount?.password || getAllowedData?.password || "",
+          loan_amount:
+            getLoanAccount?.loan_amount || getAllowedData?.loan_amount || "",
           payment_date: getLoanAccount?.payment_date
-            ? moment(getLoanAccount?.payment_date).format("YYYY-MM-DD")
+            ? getAllowedData?.payment_date
+              ? moment(getAllowedData?.payment_date).format("YYYY-MM-DD")
+              : moment(getLoanAccount?.payment_date).format("YYYY-MM-DD")
             : "",
-          account_nick_name: getLoanAccount?.account_nick_name || "",
+          account_nick_name:
+            getLoanAccount?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -167,7 +179,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="name"
                     name="creditor_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter Name"
                   />
 
@@ -176,7 +188,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="url"
                     name="website"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter url/website"
                   />
 
@@ -185,7 +197,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="username"
                     name="user_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter username"
                   />
 
@@ -195,7 +207,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
-                      disabled={!isProfileEdit}
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -219,7 +231,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="loan"
                     name="loan_amount"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter loan"
                   />
 
@@ -228,7 +240,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="date"
                     id="date"
                     name="payment_date"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter payment date"
                   />
 
@@ -237,7 +249,7 @@ const LoanAccountForm = ({ isEdit, id }) => {
                     type="text"
                     id="nickname"
                     name="account_nick_name"
-                    disabled={!isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     placeholder="Enter account nickname"
                   />
 
@@ -249,7 +261,10 @@ const LoanAccountForm = ({ isEdit, id }) => {
                   </p>
                 </fieldset>
                 <div className="subbutton">
-                  <span onClick={handleSubmit}>
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
                     {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>

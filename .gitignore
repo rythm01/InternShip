@@ -36,3 +36,6 @@ Thumbs.db
 
 # ignore yarn.lock
 yarn.lock
+client/build/
+dist/
+build/

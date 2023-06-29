@@ -38,3 +38,15 @@ export const getFileAccessApi = async (t, id) => {
     return err;
   }
 };
+
+export const getPermission = async (t) => {
+  try {
+    return axios.get(`/permissions`, {
+      headers: {
+        Authorization: `Bearer ${t}`,
+      },
+    });
+  } catch (err) {
+    return err;
+  }
+};

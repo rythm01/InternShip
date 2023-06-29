@@ -57,6 +57,8 @@ import {
 } from "../../../../networks/files";
 import { getNotificationApi } from "../../../../networks/notifications";
 import toast, { Toaster } from "react-hot-toast";
+import Permission from "../../../Permissions/Permission";
+import { getPermission } from "../../../../networks/filePermission";
 
 const style2 = {
   position: "absolute",
@@ -234,6 +236,9 @@ export default function Home() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notification, setNotifications] = useState([]);
   const [isUplaod, setIsUpload] = useState(false);
+  const [modalOpen, setModalOpen] = useState({
+    visible: false,
+  });
 
   const [folders, setFolders] = useState([]);
 
@@ -454,9 +459,7 @@ export default function Home() {
                 Icon: SignOut,
                 text: "Logout",
                 onClick: () => {
-                  //logout functionality should be here
                   logout();
-                  // window.location.href = "https://sandsvault.io";
                   navigate("/");
                 },
               },
@@ -474,605 +477,419 @@ export default function Home() {
         </Row>
       </Row>
 
-      <Row
-        justifyContent="space-between"
-        alignItems="center"
-        width="100%"
-        gap="20px"
-        className="column_1"
-      >
-        <Column width="70%" className="width-100 h-unset">
-          <Row
-            className="grid_file"
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
-            gap="10px"
-          >
-            {fileCountData.map((value, index) => (
-              <FileCount
-                key={index}
-                color={value.color}
-                count={value.count}
-                type={value.type}
-              />
-            ))}
-          </Row>
-
-          <Row
-            justifyContent="space-between"
-            width="100%"
-            gap={width > 768 ? "20px" : "0px"}
-            className="column_2"
-          >
-            <HomeContainer
-              title="Uploaded Folders"
-              width="60%"
-              height="349px"
-              className="width-100-2"
-              onViewAll={() => navigate("/home/documents")}
+      {!modalOpen.visible ? (
+        <Row
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          gap="20px"
+          className="column_1"
+        >
+          <Column width="70%" className="width-100 h-unset">
+            <Row
+              className="grid_file"
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
+              gap="10px"
             >
-              <Box
-                width="100%"
-                height="auto"
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    width < 600 ? "repeat(2,1fr)" : "repeat(2,1fr)",
-                  gridGap: "1rem",
-                  padding: "10px",
-                }}
+              {fileCountData.map((value, index) => (
+                <FileCount
+                  key={index}
+                  color={value.color}
+                  count={value.count}
+                  type={value.type}
+                />
+              ))}
+            </Row>
+
+            <Row
+              justifyContent="space-between"
+              width="100%"
+              gap={width > 768 ? "20px" : "0px"}
+              className="column_2"
+            >
+              <HomeContainer
+                title="Uploaded Folders"
+                width="60%"
+                height="349px"
+                className="width-100-2"
+                onViewAll={() => navigate("/home/documents")}
               >
-                {Folders.map((item, index) => {
-                  if (index < 3) {
-                    return (
-                      <div
-                        key={`folder-${index}`}
-                        style={{ position: "relative" }}
-                      >
+                <Box
+                  width="100%"
+                  height="auto"
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      width < 600 ? "repeat(2,1fr)" : "repeat(2,1fr)",
+                    gridGap: "1rem",
+                    padding: "10px",
+                  }}
+                >
+                  {Folders.map((item, index) => {
+                    if (index < 3) {
+                      return (
                         <div
-                          onClick={() =>
-                            navigate(`documents/folder/${item.id}`)
-                          }
+                          key={`folder-${index}`}
+                          style={{ position: "relative" }}
                         >
-                          <FolderContainer
-                            key={index}
-                            width="100%"
-                            height="95px"
-                            flexDirection="column"
-                            justifyContent="flex-start"
-                            alignItems="flex-start"
-                            padding="10px"
-                            borderRadius="7px"
+                          <div
+                            onClick={() =>
+                              navigate(`documents/folder/${item.id}`)
+                            }
                           >
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
+                            <FolderContainer
+                              key={index}
+                              width="100%"
+                              height="95px"
+                              flexDirection="column"
+                              justifyContent="flex-start"
+                              alignItems="flex-start"
+                              padding="10px"
+                              borderRadius="7px"
                             >
                               <div
                                 style={{
-                                  width: "30px",
-                                  height: "30px",
-                                  borderRadius: "50%",
-                                  backgroundColor: "#ffeeea",
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#ffeeea",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <img
+                                    width="10px"
+                                    height="10px"
+                                    src={folder}
+                                  />
+                                </div>
+                              </div>
+                              <Title fontSize="14px" margin="10px 0px 0px 3px">
+                                {item.name.split("|")[0]}
+                              </Title>
+                              <Paragraph
+                                fontSize="12px"
+                                margin="3px 0px 0px 3px"
+                              >
+                                {item.files?.length} file
+                              </Paragraph>
+                            </FolderContainer>
+                          </div>
+                          <OptionsMenu
+                            color="rgba(0, 0, 0, 0.4)"
+                            orientation="horizontal"
+                            options={[
+                              {
+                                text: "Open",
+                                onClick: () => {
+                                  navigate(`documents/folder/${item.id}`);
+                                },
+                              },
+                              {
+                                text: "Rename",
+                                onClick: () => {
+                                  renameFolder(item);
+                                },
+                              },
+                              {
+                                text: "Delete",
+                                onClick: () => {
+                                  deleteFolder(item.id);
+                                },
+                              },
+                              {
+                                text: "Permission",
+                                onClick: () =>
+                                  setModalOpen({
+                                    visible: true,
+                                    id: item.id,
+                                    idToUse: "folder_id",
+                                  }),
+                              },
+                            ]}
+                            position="absolute"
+                          />
+                        </div>
+                      );
+                    }
+                  })}
+                  <NewFolder onChange="" setopen={setopen} />
+                </Box>
+              </HomeContainer>
+
+              <HomeContainer
+                isViewAll={false}
+                title="Uploaded Files"
+                className="width-100-2"
+                width="40%"
+                height="349px"
+              >
+                <Box width="100%">
+                  {ThreeFilesRecords?.map((item, i) => {
+                    return (
+                      <div style={{ width: "100%" }} key={i}>
+                        <Box
+                          flexDirection="column"
+                          justifyContent="flex-start"
+                          alignItems="flex-start"
+                          padding="10px"
+                          borderRadius="0px"
+                          style={{ margin: "5px 0" }}
+                        >
+                          <div
+                            style={{
+                              width: "inherit",
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div width="100%" style={{ display: "flex" }}>
+                              <div
+                                style={{
+                                  width: "55px",
+                                  height: "40px",
+                                  borderRadius: "9px",
+                                  backgroundColor: "rgba(0, 166, 82, 0.1)",
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
                                 }}
                               >
-                                <img width="10px" height="10px" src={folder} />
+                                <IoDocumentTextOutline
+                                  style={{}}
+                                  color="#00A652"
+                                />
+                              </div>
+                              <div
+                                style={{
+                                  width: "100%",
+                                  height: "40px",
+                                  margin: "0px 0px 0px 10px",
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <Title fontSize="14px">
+                                  {truncateString(item.name.split("|")[1], 20)}
+                                </Title>
+                                <Paragraph fontSize="12px">
+                                  Uploaded on :{" "}
+                                  {moment(item.createdAt).format("L")}{" "}
+                                </Paragraph>
                               </div>
                             </div>
-                            <Title fontSize="14px" margin="10px 0px 0px 3px">
-                              {item.name.split("|")[0]}
-                            </Title>
-                            <Paragraph fontSize="12px" margin="3px 0px 0px 3px">
-                              {item.files?.length} file
-                            </Paragraph>
-                          </FolderContainer>
-                        </div>
-                        <OptionsMenu
-                          color="rgba(0, 0, 0, 0.4)"
-                          orientation="horizontal"
-                          options={[
-                            {
-                              text: "Open",
-                              onClick: () => {
-                                navigate(`documents/folder/${item.id}`);
-                              },
-                            },
-                            {
-                              text: "Rename",
-                              onClick: () => {
-                                renameFolder(item);
-                              },
-                            },
-                            {
-                              text: "Delete",
-                              onClick: () => {
-                                deleteFolder(item.id);
-                              },
-                            },
-                          ]}
-                          position="absolute"
-                        />
-                      </div>
-                    );
-                  }
-                })}
-                <NewFolder onChange="" setopen={setopen} />
-              </Box>
-            </HomeContainer>
-
-            <HomeContainer
-              isViewAll={false}
-              title="Uploaded Files"
-              className="width-100-2"
-              width="40%"
-              height="349px"
-            >
-              <Box width="100%">
-                {ThreeFilesRecords?.map((item, i) => {
-                  return (
-                    <div style={{ width: "100%" }} key={i}>
-                      <Box
-                        flexDirection="column"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                        padding="10px"
-                        borderRadius="0px"
-                        style={{ margin: "5px 0" }}
-                      >
-                        <div
-                          style={{
-                            width: "inherit",
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <div width="100%" style={{ display: "flex" }}>
                             <div
                               style={{
-                                width: "55px",
-                                height: "40px",
-                                borderRadius: "9px",
-                                backgroundColor: "rgba(0, 166, 82, 0.1)",
                                 display: "flex",
+                                margin: "0px 10px 0px 0px",
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
                             >
-                              <IoDocumentTextOutline
-                                style={{}}
-                                color="#00A652"
-                              />
-                            </div>
-                            <div
-                              style={{
-                                width: "100%",
-                                height: "40px",
-                                margin: "0px 0px 0px 10px",
-                                display: "flex",
-                                alignItems: "flex-start",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <Title fontSize="14px">
-                                {truncateString(item.name.split("|")[1], 20)}
-                              </Title>
-                              <Paragraph fontSize="12px">
-                                Uploaded on :{" "}
-                                {moment(item.createdAt).format("L")}{" "}
-                              </Paragraph>
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              margin: "0px 10px 0px 0px",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                paddingRight: "10px",
-                              }}
-                            >
-                              <OptionsMenu
-                                color="rgba(0, 0, 0, 0.4)"
-                                orientation="horizontal"
-                                options={[
-                                  {
-                                    text: "Open",
-                                    onClick: () => {
-                                      navigate(`documents/folder/${item.id}`);
+                              <div
+                                style={{
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "flex-end",
+                                  paddingRight: "10px",
+                                }}
+                              >
+                                <OptionsMenu
+                                  color="rgba(0, 0, 0, 0.4)"
+                                  orientation="horizontal"
+                                  options={[
+                                    {
+                                      text: "Open",
+                                      onClick: () => {
+                                        navigate(`documents/folder/${item.id}`);
+                                      },
                                     },
-                                  },
-
-                                  {
-                                    text: "Delete",
-                                    onClick: () => {
-                                      deleteFile(item.id);
+                                    {
+                                      text: "Delete",
+                                      onClick: () => {
+                                        deleteFile(item.id);
+                                      },
                                     },
-                                  },
-                                ]}
-                              />
+                                    {
+                                      text: "Permission",
+                                      onClick: () =>
+                                        setModalOpen({
+                                          visible: true,
+                                          id: item.id,
+                                          idToUse: "file_id",
+                                        }),
+                                    },
+                                  ]}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Box>
-                      <div
-                        style={{
-                          backgroundColor: "rgba(0, 0, 0, 0.03)",
-                          width: "100%",
-                          height: "1px",
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </Box>
-              <div className="modal-forgot">
-                <Modal
-                  open={isUplaod}
-                  onClose={() => setIsUpload(false)}
-                  keepMounted
-                  aria-labelledby="simple-modal-title"
-                  aria-describedby="simple-modal-description"
-                >
-                  <Box style={style2}>
-                    <Title
-                      fontSize="1.7rem"
-                      fontWeight="700"
-                      margin="20px auto 0 25px"
-                    >
-                      Select Information Type
-                    </Title>
-                    <CrossOutline
-                      style={{
-                        position: "absolute",
-                        right: 20,
-                        top: 10,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setIsUpload(false)}
-                    />
-                    <Box
-                      sx={{
-                        width: "92%",
-                        p: 3,
-                        m: 3,
-                        borderRadius: "20px",
-                      }}
-                    >
-                      <Row
-                        alignItems="center"
-                        border="1px solid black"
-                        borderRadius="10px"
-                      >
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          textColor="black"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              accept=".pdf,.doc,.docx,.xls,.xlsx"
-                              type="file"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Document
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          borderRadius="10px"
-                          textColor="black"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Photo
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Cont>
-                          <div className="dropdown-container">
-                            <div
-                              className="dropdown-header"
-                              onClick={toggleDropdown}
-                            >
-                              {selectedOption
-                                ? selectedOption.name
-                                : "Select Password Type"}
-                              {/* <FontAwesomeIcon
-                                icon={faChevronDown}
-                                className="dropdown-icon"
-                              /> */}
-                            </div>
-                            {dropdownOpen && (
-                              <ul className="dropdown-options">
-                                {PasswordSelectNames.map((option) => (
-                                  <li
-                                    key={option.id}
-                                    className="dropdown-option"
-                                    onClick={() => handleOptionSelect(option)}
-                                    onChange={(e) => {
-                                      navigate(
-                                        `/password-type-form?form=${e.id}`
-                                      );
-                                    }}
-                                  >
-                                    {option.name}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        </Cont>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          borderRadius="10px"
-                          textColor="black"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              accept="video/*"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Video
-                          </label>
-                        </Button>
-                      </Row>
-                      <Row alignItems="center">
-                        <Button
-                          width="100%"
-                          height="60px"
-                          color="white"
-                          textColor="black"
-                          borderRadius="10px"
-                          border="1px solid rgba(0, 0, 0, 0.5);"
-                        >
-                          <label
-                            style={{
-                              cursor: "pointer",
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              border: "1px solid rgba(0,0,0,0.5)",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <input
-                              type="file"
-                              onClick={(e) => {
-                                e.target.value = null;
-                              }}
-                              onChange={(e) => {
-                                setIsUpload(false);
-                                postFile(e.target.files[0]);
-                              }}
-                            />
-                            Upload From device
-                          </label>
-                        </Button>
-                      </Row>
-                    </Box>
-                  </Box>
-                </Modal>
-              </div>
+                        </Box>
+                        <div
+                          style={{
+                            backgroundColor: "rgba(0, 0, 0, 0.03)",
+                            width: "100%",
+                            height: "1px",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </Box>
 
-              <NewFile>
-                <label
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                  onClick={(e) => {
-                    e.target.value = null;
-                    setIsUpload(!isUplaod);
-                  }}
-                >
-                  + Upload new File
-                </label>
-              </NewFile>
-            </HomeContainer>
-          </Row>
-        </Column>
-
-        <Column width="30%" className="width-100 h-unset">
-          <HomeContainer
-            width="93%"
-            height="290px"
-            alignItems="start"
-            padding="20px"
-            className="width-100"
-          >
-            <Title fontSize="22px">Storage Capacity</Title>
-            <PieChart
-              viewBoxSize={[154, 154]}
-              center={[77, 77]}
-              totalValue={100}
-              data={[
-                {
-                  title: "Used",
-                  value: `${
-                    profile
-                      ? ((parseFloat(profile.storage) -
-                          parseFloat(profile.storageLeft)) /
-                          parseFloat(profile.storage)) *
-                        100
-                      : 70
-                  }`,
-                  color: "#FBBC05",
-                },
-                {
-                  title: "Free Space",
-                  value: `${
-                    profile
-                      ? (parseFloat(profile.storageLeft) /
-                          parseFloat(profile.storage)) *
-                        100
-                      : 30
-                  }`,
-                  color: "#1877f2",
-                },
-              ]}
-              labelPosition={90}
-              label={({ x, y, dx, dy, dataEntry }) => {
-                return (
-                  <g fill="#fff">
-                    <circle
-                      cx={x + dx}
-                      cy={y + dy}
-                      r={12}
-                      fill="white"
-                      style={{
-                        stroke: "black",
-                        strokeWidth: "1",
-                        strokeOpacity: "0.1",
-                      }}
-                    ></circle>
-                    <text
-                      x={x}
-                      y={y}
-                      dx={dx}
-                      dy={dy}
-                      fill="#000"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      style={{
-                        fontWeight: 600,
-                        fontSize: "10px",
-                        textAlign: "center",
-                        textAnchor: "center",
-                        fontFamily: "TT Commons",
-                      }}
-                    >{`${Math.round(dataEntry.value)}%`}</text>
-                  </g>
-                );
-              }}
-            />
-            <Row alignItems="center" justifyContent="space-around" width="100%">
-              <Row alignItems="center">
-                <div
-                  style={{
-                    backgroundColor: "#FBBC05",
-                    height: 12,
-                    width: 12,
-                    borderRadius: 100,
-                    marginRight: 4,
-                  }}
-                />
-                <Title fontSize="12px" fontWeight="400">
-                  Used
-                </Title>
-              </Row>
-              <Row alignItems="center">
-                <div
-                  style={{
-                    backgroundColor: "#1877F2",
-                    height: 12,
-                    width: 12,
-                    borderRadius: 100,
-                    marginRight: 4,
-                  }}
-                />
-                <Title fontSize="12px" fontWeight="400">
-                  Free Space
-                </Title>
-              </Row>
+                <NewFile>
+                  <label
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.target.value = null;
+                      setIsUpload(!isUplaod);
+                    }}
+                  >
+                    + Upload new File
+                  </label>
+                </NewFile>
+              </HomeContainer>
             </Row>
-          </HomeContainer>
+          </Column>
 
-          <HomeContainer
-            className="width-100"
-            width="93%"
-            height="546px"
-            title="Recent Activity"
-          ></HomeContainer>
-        </Column>
-      </Row>
+          <Column width="30%" className="width-100 h-unset">
+            <HomeContainer
+              width="93%"
+              height="290px"
+              alignItems="start"
+              padding="20px"
+              className="width-100"
+            >
+              <Title fontSize="22px">Storage Capacity</Title>
+              <PieChart
+                viewBoxSize={[154, 154]}
+                center={[77, 77]}
+                totalValue={100}
+                data={[
+                  {
+                    title: "Used",
+                    value: `${
+                      profile
+                        ? ((parseFloat(profile.storage) -
+                            parseFloat(profile.storageLeft)) /
+                            parseFloat(profile.storage)) *
+                          100
+                        : 70
+                    }`,
+                    color: "#FBBC05",
+                  },
+                  {
+                    title: "Free Space",
+                    value: `${
+                      profile
+                        ? (parseFloat(profile.storageLeft) /
+                            parseFloat(profile.storage)) *
+                          100
+                        : 30
+                    }`,
+                    color: "#1877f2",
+                  },
+                ]}
+                labelPosition={90}
+                label={({ x, y, dx, dy, dataEntry }) => {
+                  return (
+                    <g fill="#fff">
+                      <circle
+                        cx={x + dx}
+                        cy={y + dy}
+                        r={12}
+                        fill="white"
+                        style={{
+                          stroke: "black",
+                          strokeWidth: "1",
+                          strokeOpacity: "0.1",
+                        }}
+                      ></circle>
+                      <text
+                        x={x}
+                        y={y}
+                        dx={dx}
+                        dy={dy}
+                        fill="#000"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "10px",
+                          textAlign: "center",
+                          textAnchor: "center",
+                          fontFamily: "TT Commons",
+                        }}
+                      >{`${Math.round(dataEntry.value)}%`}</text>
+                    </g>
+                  );
+                }}
+              />
+              <Row
+                alignItems="center"
+                justifyContent="space-around"
+                width="100%"
+              >
+                <Row alignItems="center">
+                  <div
+                    style={{
+                      backgroundColor: "#FBBC05",
+                      height: 12,
+                      width: 12,
+                      borderRadius: 100,
+                      marginRight: 4,
+                    }}
+                  />
+                  <Title fontSize="12px" fontWeight="400">
+                    Used
+                  </Title>
+                </Row>
+                <Row alignItems="center">
+                  <div
+                    style={{
+                      backgroundColor: "#1877F2",
+                      height: 12,
+                      width: 12,
+                      borderRadius: 100,
+                      marginRight: 4,
+                    }}
+                  />
+                  <Title fontSize="12px" fontWeight="400">
+                    Free Space
+                  </Title>
+                </Row>
+              </Row>
+            </HomeContainer>
+
+            <HomeContainer
+              className="width-100"
+              width="93%"
+              height="546px"
+              title="Recent Activity"
+            ></HomeContainer>
+          </Column>
+        </Row>
+      ) : (
+        <Permission modalOpen={modalOpen} />
+      )}
       <Modal
         open={open}
         onClose={() => setopen(false)}
@@ -1117,6 +934,210 @@ export default function Home() {
                 onClick={HandleCreateFolder}
               >
                 Create
+              </Button>
+            </Row>
+          </Box>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={isUplaod}
+        onClose={() => setIsUpload(false)}
+        keepMounted
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Box style={style2} className="modal">
+          <Title fontSize="1.7rem" fontWeight="700" margin="20px auto 0 25px">
+            Select Information Type
+          </Title>
+          <CrossOutline
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 10,
+              cursor: "pointer",
+            }}
+            onClick={() => setIsUpload(false)}
+          />
+          <Box
+            sx={{
+              width: "92%",
+              p: 3,
+              m: 3,
+              borderRadius: "20px",
+            }}
+          >
+            <Row
+              alignItems="center"
+              border="1px solid black"
+              borderRadius="10px"
+            >
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                textColor="black"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    type="file"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Document
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                borderRadius="10px"
+                textColor="black"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Photo
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Cont>
+                <div className="dropdown-container">
+                  <div className="dropdown-header" onClick={toggleDropdown}>
+                    {selectedOption
+                      ? selectedOption.name
+                      : "Select Password Type"}
+                  </div>
+                  {dropdownOpen && (
+                    <ul className="dropdown-options">
+                      {PasswordSelectNames.map((option) => (
+                        <li
+                          key={option.id}
+                          className="dropdown-option"
+                          onClick={() => handleOptionSelect(option)}
+                          onChange={(e) => {
+                            navigate(`/password-type-form?form=${e.id}`);
+                          }}
+                        >
+                          {option.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </Cont>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                borderRadius="10px"
+                textColor="black"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Video
+                </label>
+              </Button>
+            </Row>
+            <Row alignItems="center">
+              <Button
+                width="100%"
+                height="60px"
+                color="white"
+                textColor="black"
+                borderRadius="10px"
+                border="1px solid rgba(0, 0, 0, 0.5);"
+              >
+                <label
+                  style={{
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(0,0,0,0.5)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    onClick={(e) => {
+                      e.target.value = null;
+                    }}
+                    onChange={(e) => {
+                      setIsUpload(false);
+                      postFile(e.target.files[0]);
+                    }}
+                  />
+                  Upload From device
+                </label>
               </Button>
             </Row>
           </Box>

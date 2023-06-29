@@ -95,6 +95,7 @@ const BankForm = ({ isEdit, id }) => {
   const { t } = useContext(AuthContext);
   const navigate = useNavigate();
   const [getAccountData, setAccountData] = useState();
+  const [getAllowedData, setAllowedData] = useState();
   const [isData, setIsData] = useState(true);
   const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -108,6 +109,7 @@ const BankForm = ({ isEdit, id }) => {
       getBankAccountDetail(t, id)
         .then((res) => {
           setAccountData(res?.data?.data);
+          setAllowedData(res.data?.allowedData);
           setIsData(true);
         })
         .catch((e) => console.log(e));
@@ -115,7 +117,7 @@ const BankForm = ({ isEdit, id }) => {
   }, []);
 
   useEffect(() => {
-    if (id && isEdit && !getAccountData) {
+    if (id && isEdit && !getAccountData && !getAllowedData) {
       setIsData(false);
     }
   }, [getAccountData]);
@@ -141,13 +143,21 @@ const BankForm = ({ isEdit, id }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          bank_name: getAccountData?.bank_name || "",
-          website: getAccountData?.website || "",
-          user_name: getAccountData?.user_name || "",
-          password: getAccountData?.password || "",
-          account_number: getAccountData?.account_number || "",
-          routing: getAccountData?.routing || "",
-          account_nick_name: getAccountData?.account_nick_name || "",
+          bank_name:
+            getAccountData?.bank_name || getAllowedData?.bank_name || "",
+          website: getAccountData?.website || getAllowedData?.website || "",
+          user_name:
+            getAccountData?.user_name || getAllowedData?.user_name || "",
+          password: getAccountData?.password || getAllowedData?.password || "",
+          account_number:
+            getAccountData?.account_number ||
+            getAllowedData?.account_number ||
+            "",
+          routing: getAccountData?.routing || getAllowedData?.routing || "",
+          account_nick_name:
+            getAccountData?.account_nick_name ||
+            getAllowedData?.account_nick_name ||
+            "",
         }}
         onSubmit={handleSubmit}
       >
@@ -163,7 +173,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="bank_name"
                     placeholder="Enter Name"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>Website/URL</label>
@@ -171,7 +181,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="website"
                     placeholder="Enter url/website"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>User Name:</label>
@@ -179,7 +189,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="user_name"
                     placeholder="Enter username"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>Password:</label>
@@ -188,7 +198,7 @@ const BankForm = ({ isEdit, id }) => {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter password"
-                      disabled={isEdit && !isProfileEdit}
+                      disabled={(isEdit && !isProfileEdit) || getAllowedData}
                     />
                     <div className="eye-icon">
                       {showPassword ? (
@@ -211,7 +221,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="tel"
                     name="account_number"
                     placeholder="Enter Account"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>Routing:</label>
@@ -219,7 +229,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="routing"
                     placeholder="Enter Routing"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>Account Nick Name:</label>
@@ -227,7 +237,7 @@ const BankForm = ({ isEdit, id }) => {
                     type="text"
                     name="account_nick_name"
                     placeholder="Enter account nickname"
-                    disabled={isEdit && !isProfileEdit}
+                    disabled={(isEdit && !isProfileEdit) || getAllowedData}
                   />
 
                   <label>Password Recovery:</label>
@@ -238,7 +248,10 @@ const BankForm = ({ isEdit, id }) => {
                   </p>
                 </fieldset>
                 <div class="subbutton">
-                  <span onClick={handleSubmit}>
+                  <span
+                    disabled={getAllowedData}
+                    onClick={() => !getAllowedData && handleSubmit()}
+                  >
                     {isEdit ? (isProfileEdit ? "Update" : "Edit") : "Submit"}
                   </span>
                 </div>

@@ -51,8 +51,13 @@ import { getBuddiesApi } from "../../../../networks/buddies";
 import Files from "./FilesStaticData";
 import fileimage from "../../../../assets/images/file1.png";
 import toast, { Toaster } from "react-hot-toast";
-import { getRecipeFormList } from "../../../../networks/passwordTypeForms";
+import {
+  deleteRecipeForm,
+  getRecipeFormList,
+} from "../../../../networks/passwordTypeForms";
 import moment from "moment";
+import { PERMISSION_FORM_TYPE_ENUMS } from "../../../../utils/helper";
+import Permission from "../../../Permissions/Permission";
 
 const Row = styled.div`
   display: flex;
@@ -72,6 +77,11 @@ const Recipes = () => {
   const [isRenameModalOpen, toggleRenameModal] = useState(false);
   const [folderToRename, setFolderToRename] = useState({});
   const [allFolders, setAllFolders] = useState([]);
+  const [allowedForms, setAllowedForm] = useState([]);
+
+  const [modalOpen, setModalOpen] = useState({
+    visible: false,
+  });
 
   const [field, setField] = useState("");
 
@@ -83,7 +93,10 @@ const Recipes = () => {
   const { t } = useContext(AuthContext);
   useEffect(() => {
     getRecipeFormList(t)
-      .then((res) => setRecipeFormList(res?.data?.data))
+      .then((res) => {
+        setRecipeFormList(res?.data?.data);
+        setAllowedForm(res?.data?.allowedData);
+      })
       .catch((e) => toast.error("Something Went wrong"));
   }, [t]);
 
@@ -258,147 +271,280 @@ const Recipes = () => {
       ) : (
         <Box>
           <div>
-            <Box width="100%" height="auto">
-              <Row justifyContent="flex-end">
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginLeft: "auto",
-                  }}
-                ></div>
-              </Row>
+            {!modalOpen.visible ? (
+              <Box width="100%" height="auto">
+                <Row justifyContent="flex-end">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginLeft: "auto",
+                    }}
+                  ></div>
+                </Row>
 
-              <Box
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    width > 1200
-                      ? "repeat(4,1fr)"
-                      : width > 950
-                      ? "repeat(3,1fr)"
-                      : width > 600
-                      ? "repeat(2,1fr)"
-                      : "repeat(2,1fr)",
-                  gridGap: "1rem",
-                }}
-              >
-                {recipeFormList?.map((element) => {
-                  return (
-                    <>
-                      <div
-                        style={{ position: "relative", marginTop: "20px" }}
-                        key={element.id}
-                      >
+                <Box
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      width > 1200
+                        ? "repeat(4,1fr)"
+                        : width > 950
+                        ? "repeat(3,1fr)"
+                        : width > 600
+                        ? "repeat(2,1fr)"
+                        : "repeat(2,1fr)",
+                    gridGap: "1rem",
+                  }}
+                >
+                  {recipeFormList?.map((element) => {
+                    return (
+                      <>
                         <div
-                          onClick={() =>
-                            navigate(
-                              `/password-type-form?form=4&id=${element.id}`
-                            )
-                          }
+                          style={{ position: "relative", marginTop: "20px" }}
+                          key={element.id}
                         >
-                          <FolderContainer
-                            width="100%"
-                            height="173px"
-                            flexDirection="column"
-                            justifyContent="flex-start"
-                            alignItems="flex-start"
-                            padding="10px"
-                            borderRadius="7px"
+                          <div
+                            onClick={() =>
+                              navigate(
+                                `/password-type-form?form=4&id=${element.id}`
+                              )
+                            }
                           >
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
+                            <FolderContainer
+                              width="100%"
+                              height="173px"
+                              flexDirection="column"
+                              justifyContent="flex-start"
+                              alignItems="flex-start"
+                              padding="10px"
+                              borderRadius="7px"
                             >
                               <div
                                 style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "50%",
-                                  backgroundColor: "#00A6521A",
+                                  width: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <img
-                                  width="20px"
-                                  height="20px"
-                                  src={fileimage}
-                                />
+                                <div
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#00A6521A",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <img
+                                    width="20px"
+                                    height="20px"
+                                    src={fileimage}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <Title
-                              fontSize="22px"
-                              margin={
-                                width > 600
-                                  ? "20px 0px 0px 3px"
-                                  : "8px 0px 0px 3px"
-                              }
-                              lineHeight="38px"
-                              fontWeight="600"
-                              fontFamily="TT Commons"
-                            >
-                              {element.filename}
-                            </Title>
-                            <Paragraph fontSize="14px">
-                              Edited On{" "}
-                              <strong>
-                                {moment(element?.updatedAt).format(
-                                  "DD MMM YYYY"
-                                )}{" "}
-                              </strong>
-                            </Paragraph>
-                            <Paragraph fontSize="14px" margin="0px 0px 0px 3px">
-                              Created On{" "}
-                              <strong>
-                                {" "}
-                                {moment(element?.createdAt).format(
-                                  "DD MMM YYYY"
-                                )}{" "}
-                              </strong>
-                            </Paragraph>
-                          </FolderContainer>
+                              <Title
+                                fontSize="22px"
+                                margin={
+                                  width > 600
+                                    ? "20px 0px 0px 3px"
+                                    : "8px 0px 0px 3px"
+                                }
+                                lineHeight="38px"
+                                fontWeight="600"
+                                fontFamily="TT Commons"
+                              >
+                                {element.filename}
+                              </Title>
+                              <Paragraph fontSize="14px">
+                                Edited On{" "}
+                                <strong>
+                                  {moment(element?.updatedAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                              <Paragraph
+                                fontSize="14px"
+                                margin="0px 0px 0px 3px"
+                              >
+                                Created On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                            </FolderContainer>
+                          </div>
+                          <OptionsMenu
+                            color="rgba(0, 0, 0, 0.4)"
+                            orientation="horizontal"
+                            options={[
+                              {
+                                text: "Open",
+                                onClick: () => {
+                                  navigate(
+                                    `/password-type-form?form=4&id=${element.id}`
+                                  );
+                                },
+                              },
+                              {
+                                Icon: people,
+                                text: "My Buddies",
+                                onClick: () => {
+                                  navigate("/home/my-buddies");
+                                },
+                              },
+                              {
+                                text: "Delete",
+                                onClick: () => {
+                                  deleteRecipeForm(element.id);
+                                },
+                              },
+                              {
+                                text: "Permission",
+                                onClick: () =>
+                                  setModalOpen({
+                                    visible: true,
+                                    id: element.id,
+                                    type: PERMISSION_FORM_TYPE_ENUMS.RECIPE_FORM_TYPE_ENUM,
+                                    idToUse: "recipeAccountId",
+                                  }),
+                              },
+                            ]}
+                            position="absolute"
+                          />
                         </div>
-                        <OptionsMenu
-                          color="rgba(0, 0, 0, 0.4)"
-                          orientation="horizontal"
-                          options={[
-                            {
-                              text: "Open",
-                              onClick: () => {
-                                navigate(
-                                  `/password-type-form?form=4&id=${element.id}`
-                                );
+                      </>
+                    );
+                  })}
+                  {allowedForms?.map((element) => {
+                    return (
+                      <>
+                        <div
+                          style={{ position: "relative", marginTop: "20px" }}
+                          key={element.id}
+                        >
+                          <div
+                            onClick={() =>
+                              navigate(
+                                `/password-type-form?form=4&id=${element.id}`
+                              )
+                            }
+                          >
+                            <FolderContainer
+                              width="100%"
+                              height="173px"
+                              flexDirection="column"
+                              justifyContent="flex-start"
+                              alignItems="flex-start"
+                              padding="10px"
+                              borderRadius="7px"
+                            >
+                              <div
+                                style={{
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#00A6521A",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <img
+                                    width="20px"
+                                    height="20px"
+                                    src={fileimage}
+                                  />
+                                </div>
+                              </div>
+                              <Title
+                                fontSize="22px"
+                                margin={
+                                  width > 600
+                                    ? "20px 0px 0px 3px"
+                                    : "8px 0px 0px 3px"
+                                }
+                                lineHeight="38px"
+                                fontWeight="600"
+                                fontFamily="TT Commons"
+                              >
+                                {element.filename}
+                              </Title>
+                              <Paragraph fontSize="14px">
+                                Edited On{" "}
+                                <strong>
+                                  {moment(element?.updatedAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                              <Paragraph
+                                fontSize="14px"
+                                margin="0px 0px 0px 3px"
+                              >
+                                Created On{" "}
+                                <strong>
+                                  {" "}
+                                  {moment(element?.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}{" "}
+                                </strong>
+                              </Paragraph>
+                            </FolderContainer>
+                          </div>
+                          <OptionsMenu
+                            color="rgba(0, 0, 0, 0.4)"
+                            orientation="horizontal"
+                            options={[
+                              {
+                                text: "Open",
+                                onClick: () => {
+                                  navigate(
+                                    `/password-type-form?form=4&id=${element.id}`
+                                  );
+                                },
                               },
-                            },
-                            {
-                              Icon: people,
-                              text: "My Buddies",
-                              onClick: () => {
-                                navigate("/home/my-buddies");
+                              {
+                                Icon: people,
+                                text: "My Buddies",
+                                onClick: () => {
+                                  navigate("/home/my-buddies");
+                                },
                               },
-                            },
-                            {
-                              text: "Rename",
-                            },
-                            {
-                              text: "Delete",
-                            },
-                          ]}
-                          position="absolute"
-                        />
-                      </div>
-                    </>
-                  );
-                })}
+                              {
+                                text: "Delete",
+                                onClick: () =>
+                                  toast.error(
+                                    "You dont have the correct permission"
+                                  ),
+                              },
+                            ]}
+                            position="absolute"
+                          />
+                        </div>
+                      </>
+                    );
+                  })}
 
-                {/* Folder Box */}
+                  {/* Folder Box */}
+                </Box>
               </Box>
-            </Box>
+            ) : (
+              <Permission modalOpen={modalOpen} />
+            )}
           </div>
         </Box>
       )}
