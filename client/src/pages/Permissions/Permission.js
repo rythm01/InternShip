@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import styled from "styled-components";
 import Divider from "@mui/material/Divider";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getPermission } from "../../networks/filePermission";
+import { AuthContext } from "../../context/AuthContext";
+import { truncateString } from "../../utils/functions";
 
 function Permission({ modalOpen }) {
   const navigate = useNavigate();
+  const [permissionList, setPermissionList] = useState([]);
 
   function handleClick() {
     navigate(
@@ -18,12 +22,15 @@ function Permission({ modalOpen }) {
     );
   }
 
+  const { t } = useContext(AuthContext);
+
   const location = useLocation();
   const [updatedData, setUpdatedData] = useState([]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const dataParam = searchParams.get("data");
+    getPermission(t).then((res) => setPermissionList(res.data.data));
 
     if (dataParam) {
       const decodedData = decodeURIComponent(dataParam);
@@ -64,35 +71,39 @@ function Permission({ modalOpen }) {
             <div className="main">
               <h4 className="heading">The file has been shared with</h4>
               <Divider />
-              {updatedData.length !== 0 ? (
-                updatedData.map((d) => {
-                  if (d.checked === "true") {
-                    return (
-                      <div
-                        className="buddy"
-                        key={d.username}
-                        style={{ position: "relative" }}
-                      >
-                        <ul className="info">
-                          <li className="buddyName">{d.username}</li>
-                          <li className="email">{d.email}</li>
-                          <li className="share">{d.share}</li>
-                          <DeleteOutlineIcon
-                            sx={{
-                              position: "absolute",
-                              top: "4px",
-                              right: "15px",
-                              color: "green",
-                            }}
-                            onClick={() => handleDeleteClick(d.username)}
-                          />
-                        </ul>
-                        <Divider />
-                      </div>
-                    );
-                  }
-                  return null;
-                })
+              {permissionList.length !== 0 ? (
+                permissionList.map((d) => (
+                  <div
+                    className="buddy"
+                    key={d.username}
+                    style={{ position: "relative" }}
+                  >
+                    <ul className="info">
+                      <li className="buddyName">{d.buddy.email}</li>
+                      {d.file && (
+                        <li className="email">
+                          {truncateString(d.file.name.split("|")[1], 20)}
+                        </li>
+                      )}
+                      {d.folder && (
+                        <li className="share">{d.folder.name.split("|")[0]}</li>
+                      )}
+                      {d.form_type !== "undefined" && d.form_type && (
+                        <li className="share">Password Type forms</li>
+                      )}
+
+                      <DeleteOutlineIcon
+                        sx={{
+                          position: "absolute",
+                          top: "4px",
+                          right: "15px",
+                          color: "green",
+                        }}
+                      />
+                    </ul>
+                    <Divider />
+                  </div>
+                ))
               ) : (
                 <div>
                   {updatedData.length === 0 && (

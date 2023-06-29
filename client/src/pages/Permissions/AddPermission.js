@@ -96,7 +96,7 @@ function AddPermission() {
       [idToUse]: id,
       buddy_ids: [selectedBuddy.id],
     });
-    navigate("home/passwords");
+    navigate("/home");
   };
 
   return (
