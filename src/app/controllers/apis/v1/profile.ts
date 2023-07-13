@@ -9,11 +9,12 @@ import Folder from "../../../models/Folder";
 import { UserAuth } from "../../../models/UserAuth";
 import Plan from "../../../models/plans";
 import { Verification } from "../../../models/verification";
+import PlanActivity from "../../../models/planActivity";
 
 const ProfileRepo = AppDataSource.getRepository(UserProfile);
 const UserAuthRepo = AppDataSource.getRepository(UserAuth);
 const FolderRepo = AppDataSource.getRepository(Folder);
-const PlanRepo = AppDataSource.getRepository(Plan);
+const PlanActivityRepo = AppDataSource.getRepository(PlanActivity);
 const VerificationRepo = AppDataSource.getRepository(Verification);
 
 export const profileController = {
@@ -29,9 +30,7 @@ export const profileController = {
         .getOne();
 
       if (!userProfile) {
-        return res
-          .status(200)
-          .json({ message: "Profile does not exist", success: false });
+        return res.json({ message: "Profile does not exist", success: false });
       }
 
       const userProfileData = await ProfileRepo.findOne({
@@ -54,8 +53,6 @@ export const profileController = {
             title: true,
             storage: true,
             buddies: true,
-            fileSizeLimit: true,
-            files: true,
           },
         },
         where: { id: userProfile.id },
@@ -63,7 +60,7 @@ export const profileController = {
 
       if (!userProfileData) {
         return res
-          .status(200)
+          .status(400)
           .json({ message: "Profile does not exist", success: false });
       }
       return res.status(200).json({
@@ -72,9 +69,8 @@ export const profileController = {
         data: userProfileData,
       });
     } catch (error) {
-      console.log(error);
       return res
-        .status(200)
+        .status(400)
         .json({ message: "Internal server error", success: false });
     }
   },
@@ -98,7 +94,9 @@ export const profileController = {
           .json({ success: false, message: "Profile already exists" });
       }
 
-      const plan = await PlanRepo.findOne({ where: { title: "Freemium" } });
+      const plan = await PlanActivityRepo.findOne({
+        where: { user: { id: req.user as any } },
+      });
 
       const key = generateUid(16);
       var fileData = {
@@ -128,16 +126,31 @@ export const profileController = {
           .json({ success: false, message: "something went wrong!" });
       }
 
+      const verificationTimeStamp = () => {
+        switch (verificationPeriod) {
+          case "One Week":
+            return 7;
+          case "Two Week":
+            return 14;
+          case "One Month":
+            return 28;
+          default:
+            break;
+        }
+      };
+
       const profile = new UserProfile();
       profile.userAuth = userAuth!;
       profile.firstName = fname;
       profile.lastName = lname;
       profile.email = email;
-      profile.plan = plan!;
+      profile.plan = plan as any;
+      profile.planTitle = plan?.title as any;
       profile.location = location;
-      profile.verficationPeriod = verificationPeriod;
+      profile.verficationPeriod = verificationTimeStamp() as any;
       profile.profilePicture = data.Location;
       profile.profilePictureKey = data.Key;
+      profile.totalBuddies = plan?.buddies as any;
       profile.storage = plan?.storage.toString() || (1024 * 1024).toString();
       profile.storageLeft =
         plan?.storage.toString() || (1024 * 1024).toString();
@@ -147,8 +160,8 @@ export const profileController = {
       const verification = new Verification();
       verification.email = email;
       verification.verification_status = true;
-      verification.verficationPeriod = verificationPeriod;
-      verification.userAuth = userAuth!;
+      verification.verficationPeriod = verificationTimeStamp() as any;
+      verification.userAuth = req.user as any;
       await VerificationRepo.save(verification);
 
       const folder = new Folder();
@@ -157,24 +170,13 @@ export const profileController = {
 
       await FolderRepo.save(folder);
 
-      // const stripeUser = await stripe.customer.get
-
-      // const customer = await stripe.customers.create({
-      //     name: fname + " " + lname,
-      //     email: req.user?.email,
-      //     description: profile.id,
-      // });
-
-      profile.stripeCustomer = "#12345";
-      await ProfileRepo.save(profile);
-
       return res
         .status(200)
         .json({ success: true, message: "Profile created successfully" });
     } catch (error) {
       console.log(error);
       return res
-        .status(200)
+        .status(400)
         .json({ success: false, message: "Internal server error" });
     }
   },
@@ -261,6 +263,14 @@ export const profileController = {
       return res
         .status(200)
         .json({ success: false, message: "Internal server error" });
+    }
+  },
+
+  updateProfileStorage: async (req: Request, res: Response) => {
+    try {
+      const { plan, storage } = req.body;
+    } catch (error) {
+      return res.status(400).send({ message: "Something went wrong" });
     }
   },
 };

@@ -26,10 +26,10 @@ export class Verification {
   email_sent_for_verification: boolean;
 
   @Column({ nullable: true })
-  email_sent_date: Date;
+  email_sent_date: string;
 
   @Column({ nullable: true })
-  email_sent_expire_date: Date;
+  email_sent_expire_date: string;
 
   @CreateDateColumn()
   dateJoined: Date;
@@ -37,6 +37,7 @@ export class Verification {
   @Column()
   verficationPeriod: string;
 
-  @OneToOne(() => UserAuth, (userAuth) => userAuth.id)
+  @OneToOne(() => UserAuth, (userAuth) => userAuth.verificationId)
+  @JoinColumn()
   userAuth: UserAuth;
 }

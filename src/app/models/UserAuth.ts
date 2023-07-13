@@ -10,6 +10,8 @@ import {
 
 import { UserProfile } from "./UserProfile";
 import BankAccountPassword from "./BankAccountPassword";
+import { Verification } from "./verification";
+import PlanActivity from "./planActivity";
 
 @Entity()
 export class UserAuth {
@@ -21,6 +23,9 @@ export class UserAuth {
 
   @Column()
   phoneNumber: string;
+
+  @Column({ nullable: true })
+  customerId: string;
 
   @Column()
   email: string;
@@ -48,6 +53,12 @@ export class UserAuth {
 
   @OneToOne(() => UserProfile, (userProfile) => userProfile.userAuth)
   userProfile: UserProfile;
+
+  @OneToOne(() => PlanActivity, (PlanActivity) => PlanActivity.id)
+  plan: PlanActivity;
+
+  @OneToOne(() => Verification, (verification) => verification.userAuth)
+  verificationId: Verification;
 
   @Column({ nullable: true })
   generatedOTP: string;

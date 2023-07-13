@@ -93,11 +93,12 @@ export const bankAccountController = {
         },
         relations: ["userAuth", "bankAccountId"],
       });
+
       const allowedData = [];
       for (const bankPassword of isHaveingPermission) {
         allowedData.push(bankPassword.bankAccountId);
       }
-
+      console.log(allowedData);
       const isBankAccount = await BankAccountRepo.createQueryBuilder(
         "bankAccount"
       )

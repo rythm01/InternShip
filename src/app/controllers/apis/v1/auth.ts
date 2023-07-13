@@ -20,13 +20,13 @@ export const authController = {
 
       if (!user) {
         return res
-          .status(200)
+          .status(400)
           .json({ message: "User not found", success: false });
       }
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res
-          .status(200)
+          .status(400)
           .json({ message: "Incorrect password", success: false });
       }
       if (!user.is2fa) {
@@ -67,8 +67,7 @@ export const authController = {
           return res.json({ success: false, message: "Something went wrong!" });
         });
     } catch (error) {
-      console.log(error);
-      res.status(200).json({ success: false, message: "Something went wrong" });
+      res.status(400).json({ success: false, message: "Something went wrong" });
     }
   },
 
@@ -155,7 +154,7 @@ export const authController = {
 
       if (user) {
         return res
-          .status(200)
+          .status(400)
           .json({ message: "User already exists", success: false });
       }
 
@@ -243,17 +242,20 @@ export const authController = {
       const user = await UserRepo.findOne({ where: { id } });
 
       if (!user) {
-        return res.json({ success: false, message: "User not found" });
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
       }
-
       //check otp is correct or not
       if (user.generatedOTP != otp) {
-        return res.json({ success: false, message: "Incorrect OTP" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Incorrect OTP" });
       }
 
       //check otp is expired or not
       if (user.otpExpiresIn < new Date()) {
-        return res.json({ success: false, message: "OTP expired" });
+        return res.status(400).json({ success: false, message: "OTP expired" });
       }
 
       const token = jwt.sign(
@@ -264,7 +266,7 @@ export const authController = {
       return res.json({ success: true, token });
     } catch (error) {
       console.log(error);
-      res.status(200).json({ success: true, message: "Something went wrong" });
+      res.status(400).json({ success: true, message: "Something went wrong" });
     }
   },
 
@@ -277,7 +279,9 @@ export const authController = {
       const user = await UserRepo.findOne({ where: { id } });
 
       if (!user) {
-        return res.json({ success: false, message: "User not found" });
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
       }
 
       twilio.messages
@@ -289,7 +293,7 @@ export const authController = {
         .then(async (message) => {
           if (!message.sid)
             return res
-              .status(200)
+              .status(400)
               .json({ success: false, message: "Something went wrong!" });
           var date = new Date();
           user.generatedOTP = otp;
@@ -300,11 +304,12 @@ export const authController = {
         })
         .catch((error) => {
           console.error(error);
-          return res.json({ success: false, message: "Something went wrong!" });
+          return res
+            .status(400)
+            .json({ success: false, message: "Something went wrong!" });
         });
     } catch (error) {
-      console.log(error);
-      res.status(200).json({ message: "Something went wrong", success: false });
+      res.status(400).json({ message: "Something went wrong", success: false });
     }
   },
 
@@ -360,16 +365,20 @@ export const authController = {
       const user = await UserRepo.findOne({ where: { email } });
 
       if (!user) {
-        return res.json({ success: false, message: "User not found" });
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
       }
       //check otp is correct or not
       if (user.generatedOTP != otp) {
-        return res.json({ success: false, message: "Incorrect OTP" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Incorrect OTP" });
       }
 
       //check otp is expired or not
       if (user.otpExpiresIn < new Date()) {
-        return res.json({ success: false, message: "OTP expired" });
+        return res.status(400).json({ success: false, message: "OTP expired" });
       }
       const newPassword = bcrypt.hashSync(password, 10);
 
@@ -384,7 +393,7 @@ export const authController = {
     } catch (error) {
       console.log(error);
       return res
-        .status(200)
+        .status(400)
         .json({ success: false, message: "Something went wrong" });
     }
   },

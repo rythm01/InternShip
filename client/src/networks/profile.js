@@ -14,7 +14,6 @@ export const getProfile = async (t) => {
 
 export const createProfile = async (t, data) => {
   try {
-    console.log(data, "datatta");
     return axios.post(`/profile`, data, {
       headers: {
         Authorization: `Bearer ${t}`,

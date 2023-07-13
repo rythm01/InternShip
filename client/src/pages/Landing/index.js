@@ -28,10 +28,7 @@ export default function Landing() {
 
   const aboutUsRef = useRef(null);
 
-
-  useEffect(() => {
-  }, []);
-
+  useEffect(() => {}, []);
 
   const handleAboutUsClick = () => {
     navigate("/about");
@@ -50,11 +47,8 @@ export default function Landing() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  
-
   return (
     <Page height="">
-
       <NavBar>
         <Row link alignItems="center">
           <Logo />
@@ -253,7 +247,9 @@ export default function Landing() {
       <ProductsSection />
       <BottomSection />
 
-      <Footer>©{new Date().getFullYear()} All Rights Reserved by S & S Vault</Footer>
+      <Footer>
+        ©{new Date().getFullYear()} All Rights Reserved by S & S Vault
+      </Footer>
     </Page>
   );
 }

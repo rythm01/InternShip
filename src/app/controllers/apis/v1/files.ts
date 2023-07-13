@@ -61,11 +61,10 @@ export const fileController = {
       return res.json({
         success: true,
         message: "Files found successfully",
-        data: files,
+        data: files.reverse(),
         allowedFile,
       });
     } catch (error) {
-      console.log(error);
       return res
         .status(200)
         .json({ success: false, message: "Internal server error" });
@@ -77,7 +76,7 @@ export const fileController = {
       const file = req.file;
       if (!file) {
         return res
-          .status(200)
+          .status(400)
           .json({ success: false, message: "Please upload a file" });
       }
 
@@ -92,7 +91,7 @@ export const fileController = {
 
       if (!userProfile) {
         return res
-          .status(200)
+          .status(400)
           .json({ success: false, message: "Profile does not exist" });
       }
 
@@ -101,7 +100,7 @@ export const fileController = {
       });
       if (!rootFolder) {
         return res
-          .status(200)
+          .status(400)
           .json({ success: false, message: "Root folder does not exist" });
       }
 
@@ -153,7 +152,7 @@ export const fileController = {
     } catch (error) {
       console.log(error);
       return res
-        .status(200)
+        .status(400)
         .json({ success: false, message: "Something went wrong" });
     }
   },
@@ -246,6 +245,13 @@ export const fileController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
+      const isHaveingPermission = await PermissionRepo.findOne({
+        where: {
+          buddy: { id: req.user as any },
+        },
+        relations: ["buddy", "file"],
+      });
+
       if (!userProfile) {
         return res
           .status(200)
@@ -256,16 +262,14 @@ export const fileController = {
       });
 
       if (!file)
-        return res.status(200).json({
+        return res.status(400).json({
           message: "no files found",
           success: false,
         });
-      console.log(file);
       return res.status(200).json({ success: true, data: file });
     } catch (error) {
-      console.log(error);
       return res
-        .status(200)
+        .status(400)
         .json({ success: false, message: "Internal server error" });
     }
   },

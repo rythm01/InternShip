@@ -29,7 +29,6 @@ export const folderController = {
           user: {
             id: userProfile.id,
           },
-          ...req.query,
         },
         relations: ["files"],
       };
@@ -43,7 +42,7 @@ export const folderController = {
       return res.json({
         success: true,
         message: "Folders found successfully",
-        data: folders,
+        data: folders.reverse(),
       });
     } catch (error) {
       console.log(error);

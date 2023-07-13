@@ -15,19 +15,20 @@ import File from "./File";
 import Folder from "./Folder";
 import Plan from "./plans";
 import BankAccountPassword from "./BankAccountPassword";
+import PlanActivity from "./planActivity";
 
 @Entity()
 export class UserProfile {
   @PrimaryGeneratedColumn("uuid")
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
-  @Column()
+  @Column({ nullable: true })
   location: string;
 
   @Column({ nullable: true })
@@ -43,15 +44,21 @@ export class UserProfile {
   storageLeft: string;
 
   @Column({ nullable: true })
+  planTitle: string;
+
+  @Column({ nullable: true })
   profilePicture: string;
 
   @Column({ nullable: true })
   profilePictureKey: string;
 
+  @Column({ nullable: true })
+  totalBuddies: string;
+
   // One-to-one relationship with Plan entity
-  @ManyToOne(() => Plan, (plan) => plan.user)
+  @OneToOne(() => PlanActivity, (plan) => plan.user)
   @JoinColumn()
-  plan: Plan;
+  plan: PlanActivity;
 
   @CreateDateColumn()
   dateJoined: Date;

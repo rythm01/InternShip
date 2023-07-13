@@ -26,53 +26,74 @@ export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id)
+  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id, { onDelete: "CASCADE" })
   @JoinColumn({ name: "userAuth" })
   userAuth: UserAuth;
 
-  @ManyToOne(() => File, (file) => file.id, { nullable: true })
+  @ManyToOne(() => File, (file) => file.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "fileId" })
   file: File;
 
-  @ManyToOne(() => Folder, (folder) => folder.id, { nullable: true })
+  @ManyToOne(() => Folder, (folder) => folder.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "folderId" })
   folder: Folder;
 
-  @ManyToOne(() => BankAccountPassword, (bank) => bank.id, { nullable: true })
+  @ManyToOne(() => BankAccountPassword, (bank) => bank.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "bankId" })
   bankAccountId: BankAccountPassword;
 
   @ManyToOne(() => CreditCardPassword, (creditCard) => creditCard.id, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   @JoinColumn({ name: "creditCardId" })
   creditCardId: CreditCardPassword;
 
-  @ManyToOne(() => LoanAccountPassword, (loan) => loan.id, { nullable: true })
+  @ManyToOne(() => LoanAccountPassword, (loan) => loan.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "loanId" })
   loanAccountId: LoanAccountPassword;
 
   @ManyToOne(() => MerchantAccountPassword, (merchant) => merchant.id, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   @JoinColumn({ name: "merchantId" })
   merchantAccountId: MerchantAccountPassword;
 
   @ManyToOne(() => PasswordStorage, (password) => password.id, {
+    onDelete: "CASCADE",
     nullable: true,
   })
   @JoinColumn({ name: "passwordId" })
   passwordStorageId: PasswordStorage;
 
-  @ManyToOne(() => MiscPasswordStorage, (misc) => misc.id, { nullable: true })
+  @ManyToOne(() => MiscPasswordStorage, (misc) => misc.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "miscId" })
   miscAccountId: MiscPasswordStorage;
 
-  @ManyToOne(() => RecipeForm, (recipe) => recipe.id, { nullable: true })
+  @ManyToOne(() => RecipeForm, (recipe) => recipe.id, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "recipeId" })
   recipeAccountId: RecipeForm;
 
-  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id)
+  @ManyToOne(() => UserAuth, (userAuth) => userAuth.id, { onDelete: "CASCADE" })
   @JoinColumn({ name: "buddyId" })
   buddy: UserAuth;
 
@@ -88,10 +109,10 @@ export class Permission {
   @Column({ default: false })
   canShare: boolean;
 
-  @Column({ type: "date", nullable: true })
-  timeReleaseDate: Date;
+  @Column({ nullable: true })
+  timeReleaseDate: boolean;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ nullable: true })
   instantReleaseDate: Date;
 
   @CreateDateColumn()

@@ -59,6 +59,159 @@ export const permissionsController = {
         .where("userProfile.userAuth = :id", { id: req.user })
         .getOne();
 
+      for (const buddy of buddy_ids) {
+        if (folder_id) {
+          const isFolderPermission = await PermissionRepo.findOne({
+            where: {
+              folder: { id: folder_id },
+              buddy: { id: buddy },
+            },
+            relations: ["buddy"],
+            select: ["id"],
+          });
+
+          if (isFolderPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (file_id) {
+          const isFilePermission = await PermissionRepo.findOne({
+            where: {
+              file: { id: file_id },
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+          if (isFilePermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.bankAccountId) {
+          const isBankPermission = await PermissionRepo.findOne({
+            where: {
+              bankAccountId: data?.bankAccountId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+          if (isBankPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.creditCardId) {
+          const isCreditCardPermission = await PermissionRepo.findOne({
+            where: {
+              creditCardId: data?.creditCardId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+
+          if (isCreditCardPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.merchantAccountId) {
+          const isMerchantPermission = await PermissionRepo.findOne({
+            where: {
+              merchantAccountId: data?.merchantAccountId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+          if (isMerchantPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.miscAccountId) {
+          const isMiscPermission = await PermissionRepo.findOne({
+            where: {
+              miscAccountId: data?.miscAccountId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+
+          if (isMiscPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.passwordStorageId) {
+          const isPassStoragePermission = await PermissionRepo.findOne({
+            where: {
+              passwordStorageId: data?.passwordStorageId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+          if (isPassStoragePermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.loanAccountId) {
+          const isLoanPermission = await PermissionRepo.findOne({
+            where: {
+              loanAccountId: data?.loanAccountId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+
+          if (isLoanPermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+
+        if (data.recipeAccountId) {
+          const isRecipePermission = await PermissionRepo.findOne({
+            where: {
+              recipeAccountId: data?.recipeAccountId,
+              buddy: { id: buddy },
+            },
+            select: ["id"],
+          });
+
+          if (isRecipePermission) {
+            return res.status(400).json({
+              message: "One of the buddy has already given the permission",
+            });
+          }
+        }
+      }
+
+      const getAllBuddy = await BuddyRepo.find({
+        where: {
+          user: { id: req.user as any },
+          buddy: { id: In(buddy_ids) },
+        },
+        relations: ["user", "buddy"],
+      });
+
+      console.log(getAllBuddy);
+
       const buddyData = await BuddyRepo.find({
         where: { user: { id: req.user as any } },
         select: {
@@ -92,6 +245,7 @@ export const permissionsController = {
             id: file_id,
           },
         });
+
         newPermission.file = fileData?.id as any;
       }
 
@@ -104,6 +258,7 @@ export const permissionsController = {
             id: folder_id,
           },
         });
+
         newPermission.folder = folderData?.id as any;
       }
 
@@ -116,14 +271,16 @@ export const permissionsController = {
         newPermission.merchantAccountId = data?.merchantAccountId;
         newPermission.miscAccountId = data?.miscAccountId;
         newPermission.recipeAccountId = data?.recipeAccountId;
+        newPermission.passwordStorageId = data?.passwordStorageId;
         newPermission.form_type = data?.form_type;
         newPermission.canRead = data?.read || false;
         newPermission.canWrite = data?.write || false;
         newPermission.canShare = data?.share || false;
         if (data.timeReleaseDate) {
-          newPermission.timeReleaseDate = data?.timeReleaseDate;
+          newPermission.timeReleaseDate = data?.timeReleaseDate && true;
         } else if (data.instantReleaseDate) {
-          newPermission.instantReleaseDate = data?.instantReleaseDate;
+          newPermission.instantReleaseDate =
+            data?.instantReleaseDate && new Date();
         }
         allPermission.push(newPermission);
       }
@@ -135,18 +292,48 @@ export const permissionsController = {
         message: "Permission created",
       });
     } catch (err) {
+      console.log(err);
       return res
-        .status(200)
+        .status(400)
         .json({ success: false, message: "Something Went wrong!" });
     }
   },
 
   getPermission: async (req: Request, res: Response) => {
     try {
+      const ids = req.query;
+      const conditions: any = {
+        userAuth: { id: req.user as any },
+      };
+      if (ids.file_id) {
+        conditions.file = { id: ids.file_id };
+      }
+      if (ids.folder_id) {
+        conditions.folder = { id: ids.folder_id };
+      }
+      if (ids.bankAccountId) {
+        conditions.bankAccountId = { id: ids.bankAccountId };
+      }
+      if (ids.creditCardId) {
+        conditions.creditCardId = { id: ids.creditCardId };
+      }
+      if (ids.loanAccountId) {
+        conditions.loanAccountId = { id: ids.loanAccountId };
+      }
+      if (ids.merchantAccountId) {
+        conditions.merchantAccountId = { id: ids.merchantAccountId };
+      }
+      if (ids.passwordStorageId) {
+        conditions.passwordStorageId = { id: ids.passwordStorageId };
+      }
+      if (ids.miscAccountId) {
+        conditions.miscAccountId = { id: ids.miscAccountId };
+      }
+      if (ids.recipeAccountId) {
+        conditions.recipeAccountId = { id: ids.recipeAccountId };
+      }
       const getAllPermission = await PermissionRepo.find({
-        where: {
-          userAuth: { id: req.user as any },
-        },
+        where: conditions,
         relations: [
           "file",
           "folder",
@@ -166,6 +353,7 @@ export const permissionsController = {
         data: getAllPermission,
       });
     } catch (error) {
+      console.log(error);
       res.status(400).json({
         message: "Something went wrong",
       });

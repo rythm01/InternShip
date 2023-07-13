@@ -25,10 +25,12 @@ export const buddyController = {
         buddy: {
           id: true,
           email: true,
+          name: true,
         },
         user: {
           id: true,
           email: true,
+          name: true,
         },
         createdAt: true,
         updatedAt: true,
@@ -56,7 +58,6 @@ export const buddyController = {
     var primeBuddyExists = await buddyRepo.find({
       where: { user: { id: user?.id }, buddyType: "subprime" },
     });
-    console.log(primeBuddyExists);
 
     var extBuddies = await buddyRepo.find({
       where: { user: { id: user?.id }, buddy: { id: buddy?.id } },
@@ -152,6 +153,12 @@ export const buddyController = {
         where: { user: { id: id }, buddy: user?.email },
       });
 
+      const extNotification = await notificationRepo.findOne({
+        where: {
+          email: user?.email,
+        },
+      });
+
       if (invitation) {
         var newBuddy = new Buddy();
         newBuddy.user = invitation.user;
@@ -163,6 +170,10 @@ export const buddyController = {
         await buddyRepo.save(newBuddy);
 
         await invitationRepo.delete(invitation.id!);
+
+        if (extNotification) {
+          await notificationRepo.delete(extNotification.id!);
+        }
 
         return res
           .status(200)
@@ -177,6 +188,9 @@ export const buddyController = {
         buddy.buddyStatus = "accepted";
         await buddyRepo.save(buddy);
 
+        if (extNotification) {
+          await notificationRepo.delete(extNotification.id!);
+        }
         return res
           .status(200)
           .json({ success: true, message: "Buddy request accepted" });

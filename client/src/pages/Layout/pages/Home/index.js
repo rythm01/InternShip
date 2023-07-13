@@ -231,8 +231,9 @@ export default function Home() {
   const [pngcount, setpngcount] = useState(0);
   const [jpegCount, setJpegCount] = useState(0);
   const [otherFilesCount, setOtherFilesCount] = useState(0);
-  const [filesData, setFilesData] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [filesData, setFilesData] = useState([]);
+  const [allwoedFilesData, setAllwoedFilesData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notification, setNotifications] = useState([]);
   const [isUplaod, setIsUpload] = useState(false);
@@ -282,7 +283,8 @@ export default function Home() {
     const res = await getfiles(t);
     setLoading(false);
     if (!res.data.success) return toast.error(res.data.message);
-    const fileData = [...res.data?.data, ...res?.data?.allowedFile];
+    const fileData = [...res.data?.data];
+    setAllwoedFilesData([...res.data.allowedFile]);
     setFilesData(fileData);
     const pdf = fileData?.filter(
       (file) => file.ext === "pdf" || file.ext === "PDF"
@@ -340,6 +342,8 @@ export default function Home() {
   };
   const Folders = folders?.slice(0, 5);
   const ThreeFilesRecords = filesData?.slice(0, 3);
+  const ThreeAllwoedFilesRecords = allwoedFilesData?.slice(0, 3);
+
   const fileCountData = [
     { color: "#DFF9EC", count: pdfcount ? pdfcount : 0, type: "PDF Files" },
     { color: "#FDF1CD", count: pngcount ? pngcount : 0, type: "PNG Files" },
@@ -729,6 +733,110 @@ export default function Home() {
                                           id: item.id,
                                           idToUse: "file_id",
                                         }),
+                                    },
+                                  ]}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </Box>
+                        <div
+                          style={{
+                            backgroundColor: "rgba(0, 0, 0, 0.03)",
+                            width: "100%",
+                            height: "1px",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                  {ThreeAllwoedFilesRecords?.map((item, i) => {
+                    return (
+                      <div style={{ width: "100%" }} key={i}>
+                        <Box
+                          flexDirection="column"
+                          justifyContent="flex-start"
+                          alignItems="flex-start"
+                          padding="10px"
+                          borderRadius="0px"
+                          style={{ margin: "5px 0" }}
+                        >
+                          <div
+                            style={{
+                              width: "inherit",
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div width="100%" style={{ display: "flex" }}>
+                              <div
+                                style={{
+                                  width: "55px",
+                                  height: "40px",
+                                  borderRadius: "9px",
+                                  backgroundColor: "rgba(0, 166, 82, 0.1)",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <IoDocumentTextOutline
+                                  style={{}}
+                                  color="#00A652"
+                                />
+                              </div>
+                              <div
+                                style={{
+                                  width: "100%",
+                                  height: "40px",
+                                  margin: "0px 0px 0px 10px",
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <Title fontSize="14px">
+                                  {truncateString(item.name.split("|")[1], 20)}
+                                </Title>
+                                <Paragraph fontSize="12px">
+                                  Uploaded on :{" "}
+                                  {moment(item.createdAt).format("L")}{" "}
+                                </Paragraph>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                margin: "0px 10px 0px 0px",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "flex-end",
+                                  paddingRight: "10px",
+                                }}
+                              >
+                                <OptionsMenu
+                                  color="rgba(0, 0, 0, 0.4)"
+                                  orientation="horizontal"
+                                  options={[
+                                    {
+                                      text: "Open",
+                                      onClick: () => {
+                                        navigate(`documents/folder/${item.id}`);
+                                      },
+                                    },
+                                    {
+                                      text: "Delete",
+                                      onClick: () => {
+                                        toast.error(
+                                          "You dont have the permission to do that"
+                                        );
+                                      },
                                     },
                                   ]}
                                 />

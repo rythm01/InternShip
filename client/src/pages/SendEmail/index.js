@@ -14,22 +14,22 @@ import {
 
 import { useState } from "react";
 import { appleImg, emailImg } from "../../assets/images";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useNavigate } from "react-router-dom";
 import { postResetPassword } from "../../api";
-import {
-  requestResetPassword,
-  setResetPasswordError,
-} from "../../store/slice/mainSlice";
+// import {
+//   requestResetPassword,
+//   setResetPasswordError,
+// } from "../../store/slice/mainSlice";
 import useWindowSize from "../../utils/hook/useWindowSize";
 
 export default function SendEmail() {
   const [error, seterror] = useState([]);
   const [validateEmail, setValidateEmail] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
 
@@ -44,17 +44,17 @@ export default function SendEmail() {
 
     if (email) {
       setValidateEmail(false);
-      dispatch(requestResetPassword(email));
+      // dispatch(requestResetPassword(email));
       try {
         const data = await postResetPassword(email);
         console.log("postResetPassword.data", data);
         if (data.message === "User not found.") {
           seterror(data);
         } else {
-          navigate("/verify-forgot-password");
+          // navigate("/verify-forgot-password");
         }
       } catch (error) {
-        dispatch(setResetPasswordError(error.message));
+        // dispatch(setResetPasswordError(error.message));
         seterror(error.response.data);
       }
     }

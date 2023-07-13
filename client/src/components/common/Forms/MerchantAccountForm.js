@@ -141,29 +141,7 @@ const MerchantAccountForm = ({ id, isEdit }) => {
 
   return (
     <Container>
-      <Formik
-        enableReinitialize
-        initialValues={{
-          merchant_name:
-            getMerchantAccount?.merchant_name ||
-            getAllowedData?.merchant_name ||
-            "",
-          website: getMerchantAccount?.website || getAllowedData?.website || "",
-          user_name:
-            getMerchantAccount?.user_name || getAllowedData?.user_name || "",
-          password:
-            getMerchantAccount?.password || getAllowedData?.password || "",
-          account_number:
-            getMerchantAccount?.account_number ||
-            getAllowedData?.account_number ||
-            "",
-          account_nick_name:
-            getMerchantAccount?.account_nick_name ||
-            getAllowedData?.account_nick_name ||
-            "",
-        }}
-        onSubmit={handleSubmit}
-      >
+      <Formik enableReinitialize onSubmit={handleSubmit}>
         {({ handleSubmit }) => (
           <Form>
             <h1>Merchant Account Password Storage Form</h1>

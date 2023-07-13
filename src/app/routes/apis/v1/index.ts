@@ -8,6 +8,7 @@ app.use("/profile", require("./profile").default);
 app.use("/folders", require("./folders").default);
 app.use("/payments", require("./payments").default);
 app.use("/plans", require("./plans").default);
+app.use("/plans-activity", require("./planAcitivty").default);
 app.use("/video-addons", require("./videoAddon").default);
 app.use("/notifications", require("./notification").default);
 app.use("/buddies", require("./buddies").default);
@@ -26,5 +27,6 @@ app.use(
 );
 app.use("/password-type/recipe-account", require("./recipe").default);
 app.use("/password-type/misc-password", require("./miscPassWord").default);
+app.use("/verification", require("./verification").default);
 
 export default app;

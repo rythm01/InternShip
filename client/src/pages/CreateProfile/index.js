@@ -22,7 +22,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 import countries from "../../countires";
 import { createProfile, getProfile } from "../../networks/profile";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { logout } from "../../store/slice/mainSlice";
 
 const Option = (props) => {
@@ -48,7 +48,7 @@ export default function CreateProfile() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [location, setLocation] = useState("");
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   // const [category, setCategory] = useState("")
   // const [categoryoptions, setcategoryoptions] = useState([])
@@ -62,16 +62,14 @@ export default function CreateProfile() {
     { value: 28, label: "One Month", color: "#5243AA", isFixed: true },
   ];
 
-  const { profile, setProfile, authData, t } = useContext(AuthContext)
+  const { profile, setProfile, authData, t } = useContext(AuthContext);
 
   useEffect(() => {
     if (authData) {
-      setEmail(authData.email)
-      setuserID(authData.id)
+      setEmail(authData.email);
+      setuserID(authData.id);
     }
   }, [authData]);
-
-
 
   const customStyles = {
     control: (provided, state) => ({
@@ -107,18 +105,13 @@ export default function CreateProfile() {
     }),
   };
 
-
   const handleImage = (e) => {
     const file = e.target.files[0];
-    // console.log('file...', file)
     if (file.type.split("/")[0] !== "image")
       return toast.error("This file type is not supported");
     setImagePreview(URL.createObjectURL(file));
     setImageFile(file);
-    //uploadImage(file);
   };
-
-
 
   const countriesOptions = useMemo(() => {
     return countries.map((country) => ({
@@ -135,15 +128,13 @@ export default function CreateProfile() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-
-    if (!firstName) return toast.error("Please enter your first name")
-    if (!lastName) return toast.error("Please enter your last name")
-    if (!country) return toast.error("Please select your country")
-    if (!verificationPeriod) return toast.error("Please select verification period")
-    if (!imageFile) return toast.error("Please select your profile image")
+    if (!firstName) return toast.error("Please enter your first name");
+    if (!lastName) return toast.error("Please enter your last name");
+    if (!country) return toast.error("Please select your country");
+    if (!verificationPeriod)
+      return toast.error("Please select verification period");
+    if (!imageFile) return toast.error("Please select your profile image");
     setLoading(true);
-
-
 
     const data = new FormData();
     data.append("file", imageFile);
@@ -157,22 +148,21 @@ export default function CreateProfile() {
     const res = await createProfile(t, data);
     if (!res.data.success) {
       setLoading(false);
-      return toast.error(res.data.message)
+      return toast.error(res.data.message);
     }
 
-
-    const response = await getProfile(t)
+    const response = await getProfile(t);
     if (!response.data.success) {
       setLoading(false);
-      return toast.error(response.data.message)
+      return toast.error(response.data.message);
     }
 
     if (response.data.data) {
-      localStorage.setItem('profile', JSON.stringify(response.data.data))
+      localStorage.setItem("profile", JSON.stringify(response.data.data));
       setLoading(false);
-      setProfile(response.data.data)
+      setProfile(response.data.data);
       navigate("/home");
-      return
+      return;
     }
   };
   if (!countriesOptions) {
@@ -228,9 +218,7 @@ export default function CreateProfile() {
                   height="50px"
                   menuPosition="left"
                   placeholder="Select the location"
-                  value={countriesOptions.find(
-                    (el) => el.value === country
-                  )}
+                  value={countriesOptions.find((el) => el.value === country)}
                   styles={customStyles}
                   onChange={(e) => {
                     setCountry(e.value);
@@ -274,7 +262,6 @@ export default function CreateProfile() {
                 Save
               </Button>
             </ButtonBar>
-
           </form>
         </Container>
       </Page>
